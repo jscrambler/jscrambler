@@ -1,11 +1,11 @@
 import clone from 'lodash.clone';
 import crypto from 'crypto';
 import defaults from 'lodash.defaults';
-import fs from 'fs';
+import https from 'https';
 import keys from 'lodash.keys';
 import request from 'axios';
 import url from 'url';
-import https from 'https';
+import { readFile } from 'fs-extra';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -126,25 +126,28 @@ JScramblerClient.prototype.request = function(
     settings.responseType = 'arraybuffer';
   }
 
-  // Internal CA
-  if (this.options.cafile) {
-    const agent = new https.Agent({
-      ca: fs.readFileSync(this.options.cafile)
-    });
-    settings.agent = agent;
-  }
-
   let promise;
 
-  if (method === 'GET' || method === 'DELETE') {
-    settings.params = signedData;
-    promise = request[method.toLowerCase()](formatedUrl, settings);
+  // Internal CA
+  if (this.options.cafile) {
+    promise = readFile(this.options.cafile).then((ca) => {
+      settings.agent = new https.Agent({ca: ca});
+
+      return settings;
+    });
   } else {
-    data = signedData;
-    promise = request[method.toLowerCase()](formatedUrl, data, settings);
+    promise = Promise.resolve(settings);
   }
 
-  return promise.then(res => {
+  return promise.then((settings) => {
+    if (method === 'GET' || method === 'DELETE') {
+      settings.params = signedData;
+      return request[method.toLowerCase()](formatedUrl, settings);
+    } else {
+      data = signedData;
+      return request[method.toLowerCase()](formatedUrl, data, settings);
+    }
+  }).then(res => {
     if (res.status >= 200 && res.status < 400) {
       return res.data;
     }
