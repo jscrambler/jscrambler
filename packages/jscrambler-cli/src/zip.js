@@ -1,91 +1,103 @@
-// TODO Replace `sync` functions with async versions
-
 import size from 'lodash.size';
 import temp from 'temp';
 import JSZip from 'jszip';
-import {readFileSync, statSync, outputFileSync} from 'fs-extra';
-import {normalize, resolve, relative, join, isAbsolute} from 'path';
-import {defer} from 'q';
+import {outputFile, readFile, stat} from 'fs-extra';
+import {isAbsolute, join, normalize, relative, resolve, sep} from 'path';
 import {inspect} from 'util';
 
 const debug = !!process.env.DEBUG;
 
-export function zip(files, cwd) {
+export function zip (files, cwd, outputTemp = true) {
   debug && console.log('Zipping files', inspect(files));
-  const deferred = defer();
-  // Flag to detect if any file was added to the zip archive
-  let hasFiles = false;
-  // Sanitize `cwd`
+
   if (cwd) {
     cwd = normalize(cwd);
   }
+
   // If it's already a zip file
   if (files.length === 1 && /^.*\.zip$/.test(files[0])) {
-    hasFiles = true;
     const zip = new JSZip();
-    let zipFile = readFileSync(files[0]);
 
-    outputFileSync(temp.openSync({suffix: '.zip'}).path, zipFile);
-    zipFile = zip.load(zipFile);
-    deferred.resolve(zipFile);
-  } else {
-    const zip = new JSZip();
-    for (let i = 0, l = files.length; i < l; ++i) {
-      // Sanitise path
-      if (typeof files[i] === 'string') {
-        files[i] = normalize(files[i]);
-        if (files[i].indexOf('../') === 0) {
-          files[i] = resolve(files[i]);
-        }
-      }
-      // Bypass unwanted patterns from `files`
-      if (/.*\.(git|hg)(\/.*|$)/.test(files[i].path || files[i])) {
-        continue;
-      }
-      let buffer, name;
-      let sPath;
-      if (cwd && files[i].indexOf && files[i].indexOf(cwd) !== 0) {
-        sPath = join(cwd, files[i]);
+    return readFile(files[0]).then(zipFile => {
+      if (outputTemp) {
+        return outputFile(temp.path({suffix: '.zip'}), zipFile)
+          .then(() => zip.load(zipFile));
       } else {
-        sPath = files[i];
+        return zip.load(zipFile);
       }
-      // If buffer
-      if (files[i].contents) {
-        name = relative(files[i].cwd, files[i].path);
-        buffer = files[i].contents;
-      } else if (!statSync(sPath).isDirectory()) {
-        // Else if it's a path and not a directory
+    });
+  }
+
+  const res = [];
+  const zip = new JSZip();
+
+  for (let i = 0, l = files.length; i < l; ++i) {
+    // Sanitise path
+    if (typeof files[i] === 'string') {
+      files[i] = normalize(files[i]);
+
+      if (files[i].indexOf('../') === 0) {
+        files[i] = resolve(files[i]);
+      }
+    }
+
+    // Bypass unwanted patterns from `files`
+    if (/.*\.(git|hg)(\/.*|$)/.test(files[i].path || files[i])) {
+      continue;
+    }
+
+    let buffer, name;
+    let sPath;
+
+    if (cwd && files[i].indexOf && files[i].indexOf(cwd) !== 0) {
+      sPath = join(cwd, files[i]);
+    } else {
+      sPath = files[i];
+    }
+
+    if (files[i].contents) { // if buffer
+      name = relative(files[i].cwd, files[i].path);
+      buffer = files[i].contents;
+
+      zip.file(name, buffer);
+      res.push(true);
+    } else {
+      let isFile = stat(sPath).then(stats => {
+        if (stats.isDirectory()) {
+          zip.folder(sPath);
+
+          return false;
+        }
+
         if (cwd && files[i].indexOf && files[i].indexOf(cwd) === 0) {
           name = files[i].substring(cwd.length);
         } else {
           name = files[i];
         }
-        buffer = readFileSync(sPath);
-      } else {
-        // Else if it's a directory path
-        zip.folder(sPath);
-      }
-      if (name) {
-        hasFiles = true;
-        zip.file(name, buffer);
-      }
-    }
-    if (hasFiles) {
-      const tempFile = temp.openSync({suffix: '.zip'});
-      outputFileSync(tempFile.path, zip.generate({type: 'nodebuffer'}), {
-        encoding: 'base64'
+
+        return readFile(sPath).then(buffer => {
+          zip.file(name, buffer);
+
+          return true;
+        });
       });
-      files[0] = tempFile.path;
-      files.length = 1;
-      deferred.resolve(zip);
-    } else {
-      throw new Error(
-        'No source files found. If you intend to send a whole directory sufix your path with "**" (e.g. ./my-directory/**)'
-      );
+
+      res.push(isFile);
     }
   }
 
-  return deferred.promise;
+  return Promise.all(res).then(hasFiles => {
+    if (hasFiles.every(isFile => isFile === false)) {
+      throw new Error('No source files found. If you intend to send a whole directory suffix your path with "**" (e.g. ./my-directory/**)');
+    }
+
+    if (outputTemp) {
+      return outputFile(temp.path({suffix: '.zip'}), zip.generate({type: 'nodebuffer'}), {encoding: 'base64'})
+        .then(() => zip);
+    } else {
+      return zip;
+    }
+  });
 }
 
 export function zipSources(sources) {
@@ -118,37 +130,39 @@ export function unzip(zipFile, dest, stream = true) {
   const _size = size(zip.files);
 
   const results = [];
+  const outfiles = [];
 
   for (const file in zip.files) {
-    if (!zip.files[file].options.dir) {
-      const buffer = zip.file(file).asNodeBuffer();
+    if (zip.files[file].options.dir) {
+      continue;
+    }
 
-      if (typeof dest === 'function') {
-        if (stream) {
-          dest(buffer, file);
-        } else {
-          results.push({filename: file, content: buffer.toString()});
-        }
-      } else if (dest && typeof dest === 'string') {
-        var destPath;
+    const buffer = zip.file(file).asNodeBuffer();
 
-        const lastDestChar = dest[dest.length - 1];
-        if (_size === 1 && lastDestChar !== '/' && lastDestChar !== '\\') {
-          destPath = dest;
-        } else {
-          let _file = file;
-          // Deal with win path join c:\dest\:c\src
-          if (isWinAbsolutePath(_file)) {
-            _file = parseWinAbsolutePath(_file).path;
-          }
-          destPath = join(dest, _file);
-        }
-        outputFileSync(destPath, buffer);
+    if (typeof dest === 'function') {
+      if (stream) {
+        dest(buffer, file);
+      } else {
+        results.push({filename: file, content: buffer});
       }
+    } else if (dest && typeof dest === 'string') {
+      let destPath;
+
+      if (_size === 1 && dest[dest.length - 1] !== sep) {
+        destPath = dest;
+      } else if (isWinAbsolutePath(file)) {
+        destPath = join(dest, parseWinAbsolutePath(file).path);
+      } else {
+        destPath = join(dest, file);
+      }
+
+      outfiles.push(outputFile(destPath, buffer));
     }
   }
 
   if (!stream) {
     dest(results);
   }
+
+  return Promise.all(outfiles);
 }
