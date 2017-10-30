@@ -384,28 +384,9 @@ export default {
   },
 
   async downloadSourceMaps(configs, destCallback) {
-    const {
-      keys,
-      host,
-      port,
-      protocol,
-      cafile,
-      stream = true,
-      filesDest,
-      filesSrc,
-      protectionId
-    } = configs;
-
+    const {keys, host, port, protocol, cafile, stream = true, filesDest, filesSrc, protectionId} = configs;
     const {accessKey, secretKey} = keys;
-
-    const client = new this.Client({
-      accessKey,
-      secretKey,
-      host,
-      port,
-      protocol,
-      cafile
-    });
+    const client = new this.Client({accessKey, secretKey, host, port, protocol, cafile});
 
     if (!filesDest && !destCallback) {
       throw new Error('Required *filesDest* not provided');
