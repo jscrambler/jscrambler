@@ -411,38 +411,27 @@ export default {
   },
 
   async pollProtection(client, applicationId, protectionId, fragments) {
+    const delay = n => new Promise(resolve => setTimeout(resolve, n));
+    const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`;
     const poll = async () => {
-      const applicationProtection = await this.getApplicationProtection(
-        client,
-        applicationId,
-        protectionId,
-        fragments
-      );
-      const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`;
+      const applicationProtection = await this.getApplicationProtection(client, applicationId, protectionId, fragments);
+
       if (applicationProtection.errors) {
         console.log('Error polling protection', applicationProtection.errors);
 
-        throw new Error(
-          `Protection failed. For more information visit: ${url}`
-        );
+        throw new Error(`Protection failed. For more information visit: ${url}`);
       } else {
-        const state = applicationProtection.data.applicationProtection.state;
-        const bail = applicationProtection.data.applicationProtection.bail;
-        if (
-          state !== 'finished' &&
-          state !== 'errored' &&
-          state !== 'canceled'
-        ) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          return poll();
-        } else if (state === 'errored' && !bail) {
-          throw new Error(
-            `Protection failed. For more information visit: ${url}`
-          );
+        const {bail, state} = applicationProtection.data.applicationProtection;
+
+        if (state === 'finished' || (state === 'errored' && bail)) {
+          return applicationProtection.data.applicationProtection;
+        } else if (state === 'errored') {
+          throw new Error(`Protection failed. For more information visit: ${url}`);
         } else if (state === 'canceled') {
           throw new Error('Protection canceled by user');
         } else {
-          return applicationProtection.data.applicationProtection;
+          await delay(500);
+          return poll();
         }
       }
     };
