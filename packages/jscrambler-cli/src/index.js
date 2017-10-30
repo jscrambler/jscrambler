@@ -4,7 +4,6 @@ import glob from 'glob';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
-import Q from 'q';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';

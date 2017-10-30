@@ -46,7 +46,6 @@
     "lodash.omit": "^4.3.0",
     "lodash.pluck": "^3.1.2",
     "lodash.size": "^4.0.1",
-    "q": "^1.5.1",
     "rc": "^1.2.2",
     "snake-case": "^2.1.0",
     "temp": "^0.8.3"
