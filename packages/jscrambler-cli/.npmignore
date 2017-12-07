@@ -1,0 +1,10 @@
+*.log
+.jscramblerrc
+jscrambler_keys.json
+jsrambler.json
+config.json
+results
+src
+tmp
+media/
+src/

@@ -1,0 +1,10 @@
+*.log
+.jscramblerrc
+jscrambler_keys.json
+jscrambler.json
+config.json
+node_modules
+results
+tmp
+.DS_Store
+dist/

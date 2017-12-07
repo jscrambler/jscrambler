@@ -1,0 +1,33 @@
+{
+  "asi": false,
+  "bitwise": true,
+  "browser": false,
+  "curly": false,
+  "eqeqeq": true,
+  "eqnull": true,
+  "esnext": true,
+  "immed": true,
+  "latedef": false,
+  "newcap": true,
+  "noarg": true,
+  "nonew": true,
+  "quotmark": false,
+  "undef": true,
+  "unused": "vars",
+  "strict": false,
+  "globalstrict": true,
+  "trailing": false,
+  "validthis": true,
+  "expr": true,
+  "globals": {
+    "Buffer": true,
+    "define": true,
+    "module": true,
+    "require": true,
+    "exports": true,
+    "setTimeout": true,
+    "console": true,
+    "process": true,
+    "escape": true
+  }
+}
