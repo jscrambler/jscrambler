@@ -104,6 +104,7 @@ export default {
   // Jscrambler or if you're provided access to beta features of our product.
   //
   async protectAndDownload(configPathOrObject, destCallback) {
+    console.log('Jscrambler CLI 5.2 is now available on NPM. Please upgrade ASAP: `npm i jscrambler@5.2`.');
     const _config =
       typeof configPathOrObject === 'string'
         ? require(configPathOrObject)
