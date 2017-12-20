@@ -308,7 +308,7 @@ export default {
       client,
       applicationId,
       protectionId,
-      getProtectionDefaultFragments[jscramblerVersion]
+      await getProtectionDefaultFragments(client)
     );
 
     if (debug) {

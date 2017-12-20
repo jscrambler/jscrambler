@@ -100,15 +100,25 @@ export async function intoObjectType(client, obj, name) {
       if (field && field.type) {
         finalObj[k] = cloneDeep(obj[k]);
 
+        if (field.type.kind === 'OBJECT' && !!field.type.name) {
+          finalObj[k] = await intoObjectType(
+            client,
+            finalObj[k],
+            field.type.name
+          );
+          return;
+        }
+
         if (
-          field.type.kind === 'NON_NULL' &&
+          (field.type.kind === 'NON_NULL' || field.type.kind === 'LIST') &&
           field.type.ofType.kind === 'OBJECT'
         ) {
           finalObj[k] = await intoObjectType(
             client,
-            finalObj,
+            finalObj[k],
             field.type.ofType.name
           );
+          return;
         }
 
         if (field.type.name === 'String' && typeof finalObj[k] !== 'string') {
