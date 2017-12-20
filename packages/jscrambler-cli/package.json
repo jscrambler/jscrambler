@@ -2,17 +2,17 @@
   "name": "jscrambler",
   "description": "Jscrambler API client.",
   "version": "1.3.3",
-  "homepage": "https://github.com/jscrambler/javascript-jscrambler",
+  "homepage": "https://github.com/jscrambler/jscrambler",
   "author": {
     "name": "magalhas",
     "email": "magalhas@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscrambler/javascript-jscrambler.git"
+    "url": "https://github.com/jscrambler/jscrambler.git"
   },
   "bugs": {
-    "url": "https://github.com/jscrambler/javascript-jscrambler/issues"
+    "url": "https://github.com/jscrambler/jscrambler/issues"
   },
   "licenses": [
     {
