@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "axios": "^0.13.1",
+    "babel-polyfill": "^6.9.1",
     "commander": "^2.8.1",
     "flavored-path": "0.0.8",
     "fs-extra": "^0.30.0",
