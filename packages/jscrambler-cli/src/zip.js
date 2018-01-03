@@ -127,7 +127,7 @@ export function unzip(zipFile, dest, stream = true) {
         if (stream) {
           dest(buffer, file);
         } else {
-          results.push({filename: file, content: buffer});
+          results.push({filename: file, content: buffer.toString()});
         }
       } else if (dest && typeof dest === 'string') {
         var destPath;

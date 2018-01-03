@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/jscrambler/jscrambler",
   "dependencies": {
-    "jscrambler": "^5.2.0"
+    "jscrambler": "^5.2.0",
+    "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

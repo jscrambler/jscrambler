@@ -416,7 +416,7 @@ export default {
     }
 
     if (filesSrc) {
-      console.log(
+      console.warn(
         '[Warning] Ignoring sources supplied. Downloading source maps of given protection'
       );
     }
