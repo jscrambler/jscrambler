@@ -124,7 +124,6 @@ JscramblerWriter.prototype.build = function() {
     )
     .then(protectionId => {
       if (this.options.sourcemaps) {
-        console.log(`protection id is ${protectionId}`);
         return new Promise((resolve, reject) =>
           jscrambler.downloadSourceMaps(
             Object.assign({}, jscrambler.config, {stream: false, protectionId}),
