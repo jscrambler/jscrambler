@@ -58,7 +58,6 @@ JscramblerWriter.prototype.processFile = function(inFile, outFile, filename) {
 
   if (this.options.sourcemaps) {
     let sourceMapPath = inFile.slice(0, -3) + '.map';
-    console.log(sourceMapPath);
     if (fs.existsSync(sourceMapPath)) {
       const sourceMapContent = fs.readFileSync(sourceMapPath);
 
