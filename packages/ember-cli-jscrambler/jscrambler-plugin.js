@@ -34,7 +34,8 @@ function JscramblerWriter(inputNodes, options) {
   Plugin.call(this, inputNodes, options);
 
   this.options = defaults(options, {
-    jscrambler: {}
+    jscrambler: {},
+    sourcemaps: true
   });
 
   this.inputNodes = inputNodes;
@@ -49,6 +50,29 @@ function JscramblerWriter(inputNodes, options) {
 
 JscramblerWriter.prototype = Object.create(Plugin.prototype);
 
+JscramblerWriter.prototype.processFile = function(inFile, outFile, filename) {
+  const src = fs.readFileSync(inFile, 'utf-8');
+  const mapName = path.basename(outFile).replace(/\.js$/,'') + '.map';
+
+  const source = {filename, content: src }
+
+  if (this.options.sourcemaps) {
+    let sourceMapPath = inFile.slice(0, -3) + '.map';
+    if (fs.existsSync(sourceMapPath)) {
+      const sourceMapContent = fs.readFileSync(sourceMapPath);
+
+      const sourceMap = {
+        filename: filename + '.map',
+        content: sourceMapContent
+      };
+
+      return [source, sourceMap];
+    }
+  }
+
+  return [source];
+};
+
 JscramblerWriter.prototype.build = function() {
   const sources = this.inputPaths.reduce((res, inputPath) => {
     walkSync(inputPath).forEach(filename => {
@@ -61,10 +85,16 @@ JscramblerWriter.prototype.build = function() {
 
       ensureDir(outFile);
 
-      const content = fs.readFileSync(path.join(inputPath, filename), 'utf8');
-
       if (filename.slice(-3) === '.js' && !this.excludes.match(filename)) {
-        res.push({content, filename});
+        this.processFile(inFile, outFile, filename).forEach(f => {
+          res.push(f);
+        });
+      } else if (filename.slice(-4) === '.map') {
+        if (this.excludes.match(filename.slice(0, -4) + '.js')) {
+          // ensure .map files for excldue JS paths are also copied forward
+          symlinkOrCopy.sync(inFile, outFile);
+        }
+        // skip, because it will get handled when its corresponding JS does
       } else {
         symlinkOrCopy.sync(inFile, outFile);
       }
@@ -72,6 +102,8 @@ JscramblerWriter.prototype.build = function() {
 
     return res;
   }, []);
+
+  const output = [];
 
   return jscrambler
     .protectAndDownload(
@@ -90,8 +122,43 @@ JscramblerWriter.prototype.build = function() {
         return this.outputPath;
       }
     )
-    .then(() => this.outputPath);
+    .then(protectionId => {
+      if (this.options.sourcemaps) {
+        console.log(`protection id is ${protectionId}`);
+        return new Promise((resolve, reject) =>
+          jscrambler.downloadSourceMaps(
+            Object.assign({}, jscrambler.config, {stream: false, protectionId}),
+            (res, error) => {
+              if (error) {
+                console.error(error);
+                return reject(error);
+              }
+              
+              return this.processSourceMaps(res, this.outputPath, resolve);
+            }
+          ));
+      }
+
+      return this.outputPath;
+    });
 };
+
+JscramblerWriter.prototype.processSourceMaps = function(results, outputPath, done) {
+  for (const result of results) {
+    const sourceFilename = result.filename
+      .slice(0, -4)
+      .replace('jscramblerSourceMaps/', '');
+
+    let sourceMapName = sourceFilename.slice(0, -3) + '.map';
+
+    fs.writeFileSync(
+      path.join(outputPath, sourceMapName),
+      result.content
+    );
+  }
+
+  done(outputPath);
+}
 
 JscramblerWriter.prototype.constructor = JscramblerWriter;
 
