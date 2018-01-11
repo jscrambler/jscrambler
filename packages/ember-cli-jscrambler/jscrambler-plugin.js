@@ -113,10 +113,12 @@ JscramblerWriter.prototype.build = function() {
       }),
       outputFiles => {
         outputFiles.forEach(file => {
-          fs.writeFileSync(
-            path.join(this.outputPath, file.filename),
-            file.content
-          );
+          if (file.filename.slice(-4) !== '.map') {
+            fs.writeFileSync(
+              path.join(this.outputPath, file.filename),
+              file.content
+            );
+          }
         });
 
         return this.outputPath;
