@@ -43,7 +43,10 @@ module.exports = function (options) {
         self.emit('end');
       })
       .catch(function (error) {
-        self.emit('error', error);
+        // need to emit in nextTick to avoid the promise catching a re-thrown error
+        process.nextTick(function () {
+          self.emit('error', error);
+        });
       });
   };
   return es.through(aggregate, scramble);
