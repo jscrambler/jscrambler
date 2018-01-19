@@ -1,6 +1,6 @@
 import 'babel-polyfill';
 
-import glob from 'glob';
+import globby from 'globby';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
@@ -189,18 +189,19 @@ export default {
     let zipped;
 
     if (filesSrc && filesSrc.length) {
-      let _filesSrc = [];
-      for (let i = 0, l = filesSrc.length; i < l; i += 1) {
-        if (typeof filesSrc[i] === 'string') {
-          // TODO Replace `glob.sync` with async version
-          _filesSrc = _filesSrc.concat(
-            glob.sync(filesSrc[i], {
-              dot: true
-            })
-          );
+      const globs = [];
+      const _filesSrc = [];
+
+      for (let fileSrc of filesSrc) {
+        if (typeof fileSrc === 'string') {
+          globs.push(fileSrc);
         } else {
-          _filesSrc.push(filesSrc[i]);
+          _filesSrc.push(fileSrc);
         }
+      }
+
+      if (globs.length > 0) {
+        _filesSrc.push(...(await globby(globs, {dot: true})));
       }
 
       if (debug) {

@@ -37,6 +37,7 @@
     "flavored-path": "0.0.8",
     "fs-extra": "^4.0.2",
     "glob": "^7.0.3",
+    "globby": "^6.1.0",
     "jszip": "^3.1.4",
     "lodash.assign": "^4.0.1",
     "lodash.clone": "^4.0.3",
