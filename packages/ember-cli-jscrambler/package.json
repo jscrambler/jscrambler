@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-jscrambler",
-  "version": "5.2.3",
+  "version": "5.2.5",
   "description": "Jscrambler JavaScript protection for Ember-CLI",
   "keywords": [
     "ember-addon"
@@ -26,6 +26,9 @@
   },
   "ember-addon": {
     "before": "ember-cli-sri",
-    "after": ["ember-cli-babel", "ember-cli-uglify"]
+    "after": [
+      "ember-cli-babel",
+      "ember-cli-uglify"
+    ]
   }
 }
