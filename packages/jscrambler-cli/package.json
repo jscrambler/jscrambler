@@ -23,7 +23,6 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
-    "test": "grunt test 2> /dev/null",
     "watch": "grunt watch",
     "prepublish": "npm run build"
   },
@@ -56,12 +55,11 @@
     "babel-core": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.2",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-jasmine-node": "^0.3.1"
+    "grunt-contrib-watch": "^1.0.0"
   },
   "main": "dist/index.js",
   "bin": {

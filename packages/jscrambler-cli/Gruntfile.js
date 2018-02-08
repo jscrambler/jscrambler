@@ -33,15 +33,6 @@ module.exports = function(grunt) {
         dest: 'dist'
       }
     },
-    jasmine_node: {
-      options: {
-        forceExit: true,
-        match: '.',
-        matchall: true,
-        extensions: 'js'
-      },
-      test: ['test/specs/']
-    },
     watch: {
       options: {
         interrupt: true
@@ -57,9 +48,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-jasmine-node');
 
   grunt.registerTask('default', ['test']);
   grunt.registerTask('build', ['clean:build', 'copy', 'babel']);
-  grunt.registerTask('test', ['clean:test', 'jasmine_node', 'clean:test']);
 };
