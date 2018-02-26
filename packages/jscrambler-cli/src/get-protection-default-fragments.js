@@ -7,16 +7,19 @@ export default async function(client) {
   );
 
   let deprecations = 'deprecations';
+  let warnings = '';
 
   const isNewFormat =
     appProtection.fields.find(f => f.name === 'deprecations').type.ofType
-      .kind === 'OBJECT';
+      .kind === 'OBJECT' 
+      || appProtection.fields.find(f => f.name === 'growthWarning')
 
   if (isNewFormat) {
     deprecations = `deprecations {
     type
     entity
   }`;
+    warnings = `growthWarning`;
   }
 
   return {
@@ -28,6 +31,7 @@ export default async function(client) {
       state
       bail
       ${deprecations}
+      ${warnings}
       errorMessage
       sources {
         filename

@@ -310,7 +310,10 @@ export default {
       protectionId,
       await getProtectionDefaultFragments(client)
     );
-
+    if (protection.growthWarning){
+      const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`
+      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${url}`);
+    }
     if (debug) {
       console.log('Finished protecting');
     }
