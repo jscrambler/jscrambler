@@ -27,16 +27,8 @@ module.exports = function (grunt) {
             var parsedPath = path.parse(src);
             src = src.replace(parsedPath.root, '');
           }
-          if (grunt.file.arePathsEquivalent(src, file)) {
-            var dest = elem.dest;
-            var lastDestChar = dest[dest.length - 1];
-            var destPath;
-            if (elem.src.length === 1 && lastDestChar !== '/' && lastDestChar !== '\\') {
-              destPath = dest;
-            } else {
-              destPath = path.join(dest, file);
-            }
-            grunt.file.write(destPath, buffer);
+          if(grunt.file.arePathsEquivalent(src, file)) {
+            grunt.file.write(elem.dest, buffer);
           }
         });
       });
