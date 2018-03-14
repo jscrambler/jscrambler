@@ -66,9 +66,9 @@ config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
 
-if (config.jscramblerVersion && !/^\d+\.\d+$/.test(config.jscramblerVersion)) {
+if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
-    'The Jscrambler version must be in the form of $major.$minor (e.g. 5.1)'
+    'The Jscrambler version must be in the form of $major.$minor or the words stable and latest. (e.g. 5.2, stable, latest)'
   );
   process.exit(1);
 }
