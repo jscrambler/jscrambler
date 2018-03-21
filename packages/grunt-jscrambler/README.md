@@ -25,7 +25,7 @@ grunt.loadNpmTasks('grunt-jscrambler');
 ### Setup your Jscrambler Grunt task
 
 In your project's Gruntfile, add a section named `jscrambler` to the data object passed into `grunt.initConfig()`.
-
+#### Relative path
 ```js
 grunt.initConfig({
   jscrambler: {
@@ -52,7 +52,44 @@ grunt.initConfig({
   },
 });
 ```
-
+#### Absolute path
+```js
+grunt.initConfig({
+  jscrambler: {
+    main: {
+      options: {
+        keys: {
+          accessKey: '',
+          secretKey: ''
+        },
+        applicationId: '',
+        params: [
+          {
+            name: 'whitespaceRemoval'
+          },
+          {
+            name: 'charToTernaryOperator'
+          }
+        ]
+      },
+      files: [
+        {
+          expand: true,
+          cwd: '/example/src/'
+          src: ['foo.js', 'bar.js'],
+          dest: '/destination/'
+        },
+        {
+          expand: true,
+          cwd: '/otherexample/'
+          src: ['foo.js', 'bar.js'],
+          dest: '/otherdestination/'
+        }
+      ]
+    }
+  },
+});
+```
 You will need your credentials and Application ID in order to protect your application.
 Navigate to your [profile](https://app.jscrambler.com/profile) page and grab your `accessKey` and `secretKey` at the _API Credentials_ section.
 
