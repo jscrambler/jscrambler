@@ -213,6 +213,6 @@ jscrambler.protectAndDownload({
 
 More detailed informations can be found [here](https://docs.jscrambler.com/code-integrity/documentation/api/clients).
 
-## JScrambler Parameters
+## Jscrambler Parameters
 
 Please refer to [docs](https://docs.jscrambler.com/) for more information.
