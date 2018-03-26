@@ -4,8 +4,6 @@
 
 Add obfuscation to your build process with [gulp](https://github.com/wearefractal/gulp) and gulp-jscrambler.
 
-> DISCLAIMER: If you are looking for Jscrambler 3.8 or below please go to [this page](https://github.com/jscrambler/gulp-jscrambler/tree/v0).
-
 ## How to Use
 
 ### Install

@@ -4,8 +4,6 @@
 
 Add obfuscation to your build process with [grunt](https://github.com/gruntjs/grunt) and grunt-jscrambler.
 
-> DISCLAIMER: If you are looking for Jscrambler 3.8 or below please go to [this page](https://github.com/jscrambler/grunt-jscrambler/tree/v0).
-
 ## How to Use
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins.
 
