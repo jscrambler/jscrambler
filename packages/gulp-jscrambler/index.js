@@ -1,8 +1,7 @@
 'use strict';
 var defaults = require('lodash.defaults');
 var es = require('event-stream');
-var gutil = require('gulp-util');
-var File = gutil.File;
+var File = require('vinyl');
 var jScrambler = require('jscrambler').default;
 var path = require('path');
 

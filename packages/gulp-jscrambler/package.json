@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "event-stream": "^3.1.5",
-    "gulp-util": "^2.2.14",
     "jscrambler": "^5.2.6",
-    "lodash.defaults": "^4.0.1"
+    "lodash.defaults": "^4.0.1",
+    "vinyl": "^2.1.0"
   },
   "keywords": [
     "gulpplugin",
