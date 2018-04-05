@@ -10,7 +10,7 @@ Jscrambler Client for Browser and Node.js
   - [Using configuration file](#using-configuration-file)
 - [API](#api)
   - [Quick example](#quick-example)
-- [JScrambler Parameters](#jscrambler-parameters)
+- [Jscrambler Parameters](#jscrambler-parameters)
 
 ## Installation
 
