@@ -97,10 +97,10 @@ Your `applicationId` can be found inside your application page just below your a
 
 You can also grab your current configuration on your application page. This will download a `.json` file containing a valid configuration with your currently selected options.
 
-![download config file location](https://rawgithub.com/jscrambler/grunt-jscrambler/master/media/download-settings.png)
+![download config file location](https://github.com/jscrambler/jscrambler/blob/master/packages/grunt-jscrambler/media/download-settings.png)
 
 Keep in mind that the `params` object is optional and if it is not provided we will use your previous configuration.
 
 ### Usage Example
 
-You can find some working examples [here](https://github.com/jscrambler/grunt-jscrambler/tree/master/examples)
+You can find some working examples [here](https://github.com/jscrambler/jscrambler/tree/master/packages/grunt-jscrambler/examples)
