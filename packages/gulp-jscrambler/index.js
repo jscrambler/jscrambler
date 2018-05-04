@@ -12,6 +12,7 @@ module.exports = function (options) {
   });
 
   var filesSrc = [];
+  var cwd = options && options.cwd || process.cwd();
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
       filesSrc.push(file);
@@ -25,6 +26,14 @@ module.exports = function (options) {
   };
   var scramble = function (done) {
     var self = this;
+    var dest = function (buffer, file) {
+      self.push(new File({
+        contents: buffer,
+        cwd: cwd,
+        path: path.join(cwd, file)
+      }))
+    };
+
     jScrambler
       .protectAndDownload({
         filesSrc: filesSrc,
@@ -37,14 +46,7 @@ module.exports = function (options) {
         port: options.port,
         params: options.params,
         jscramblerVersion: options.jscramblerVersion
-      }, function (buffer, file) {
-        var cwd = options && options.cwd || process.cwd();
-        var relativePath = path.relative(cwd, file);
-        self.push(new File({
-          path: relativePath,
-          contents: buffer
-        }));
-      })
+      }, dest)
       .then(function () {
         done(null);
       })
