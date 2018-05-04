@@ -26,12 +26,25 @@ module.exports = function (options) {
   };
   var scramble = function (done) {
     var self = this;
-    var dest = function (buffer, file) {
-      self.push(new File({
-        contents: buffer,
-        cwd: cwd,
-        path: path.join(cwd, file)
-      }))
+    var dest = function (buffer, filename) {
+      var file = null;
+
+      for (var src of options.filesSrc) {
+        if (src.path && src.relative === filename) {
+          file = src;
+          break;
+        }
+      }
+
+      if (file === null) {
+        file = new File({
+          cwd: cwd,
+          path: path.join(cwd, filename)
+        });
+      }
+
+      file.contents = buffer;
+      self.push(file);
     };
 
     jScrambler.protectAndDownload(options, dest).then(function () {
