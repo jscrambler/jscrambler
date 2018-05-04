@@ -3,6 +3,7 @@ var defaults = require('lodash.defaults');
 var File = require('vinyl');
 var jScrambler = require('jscrambler').default;
 var path = require('path');
+var PluginError = require('plugin-error');
 var through = require('through2');
 
 module.exports = function (options) {
@@ -12,10 +13,15 @@ module.exports = function (options) {
 
   var filesSrc = [];
   var aggregate = function (file, enc, next) {
-    if (file.contents) {
+    if (file.isBuffer()) {
       filesSrc.push(file);
     }
-    next(null);
+    if (file.isStream()) {
+      // streaming is not supported because jscrambler-cli/src/zip.js cannot handle content streams
+      next(new PluginError('gulp-jscrambler', 'Streaming not supported'));
+    } else {
+      next(null);
+    }
   };
   var scramble = function (done) {
     var self = this;
