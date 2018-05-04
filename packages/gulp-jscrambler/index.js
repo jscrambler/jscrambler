@@ -8,11 +8,11 @@ var through = require('through2');
 
 module.exports = function (options) {
   options = defaults(options || {}, {
+    cwd: process.cwd(),
     filesSrc: [],
     keys: {}
   });
 
-  var cwd = options && options.cwd || process.cwd();
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
       options.filesSrc.push(file);
@@ -38,8 +38,8 @@ module.exports = function (options) {
 
       if (file === null) {
         file = new File({
-          cwd: cwd,
-          path: path.join(cwd, filename)
+          cwd: options.cwd,
+          path: path.join(options.cwd, filename)
         });
       }
 
