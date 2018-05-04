@@ -47,7 +47,8 @@ module.exports = function (options) {
       self.push(file);
     };
 
-    jScrambler.protectAndDownload(options, dest).then(function () {
+    jScrambler.protectAndDownload(options, dest).then(function (protectionId) {
+      self.emit('protectionId', protectionId);
       done(null);
     }).catch(function (error) {
       // need to emit in nextTick to avoid the promise catching a re-thrown error
