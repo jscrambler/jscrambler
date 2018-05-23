@@ -10,6 +10,8 @@ import https from 'https';
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
 
+const debug = !!process.env.DEBUG;
+
 /**
  * @class JScramblerClient
  * @param {Object} options
@@ -145,11 +147,31 @@ JScramblerClient.prototype.request = function(
   }
 
   return promise.then(res => {
-    if (res.status >= 200 && res.status < 400) {
-      return res.data;
+    return res.data;
+  }).catch(err => {
+    let errorMessage = 'Unexpected Response: ';
+
+    if (err.response) {
+      if (debug) {
+        console.error(err.response);
+      }
+
+      errorMessage += `${err.response.status} ${err.response.statusText}`;
+
+      // For when we have API error messages
+      if (
+        err.response.data &&
+        err.response.data.error &&
+        err.response.data.message
+      ) {
+        errorMessage += ` - ${err.response.data.message}`;
+      }
+
+    } else {
+      errorMessage += err.message;
     }
 
-    throw new Error(`Unexpected Response Code: ${res.status}`);
+    throw new Error(errorMessage);
   });
 };
 /**
