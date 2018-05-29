@@ -111,13 +111,14 @@ JScramblerClient.prototype.request = function(
   }
 
   // Format URL
-  const protocol =
-    this.options.protocol || (this.options.port === 443 ? 'https' : 'http');
+  const port =
+    this.options.port || (this.options.protocol === 'http' ? 80 : 443);
+  const protocol = this.options.protocol || (port === 80 ? 'http' : 'https');
 
   const formatedUrl =
     url.format({
       hostname: this.options.host,
-      port: this.options.port,
+      port,
       protocol
     }) + path;
 

@@ -6,8 +6,7 @@ const config = rc(
   'jscrambler',
   {
     keys: {},
-    host: 'api4.jscrambler.com',
-    port: 443
+    host: 'api4.jscrambler.com'
   },
   []
 );
