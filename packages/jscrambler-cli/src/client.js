@@ -110,10 +110,20 @@ JScramblerClient.prototype.request = function(
     signedData = params;
   }
 
-  // Format URL
-  const port =
-    this.options.port || (this.options.protocol === 'http' ? 80 : 443);
-  const protocol = this.options.protocol || (port === 80 ? 'http' : 'https');
+  let {protocol, port} = this.options;
+
+  if (!port && !protocol) {
+    port = 443;
+    protocol = 'https';
+  }
+
+  if (!port) {
+    port = protocol === 'https' ? 443 : 80;
+  }
+
+  if (!protocol) {
+    protocol = port === 443 ? 'https' : 'http';
+  }
 
   const formatedUrl =
     url.format({
