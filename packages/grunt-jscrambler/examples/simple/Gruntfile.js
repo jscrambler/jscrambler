@@ -46,7 +46,7 @@ module.exports = function (grunt) {
           areSubscribersOrdered: false
         },
         files: [
-          {src: ['index.js', 'module.js'], dest: 'dist/'}
+          {expand:true, src: ['index.js', 'module.js'], dest: 'dist/'}
         ]
       }
     }
