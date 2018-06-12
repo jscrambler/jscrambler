@@ -44,7 +44,7 @@ grunt.initConfig({
         ]
       },
       files: [
-        {src: ['foo.js', 'bar.js'], dest: 'dist/'},
+        {expand: true, src: ['foo.js', 'bar.js'], dest: 'dist/'},
       ]
     }
   },
