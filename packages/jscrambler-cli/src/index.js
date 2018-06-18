@@ -318,9 +318,22 @@ export default {
       console.log('Finished protecting');
     }
 
-    const errors = protection.errorMessage
-      ? [{message: protection.errorMessage}]
-      : [];
+    if (protection.deprecations) {
+      protection.deprecations.forEach(deprecation => {
+        if (deprecation.type === 'Transformation') {
+          console.warn(
+            `Warning: ${deprecation.type} ${deprecation.entity} is no longer maintained. Please consider removing it from your configuration.`
+          );
+        } else if (deprecation.type && deprecation.entity) {
+          console.warn(
+            `Warning: ${deprecation.type} ${deprecation.entity} is deprecated.`
+          );
+        }
+      });
+    }
+
+    const errors = [];
+
     protection.sources.forEach(s => {
       if (s.errorMessages && s.errorMessages.length > 0) {
         errors.push(
@@ -332,33 +345,16 @@ export default {
       }
     });
 
-    if (!bail && errors.length > 0) {
-      errors.forEach(e =>
-        console.error(`Non-fatal error: "${e.message}" in ${e.filename}`)
-      );
-    } else if (bail && protection.state === 'errored') {
-      errors.forEach(e =>
-        console.error(
-          `Error: "${e.message}"${e.filename
-            ? `in ${e.filename}${e.line ? `:${e.line}` : ''}`
-            : ''}`
-        )
-      );
-      throw new Error('Protection failed');
+    if (protection.errorMessage) {
+      errors.push({protection: protection.errorMessage});
     }
 
-    if (protection.deprecations) {
-      protection.deprecations.forEach(deprecation => {
-        if (deprecation.type === 'Transformation') {
-          console.warn(
-            `Warning: ${deprecation.type} ${deprecation.entity} is no longer maintained. Please consider removing it from your configuration.`
-          );
-        } else {
-          console.warn(
-            `Warning: ${deprecation.type} ${deprecation.entity} is deprecated.`
-          );
-        }
-      });
+    if (errors.length > 0) {
+      if (!bail) {
+        errors.forEach(e => console.warn(`Non-fatal error: "${e.message}" in ${e.filename}`));
+      } else if (bail || protection.state === 'errored') {
+        throw new Error(JSON.stringify(errors, null, 2));
+      }
     }
 
     if (debug) {
