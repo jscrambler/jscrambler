@@ -3,7 +3,15 @@ import cloneDeep from 'lodash.clonedeep';
 const typeCache = {};
 
 export async function type(client, name) {
-  if (typeCache[name]) return typeCache[name];
+  const {jscramblerVersion} = client.options;
+
+  if (!typeCache[jscramblerVersion]) {
+    typeCache[jscramblerVersion] = {};
+  }
+
+  if (typeCache[jscramblerVersion][name]) {
+    return typeCache[jscramblerVersion][name];
+  }
 
   const query = {
     query: `
@@ -74,7 +82,7 @@ fragment TypeRef on __Type {
 
   const __type = res.data.__type;
 
-  typeCache[__type.name] = __type;
+  typeCache[jscramblerVersion][__type.name] = __type;
 
   return __type;
 }
