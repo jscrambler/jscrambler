@@ -234,7 +234,9 @@ export default {
         extension: 'zip'
       };
 
-      await this.addApplicationSource(client, applicationId, source);
+      errorHandler(
+        await this.addApplicationSource(client, applicationId, source)
+      );
     }
 
     const updateData = {
