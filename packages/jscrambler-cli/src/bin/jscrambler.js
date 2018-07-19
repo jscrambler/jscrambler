@@ -103,6 +103,11 @@ if (globSrc && globSrc.length) {
       dot: true
     });
 
+    if (config.werror && tmpGlob.length === 0) {
+      console.error(`Pattern "${globSrc[i]}" doesn't match any files.`);
+      process.exit(1);
+    }
+
     if (debug) {
       if (tmpGlob.length === 0) {
         console.log(
@@ -117,6 +122,14 @@ if (globSrc && globSrc.length) {
     }
     filesSrc = filesSrc.concat(tmpGlob);
   }
+  if (filesSrc.length === 0) {
+    console.error(`No files matched.`);
+    process.exit(1);
+  }
+} else if (debug) {
+  console.log(
+    'No filesSrc provided. Using the ones in the application (if any).'
+  );
 }
 
 const {

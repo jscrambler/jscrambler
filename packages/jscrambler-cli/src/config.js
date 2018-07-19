@@ -8,7 +8,8 @@ const config = rc(
     keys: {},
     host: 'api4.jscrambler.com',
     port: 443,
-    jscramblerVersion: 'stable'
+    jscramblerVersion: 'stable',
+    werror: true
   },
   []
 );
