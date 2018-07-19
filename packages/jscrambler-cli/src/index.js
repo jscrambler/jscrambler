@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import 'babel-polyfill';
 
 import glob from 'glob';
@@ -36,6 +37,12 @@ function errorHandler(res) {
   }
 
   return res;
+}
+
+function printSourcesErrors(errors) {
+  console.error('Application sources errors:');
+  console.error(JSON.stringify(errors, null, 2));
+  console.error('');
 }
 
 function normalizeParameters(parameters) {
@@ -324,11 +331,11 @@ export default {
       });
     }
 
-    const errors = [];
+    const sourcesErrors = [];
 
     protection.sources.forEach(s => {
       if (s.errorMessages && s.errorMessages.length > 0) {
-        errors.push(
+        sourcesErrors.push(
           ...s.errorMessages.map(e => ({
             filename: s.filename,
             ...e
@@ -337,15 +344,22 @@ export default {
       }
     });
 
-    if (protection.errorMessage) {
-      errors.push({protection: protection.errorMessage});
-    }
-
-    if (errors.length > 0) {
-      if (!bail) {
-        errors.forEach(e => console.warn(`Non-fatal error: "${e.message}" in ${e.filename}`));
-      } else if (bail || protection.state === 'errored') {
-        throw new Error(JSON.stringify(errors, null, 2));
+    if (protection.state === 'errored') {
+      console.error('Global protection errors:');
+      console.error(`- ${protection.errorMessage}`);
+      console.error('');
+      if (sourcesErrors.length > 0) {
+        printSourcesErrors(sourcesErrors);
+      }
+      throw new Error('Your protection has failed.');
+    } else if (sourcesErrors.length > 0) {
+      if (bail) {
+        printSourcesErrors(sourcesErrors);
+        throw new Error('Your protection has failed.');
+      } else {
+        sourcesErrors.forEach(e =>
+          console.warn(`Non-fatal error: "${e.message}" in ${e.filename}`)
+        );
       }
     }
 
