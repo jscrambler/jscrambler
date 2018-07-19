@@ -170,21 +170,8 @@ export default {
         '',
         applicationId
       );
-      if (removeSourceRes.errors) {
-        // TODO Implement error codes or fix this is on the services
-        let hadNoSources = false;
-        removeSourceRes.errors.forEach(error => {
-          if (
-            error.message ===
-            'Application Source with the given ID does not exist'
-          ) {
-            hadNoSources = true;
-          }
-        });
-        if (!hadNoSources) {
-          throw new Error(removeSourceRes.errors[0].message);
-        }
-      }
+
+      errorHandler(removeSourceRes);
     }
 
     let zipped;
@@ -234,7 +221,9 @@ export default {
         extension: 'zip'
       };
 
-      await this.addApplicationSource(client, applicationId, source);
+      errorHandler(
+        await this.addApplicationSource(client, applicationId, source)
+      );
     }
 
     const updateData = {
