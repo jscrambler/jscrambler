@@ -134,7 +134,7 @@ export default {
       randomizationSeed,
       areSubscribersOrdered,
       useRecommendedOrder,
-      bail,
+      bail = true,
       jscramblerVersion,
       debugMode
     } = finalConfig;
