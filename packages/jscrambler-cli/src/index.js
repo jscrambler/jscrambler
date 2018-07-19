@@ -4,7 +4,6 @@ import glob from 'glob';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
-import Q from 'q';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';
@@ -147,6 +146,7 @@ export default {
 
     let filesSrc = finalConfig.filesSrc;
     let filesDest = finalConfig.filesDest;
+    let source;
 
     if (sources) {
       filesSrc = undefined;
@@ -170,21 +170,8 @@ export default {
         '',
         applicationId
       );
-      if (removeSourceRes.errors) {
-        // TODO Implement error codes or fix this is on the services
-        let hadNoSources = false;
-        removeSourceRes.errors.forEach(error => {
-          if (
-            error.message ===
-            'Application Source with the given ID does not exist'
-          ) {
-            hadNoSources = true;
-          }
-        });
-        if (!hadNoSources) {
-          throw new Error(removeSourceRes.errors[0].message);
-        }
-      }
+
+      errorHandler(removeSourceRes);
     }
 
     let zipped;
@@ -228,11 +215,15 @@ export default {
         console.log('Adding sources to application');
       }
 
-      await this.addApplicationSource(client, applicationId, {
+      source = {
         content,
         filename: 'application.zip',
         extension: 'zip'
-      });
+      };
+
+      errorHandler(
+        await this.addApplicationSource(client, applicationId, source)
+      );
     }
 
     const updateData = {
@@ -295,10 +286,11 @@ export default {
       console.log('Creating Application Protection');
     }
 
+    delete updateData._id;
     const createApplicationProtectionRes = await this.createApplicationProtection(
       client,
       applicationId,
-      {bail, randomizationSeed}
+      {bail, randomizationSeed, source, ...updateData}
     );
     errorHandler(createApplicationProtectionRes);
 

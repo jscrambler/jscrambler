@@ -1,9 +1,7 @@
-import clone from 'lodash.clone';
-import crypto from 'crypto';
 import defaults from 'lodash.defaults';
 import fs from 'fs';
 import keys from 'lodash.keys';
-import request from 'axios';
+import axios from 'axios';
 import url from 'url';
 import https from 'https';
 
@@ -38,9 +36,11 @@ function JScramblerClient(options) {
    */
   this.options = defaults(options || {}, cfg);
 
-  if (this.options.jscramblerVersion) {
-    request.defaults.headers.common.jscramblerVersion = this.options.jscramblerVersion;
-  }
+  this.axiosInstance = axios.create({
+    headers: {
+      jscramblerVersion: this.options.jscramblerVersion
+    }
+  });
 }
 /**
  * Delete request.
@@ -151,10 +151,10 @@ JScramblerClient.prototype.request = function(
 
   if (method === 'GET' || method === 'DELETE') {
     settings.params = signedData;
-    promise = request[method.toLowerCase()](formatedUrl, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, settings);
   } else {
     data = signedData;
-    promise = request[method.toLowerCase()](formatedUrl, data, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, data, settings);
   }
 
   return promise.then(res => {

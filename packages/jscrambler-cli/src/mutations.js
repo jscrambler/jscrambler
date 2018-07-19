@@ -348,6 +348,23 @@ export function createApplicationProtection(
     };
   }
 
+  // Check if createApplicationProtection supports "data" argument
+  if (args.some(arg => arg.name === 'data')) {
+    return {
+      query: `
+        mutation createApplicationProtection ($applicationId: String!, $data: ApplicationProtectionCreate) {
+          createApplicationProtection (applicationId: $applicationId, data: $data) {
+            ${fragments}
+          }
+        }
+      `,
+      params: {
+        applicationId,
+        data: options
+      }
+    };
+  }
+
   return {
     query: `
       mutation createApplicationProtection ($applicationId: String!, $options: JSON) {
