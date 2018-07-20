@@ -8,6 +8,7 @@ Jscrambler Client for Browser and Node.js
   - [Output multiple files to a directory](#output-multiple-files-to-a-directory)
   - [Using minimatch](#using-minimatch)
   - [Using configuration file](#using-configuration-file)
+  - [Options](#options)
 - [API](#api)
   - [Quick example](#quick-example)
 - [Jscrambler Parameters](#jscrambler-parameters)
@@ -34,10 +35,10 @@ Here's an example of what your `.jscramblerrc` file should look like:
 ```json
 {
   "keys": {
-    "accessKey": "AAAA",
-    "secretKey": "SSSS"
+    "accessKey": "_YOUR_ACCESS_KEY_",
+    "secretKey": "_YOUR_SECRET_KEY_"
   },
-  "applicationId": "XXXXX",
+  "applicationId": "_YOUR_APPLICATION_ID_",
   "filesSrc": [
     "/path/to/src.html",
     "/path/to/src.js"
@@ -45,30 +46,34 @@ Here's an example of what your `.jscramblerrc` file should look like:
   "filesDest": "/path/to/destDir/",
   "params": [
     {
-      "name": "stringSplitting"
+      "name": "stringSplitting",
+      "options": {
+        "freq": 1
+      }
     }
   ],
   "areSubscribersOrdered": false,
-  "jscramblerVersion": "5.1"
+  "jscramblerVersion": "5.3"
 }
 ```
 
-Please, replace the `AAAA`, `SSSS` and `XXXXX` placeholders with your API credentials and Application ID.
+Please, replace the `_YOUR_ACCESS_KEY_`, `_YOUR_SECRET_KEY_` and `_YOUR_APPLICATION_ID_` placeholders with your API credentials and Application ID. If you are having trouble finding these, please check our [Getting Started](https://docs.jscrambler.com/code-integrity/getting-started) page.
 
 You can also download this file through Jscrambler's application builder. More
-information can be found [here](https://docs.jscrambler.com/api/clients.html).
+information can be found [here](https://docs.jscrambler.com/code-integrity/documentation/api/clients).
 
 ## CLI
 ```bash
 npm install -g jscrambler
 ```
+
 ```
   Usage: jscrambler [options] <file ...>
 
   Options:
 
-    -h, --help                       output usage information
     -V, --version                    output the version number
+    -v, --version
     -a, --access-key <accessKey>     Access key
     -c, --config <config>            JScrambler configuration options
     -H, --host <host>                Hostname
@@ -78,24 +83,49 @@ npm install -g jscrambler
     --protocol <protocol>            Protocol (http or https)
     --cafile <path>                  Internal certificate authority
     -C, --cwd <dir>                  Current Working Directory
+    -s, --secret-key <secretKey>     Secret key
     -m, --source-maps <id>           Download source maps
     -R, --randomization-seed <seed>  Set randomization seed
-    -s, --secret-key <secretKey>     Secret key
-    -R, --randomization-seed <seed>  Set randomization seed
     --recommended-order <bool>       Use recommended order
-    -W --werror                      Cancel protection if any file contains errors
+    -W, --werror <bool>              Set werror flag value (default: true)
     --jscramblerVersion <version>    Use a specific Jscrambler version
+    --debugMode                      Protect in debug mode
+    -h, --help                       output usage information
 ```
 
 
 ### Required Fields
-When making API requests you must pass valid secret and access keys, through the command line or by having a `.jscramblerrc` file. These keys are each 40 characters long, alpha numeric strings, and uppercase. You can find them in your jscramber web dashboard under `My Profile > API Credentials`. In the examples these are shortened to `AAAA` and `SSSS` for the sake of readability.
+When making API requests you must pass valid *secret* and *access keys*, through the command line or by having a `.jscramblerrc` file. These keys are each 40 characters long, alpha numeric and uppercase strings. You can find them in your Jscrambler web dashboard under `My Profile > API Credentials`. In the examples these are shortened to `_YOUR_ACCESS_KEY_` and `_YOUR_SECRET_KEY_` for the sake of readability.
 
-### Flag -W / --werror
+### Output to a single file
+```bash
+jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output.js input.js
+```
 
-Jscrambler by default will protect your application even if errors occurred in some of your files. For example: if your app have 5 files and 1 of them has syntax errors, Jscrambler will protect the files with no errors and keep the original content in the other one.
+### Output multiple files to a directory
+```bash
+jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output/ input1.js input2.js
+```
 
-With this flag, any error/warning will make the protection fail.
+### Using minimatch
+```bash
+jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output/ "lib/**/*.js"
+```
+
+### Using configuration file
+```bash
+jscrambler -c config.json
+```
+where `config.json` is an object optionally containing any of the Jscrambler options listed [here](#jscrambler-options), using the structure described [in the RC configuration](#rc-configiguration).
+
+## Options
+
+### Flag -W / --werror (default: **true**)
+
+By default, Jscrambler will not protect your application when errors occur in some or all of your files. For example: if your app have 5 files and one of them has syntax errors, Jscrambler will not protect any of your files. To override this behavior you must set the `werror` flag to `false`.
+
+Any error/warning will make the protection fail.
+
 There are two possible types of errors:
 * Syntax errors
 
@@ -108,8 +138,21 @@ There are two possible types of errors:
 
     Output
     ```
-    Error: "Unexpected token [" in test.js:1
-    Protection failed
+    Global protection errors:
+    - Errors ocurred while parsing
+
+    Application sources errors:
+    [
+      {
+        "filename": "index.js",
+        "message": "SyntaxError: 'return' outside of function (1:0)",
+        "line": 1,
+        "column": null,
+        "fatal": true
+      }
+    ]
+
+    Protection failed. For more information visit: https://app.jscrambler.com/app/_YOUR_APPLICATION_ID_/protections/_PROTECTION_ID_
     ```
 
 * Errors parsing jscrambler [code annotations](https://docs.jscrambler.com/code-annotations/overview.html)
@@ -133,35 +176,38 @@ There are two possible types of errors:
 
     Output
     ```
-    Error: "[Annotation Error] Expected " " or [a-z]i but "_" found." in test.js:1
-    Error: "[Annotation Error] Expected " ", "define", "disable", "enable", "global", "order" or "target" but "[" found." in test.js:8
-    Error: "Parsing errors on annotations" in test.js
-    Protection failed
+    Global protection errors:
+    - Failed to protect any source file
+
+    Application sources errors:
+    [
+      {
+        "filename": "index.js",
+        "message": "[Annotation Error] Expected \" \" or [a-z]i but \"_\" found.",
+        "line": 1,
+        "column": 21,
+        "fatal": true
+      },
+      {
+        "filename": "index.js",
+        "message": "[Annotation Error] Expected \" \", \"define\", \"disable\", \"enable\", \"global\", \"order\" or \"target\" but \"[\" found.",
+        "line": 8,
+        "column": 13,
+        "fatal": true
+      },
+      {
+        "filename": "index.js",
+        "message": "Parsing errors on annotations",
+        "line": null,
+        "column": null,
+        "fatal": true
+      }
+    ]
+
+    Protection failed. For more information visit: https://app.jscrambler.com/app/5b4c564eb6dd700016ba8759/protections/5b5195e5824c320016a1f718
     ```
 
-### Output to a single file
-```bash
-jscrambler -a AAAA -s SSSS -i APP_ID -o output.js input.js
-```
-
-### Output multiple files to a directory
-```bash
-jscrambler -a AAAA -s SSSS -i APP_ID -o output/ input1.js input2.js
-```
-
-### Using minimatch
-```bash
-jscrambler -a AAAA -s SSSS -i APP_ID -o output/ "lib/**/*.js"
-```
-
-### Using configuration file
-```bash
-jscrambler -c config.json
-```
-where `config.json` is an object optionally containing any of the JScrambler options listed [here](#jscrambler-options), using the structure described [in the RC configuration](#rc-config).
-
-
-### Enabling/disabling the recommended order
+### Recommended Order (default: **false**)
 ```bash
 jscrambler --recommended-order false input1.js -o output/
 ```
@@ -170,7 +216,6 @@ To enable:
 ```bash
 jscrambler --recommended-order true input1.js -o output/
 ```
-
 
 ## API
 ```bash
@@ -183,12 +228,12 @@ var jscrambler = require('jscrambler').default;
 
 jscrambler.protectAndDownload({
   keys: {
-    accessKey: 'YOUR_JSCRAMBLER_ACCESS_KEY',
-    secretKey: 'YOUR_JSCRAMBLER_SECRET_KEY'
+    accessKey: '_YOUR_ACCESS_KEY_',
+    secretKey: '_YOUR_SECRET_KEY_'
   },
   host: 'api4.jscrambler.com',
   port: 443,
-  applicationId: 'YOUR_APPLICATION_ID',
+  applicationId: '_YOUR_APPLICATION_ID_',
   filesSrc: [
     '/path/to/src/*.html',
     '/path/to/src/*.js'
