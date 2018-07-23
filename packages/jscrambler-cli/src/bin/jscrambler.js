@@ -120,7 +120,7 @@ if (globSrc && globSrc.length) {
     filesSrc = filesSrc.concat(tmpGlob);
   }
   if (filesSrc.length === 0) {
-    console.error(`No files matched.`);
+    console.error('No files matched.');
     process.exit(1);
   }
 } else if (debug) {
