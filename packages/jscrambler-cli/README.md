@@ -91,6 +91,38 @@ npm install -g jscrambler
 ### Required Fields
 When making API requests you must pass valid secret and access keys, through the command line or by having a `.jscramblerrc` file. These keys are each 40 characters long, alpha numeric strings, and uppercase. You can find them in your jscramber web dashboard under `My Profile > API Credentials`. In the examples these are shortened to `AAAA` and `SSSS` for the sake of readability.
 
+### Using a proxy to make requests ###
+If your requests need to go through a proxy, there is an option where you can specify the ip address, port and authentication credentials.
+```
+{
+  proxy: {
+    host: '',
+    port: 1234,
+    auth: {
+      username: '',
+      password: ''
+    }
+  }
+}
+
+```
+
+WARNING: currently we only support HTTP proxies. In order to make it use your proxy, you just need to add the proxy details to the Jscrambler config file as above and use the port 80 of our service (this is the HTTP port of the Jscrambler API).
+
+```
+{
+  port: 80,
+  proxy: {
+      host: '',
+      port: 1234,
+      auth: {
+        username: '',
+        password: ''
+      }
+  }
+}
+```
+
 ### Flag -W / --werror
 
 Jscrambler by default will protect your application even if errors occurred in some of your files. For example: if your app have 5 files and 1 of them has syntax errors, Jscrambler will protect the files with no errors and keep the original content in the other one.
