@@ -135,7 +135,8 @@ export default {
       useRecommendedOrder,
       bail,
       jscramblerVersion,
-      debugMode
+      debugMode,
+      proxy
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -147,7 +148,8 @@ export default {
       port,
       protocol,
       cafile,
-      jscramblerVersion
+      jscramblerVersion,
+      proxy
     });
 
     let filesSrc = finalConfig.filesSrc;
@@ -398,7 +400,8 @@ export default {
       stream = true,
       filesDest,
       filesSrc,
-      protectionId
+      protectionId,
+      proxy
     } = configs;
 
     const {accessKey, secretKey} = keys;
@@ -409,7 +412,8 @@ export default {
       host,
       port,
       protocol,
-      cafile
+      cafile,
+      proxy
     });
 
     if (!filesDest && !destCallback) {

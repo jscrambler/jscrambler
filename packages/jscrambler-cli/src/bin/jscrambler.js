@@ -134,7 +134,8 @@ const {
   useRecommendedOrder,
   werror,
   jscramblerVersion,
-  debugMode
+  debugMode,
+  proxy
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -185,7 +186,8 @@ if (commander.sourceMaps) {
       randomizationSeed,
       useRecommendedOrder,
       jscramblerVersion,
-      debugMode
+      debugMode,
+      proxy
     };
     try {
       if (typeof werror !== 'undefined') {
