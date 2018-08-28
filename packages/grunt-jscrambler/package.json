@@ -35,8 +35,7 @@
     "grunt-contrib-clean": "^0.6.0"
   },
   "dependencies": {
-    "jscrambler": "^5.2.14",
-    "lodash": "^3.10.1"
+    "jscrambler": "^5.2.14"
   },
   "keywords": [
     "gruntplugin",

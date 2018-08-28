@@ -5,7 +5,6 @@
  */
 'use strict';
 
-var _ = require('lodash');
 var jscrambler = require('jscrambler').default;
 var path = require('path');
 var util = require('util');
