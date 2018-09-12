@@ -1,6 +1,6 @@
 {
   "name": "jscrambler-webpack-plugin",
-  "version": "5.2.15",
+  "version": "5.2.16",
   "description": "A webpack plugin to protect your generated bundle using Jscrambler",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/jscrambler/jscrambler",
   "dependencies": {
-    "jscrambler": "^5.2.15",
+    "jscrambler": "^5.2.16",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {

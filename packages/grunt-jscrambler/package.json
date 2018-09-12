@@ -1,7 +1,7 @@
 {
   "name": "grunt-jscrambler",
   "description": "Obfuscate your source files using the JScrambler API.",
-  "version": "5.2.15",
+  "version": "5.2.16",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "scripts": {
     "test": "grunt"
@@ -35,7 +35,7 @@
     "grunt-contrib-clean": "^0.6.0"
   },
   "dependencies": {
-    "jscrambler": "^5.2.15"
+    "jscrambler": "^5.2.16"
   },
   "keywords": [
     "gruntplugin",
