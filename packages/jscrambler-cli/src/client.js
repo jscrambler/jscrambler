@@ -39,7 +39,8 @@ function JScramblerClient(options) {
   this.axiosInstance = axios.create({
     headers: {
       jscramblerVersion: this.options.jscramblerVersion
-    }
+    },
+    maxContentLength: 100 * 1000 * 1000, // 100 MB
   });
 }
 /**
