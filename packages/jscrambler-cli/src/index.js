@@ -136,7 +136,8 @@ export default {
       useRecommendedOrder,
       bail = true,
       jscramblerVersion,
-      debugMode
+      debugMode,
+      proxy
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -148,7 +149,8 @@ export default {
       port,
       protocol,
       cafile,
-      jscramblerVersion
+      jscramblerVersion,
+      proxy
     });
 
     let filesSrc = finalConfig.filesSrc;
@@ -354,7 +356,7 @@ export default {
       const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`;
       throw new Error(`Protection failed. For more information visit: ${url}`);
     } else if (sourcesErrors.length > 0) {
-      if (bail) {
+      if (protection.bail) {
         printSourcesErrors(sourcesErrors);
         throw new Error('Your protection has failed.');
       } else {
@@ -399,7 +401,8 @@ export default {
       stream = true,
       filesDest,
       filesSrc,
-      protectionId
+      protectionId,
+      proxy
     } = configs;
 
     const {accessKey, secretKey} = keys;
@@ -410,7 +413,8 @@ export default {
       host,
       port,
       protocol,
-      cafile
+      cafile,
+      proxy
     });
 
     if (!filesDest && !destCallback) {

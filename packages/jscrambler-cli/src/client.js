@@ -39,7 +39,8 @@ function JScramblerClient(options) {
   this.axiosInstance = axios.create({
     headers: {
       jscramblerVersion: this.options.jscramblerVersion
-    }
+    },
+    maxContentLength: 100 * 1000 * 1000, // 100 MB
   });
 }
 /**
@@ -110,7 +111,7 @@ JScramblerClient.prototype.request = function(
     signedData = params;
   }
 
-  let {protocol, port} = this.options;
+  let {protocol, port, proxy} = this.options;
 
   if (!port && !protocol) {
     port = 443;
@@ -135,6 +136,10 @@ JScramblerClient.prototype.request = function(
   let data;
   const settings = {};
 
+  if (proxy) {
+    settings.proxy = proxy;
+  }
+
   if (!isJSON) {
     settings.responseType = 'arraybuffer';
   }
@@ -144,8 +149,10 @@ JScramblerClient.prototype.request = function(
     const agent = new https.Agent({
       ca: fs.readFileSync(this.options.cafile)
     });
-    settings.agent = agent;
+    settings.httpsAgent = agent;
   }
+
+
 
   let promise;
 
