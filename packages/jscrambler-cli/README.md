@@ -204,7 +204,7 @@ There are two possible types of errors:
       }
     ]
 
-    Protection failed. For more information visit: https://app.jscrambler.com/app/5b4c564eb6dd700016ba8759/protections/5b5195e5824c320016a1f718
+    Protection failed. For more information visit: https://app.jscrambler.com/app/_YOUR_APPLICATION_ID_/protections/_PROTECTION_ID_
     ```
 
 ### Recommended Order (default: **false**)
