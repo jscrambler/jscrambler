@@ -7,7 +7,8 @@ const config = rc(
   {
     keys: {},
     host: 'api4.jscrambler.com',
-    jscramblerVersion: 'stable'
+    jscramblerVersion: 'stable',
+    werror: true
   },
   []
 );

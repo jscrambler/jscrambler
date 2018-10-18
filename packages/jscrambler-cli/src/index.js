@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import 'babel-polyfill';
 
 import glob from 'glob';
@@ -133,7 +134,7 @@ export default {
       randomizationSeed,
       areSubscribersOrdered,
       useRecommendedOrder,
-      bail,
+      bail = true,
       jscramblerVersion,
       debugMode,
       proxy
@@ -454,8 +455,7 @@ export default {
           `Protection failed. For more information visit: ${url}`
         );
       } else {
-        const state = applicationProtection.data.applicationProtection.state;
-        const bail = applicationProtection.data.applicationProtection.bail;
+        const {state} = applicationProtection.data.applicationProtection;
         if (
           state !== 'finished' &&
           state !== 'errored' &&
@@ -463,10 +463,6 @@ export default {
         ) {
           await new Promise(resolve => setTimeout(resolve, 500));
           return poll();
-        } else if (state === 'errored' && !bail) {
-          throw new Error(
-            `Protection failed. For more information visit: ${url}`
-          );
         } else if (state === 'canceled') {
           throw new Error('Protection canceled by user');
         } else {

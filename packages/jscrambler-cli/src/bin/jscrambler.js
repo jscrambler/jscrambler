@@ -28,7 +28,7 @@ commander
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--recommended-order <bool>', 'Use recommended order')
-  .option('-W --werror', 'Cancel protection if any file contains errors')
+  .option('-W, --werror <bool>', 'Set werror flag value (default: true)')
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
@@ -61,7 +61,7 @@ config.cwd = commander.cwd || config.cwd;
 config.useRecommendedOrder = commander.recommendedOrder
   ? commander.recommendedOrder !== 'false'
   : config.useRecommendedOrder;
-config.werror = commander.werror || config.werror;
+config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
@@ -100,6 +100,11 @@ if (globSrc && globSrc.length) {
       dot: true
     });
 
+    if (config.werror && tmpGlob.length === 0) {
+      console.error(`Pattern "${globSrc[i]}" doesn't match any files.`);
+      process.exit(1);
+    }
+
     if (debug) {
       if (tmpGlob.length === 0) {
         console.log(
@@ -114,6 +119,14 @@ if (globSrc && globSrc.length) {
     }
     filesSrc = filesSrc.concat(tmpGlob);
   }
+  if (filesSrc.length === 0) {
+    console.error('No files matched.');
+    process.exit(1);
+  }
+} else if (debug) {
+  console.log(
+    'No filesSrc provided. Using the ones in the application (if any).'
+  );
 }
 
 const {
