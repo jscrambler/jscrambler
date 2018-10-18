@@ -116,7 +116,7 @@ jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o
 ```bash
 jscrambler -c config.json
 ```
-where `config.json` is a file that optionally contains containing any of the Jscrambler options listed [here](#jscrambler-options), using the structure described [in the RC configuration](#rc-configiguration).
+where `config.json` is a file that optionally contains any of the Jscrambler options listed [here](#jscrambler-options), using the structure described [in the RC configuration](#rc-configiguration).
 
 ## Options
 
