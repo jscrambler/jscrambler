@@ -1,4 +1,4 @@
-# ![jscrambler](https://rawgithub.com/jscrambler/grunt-jscrambler/master/media/jscrambler-logo.png)
+# ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
 [grunt](https://github.com/gruntjs/grunt)-jscrambler
 --------------------
 
