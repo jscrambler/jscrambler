@@ -1,4 +1,4 @@
-# ![jscrambler](https://rawgithub.com/jscrambler/gulp-jscrambler/master/media/jscrambler-logo.png)
+# ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
 [gulp](https://github.com/wearefractal/gulp)-jscrambler
 --------------------
 
