@@ -7,7 +7,10 @@ class JscramblerPlugin {
   constructor(_options) {
     let options = _options;
     if (typeof options !== 'object' || Array.isArray(options)) options = {};
-    this.options = options;
+
+    this.options = Object.assign(options, {
+      clientId: 2
+    });
 
     this.processResult = this.processResult.bind(this);
     this.processSourceMaps = this.processSourceMaps.bind(this);

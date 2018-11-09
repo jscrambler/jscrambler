@@ -14,7 +14,8 @@ module.exports = function (grunt) {
     var done = this.async();
     var files = this.files;
     var options = this.options({
-      keys: {}
+      keys: {},
+      clientId: 4
     });
 
     options.filesSrc = this.filesSrc;
