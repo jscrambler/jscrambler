@@ -8,7 +8,8 @@ const config = rc(
     keys: {},
     host: 'api4.jscrambler.com',
     jscramblerVersion: 'stable',
-    werror: true
+    werror: true,
+    clientId: 0
   },
   []
 );

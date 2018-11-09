@@ -17,6 +17,7 @@ const debug = !!process.env.DEBUG;
  * @param {String} options.secretKey
  * @param {String} [options.host=api.jscrambler.com]
  * @param {String} [options.port=443]
+ * @param {String} [options.clientId=0]
  * @author José Magalhães (magalhas@gmail.com)
  * @license MIT <http://opensource.org/licenses/MIT>
  */
@@ -36,11 +37,14 @@ function JScramblerClient(options) {
    */
   this.options = defaults(options || {}, cfg);
 
+  const {jscramblerVersion, clientId} = this.options;
+
   this.axiosInstance = axios.create({
     headers: {
-      jscramblerVersion: this.options.jscramblerVersion
+      jscramblerVersion,
+      clientId
     },
-    maxContentLength: 100 * 1000 * 1000, // 100 MB
+    maxContentLength: 100 * 1000 * 1000 // 100 MB
   });
 }
 /**
