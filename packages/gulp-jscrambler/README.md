@@ -63,4 +63,4 @@ Keep in mind that the `params` object is optional and if it is not provided we w
 
 ### Usage Example
 
-You can find some working examples [here](https://github.com/jscrambler/gulp-jscrambler/tree/master/examples).
+You can find some working examples [here](https://github.com/jscrambler/jscrambler/tree/master/packages/gulp-jscrambler/examples).
