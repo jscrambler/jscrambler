@@ -10,7 +10,8 @@ module.exports = function (options) {
   options = defaults(options || {}, {
     cwd: process.cwd(),
     filesSrc: [],
-    keys: {}
+    keys: {},
+    clientId: 3
   });
 
   var aggregate = function (file, enc, next) {

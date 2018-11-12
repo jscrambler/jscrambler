@@ -137,7 +137,8 @@ export default {
       bail = true,
       jscramblerVersion,
       debugMode,
-      proxy
+      proxy,
+      clientId
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -150,7 +151,8 @@ export default {
       protocol,
       cafile,
       jscramblerVersion,
-      proxy
+      proxy,
+      clientId
     });
 
     let filesSrc = finalConfig.filesSrc;
@@ -633,7 +635,8 @@ export default {
   async createApplicationProtection(
     client,
     applicationId,
-    protectionOptions
+    protectionOptions,
+    fragments
   ) {
     const {args} = await introspection.mutation(
       client,
@@ -642,7 +645,7 @@ export default {
 
     const mutation = await mutations.createApplicationProtection(
       applicationId,
-      undefined,
+      fragments,
       protectionOptions,
       args
     );

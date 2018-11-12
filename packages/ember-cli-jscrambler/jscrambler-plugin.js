@@ -109,7 +109,8 @@ JscramblerWriter.prototype.build = function() {
     .protectAndDownload(
       Object.assign({}, this.options.jscrambler, {
         sources,
-        stream: false
+        stream: false,
+        clientId: 5
       }),
       outputFiles => {
         outputFiles.forEach(file => {
