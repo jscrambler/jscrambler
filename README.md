@@ -35,6 +35,7 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Ionic Framework](https://blog.jscrambler.com/protecting-hybrid-mobile-apps-with-ionic-and-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [NativeScript Framework](https://blog.jscrambler.com/protecting-your-nativescript-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [Vue.js Framework](https://blog.jscrambler.com/how-to-protect-your-vue-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [Angular Framework](https://blog.jscrambler.com/how-to-protect-angular-code-against-theft-and-reverse-engineering/?utm_source=github.com&utm_medium=referral)
 - [Angular.js Framework](https://blog.jscrambler.com/how-to-protect-your-angular-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 
 ## Jscrambler Tutorials
