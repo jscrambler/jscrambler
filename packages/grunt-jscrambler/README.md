@@ -93,11 +93,11 @@ Navigate to your [profile](https://app.jscrambler.com/profile) page and grab you
 
 Your `applicationId` can be found inside your application page just below your application name. Click the copy to clipboard icon to copy the `applicationId`.
 
-![copy](https://rawgithub.com/jscrambler/grunt-jscrambler/master/media/copy-id.png)
+![Application ID](https://blog.jscrambler.com/content/images/2018/08/jscrambler-101-first-use-app-id.jpg)
 
 You can also grab your current configuration on your application page. This will download a `.json` file containing a valid configuration with your currently selected options.
 
-![download config file location](https://github.com/jscrambler/jscrambler/blob/master/packages/grunt-jscrambler/media/download-settings.png)
+![download config file location](https://blog.jscrambler.com/content/images/2018/08/jscrambler-101-first-use-download-json.png)
 
 Keep in mind that the `params` object is optional and if it is not provided we will use your previous configuration.
 
