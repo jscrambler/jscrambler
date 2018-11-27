@@ -89,7 +89,7 @@ grunt.initConfig({
 });
 ```
 You will need your credentials and Application ID in order to protect your application.
-Navigate to your [profile](https://app.jscrambler.com/profile) page and grab your `accessKey` and `secretKey` at the _API Credentials_ section.
+Navigate to your [Settings](https://app.jscrambler.com/settings) page and grab your `accessKey` and `secretKey` at the _API Credentials_ section.
 
 Your `applicationId` can be found inside your application page just below your application name. Click the copy to clipboard icon to copy the `applicationId`.
 
@@ -103,4 +103,4 @@ Keep in mind that the `params` object is optional and if it is not provided we w
 
 ### Usage Example
 
-You can find some working examples [here](https://github.com/jscrambler/jscrambler/tree/master/packages/grunt-jscrambler/examples)
+You can find some working examples [here](https://github.com/jscrambler/jscrambler/tree/master/packages/grunt-jscrambler/examples).
