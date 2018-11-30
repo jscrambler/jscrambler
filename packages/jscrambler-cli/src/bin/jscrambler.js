@@ -10,6 +10,13 @@ import jscrambler from '../';
 import {mergeAndParseParams} from '../cli';
 
 const debug = !!process.env.DEBUG;
+const validateBool = option => val => {
+  if (!/^(true|false)$/i.test(val)) {
+    console.error(`*${option}* requires a <bool> value.`);
+    process.exit(1);
+  }
+  return val.toLowerCase();
+};
 
 commander
   .version(require('../../package.json').version)
@@ -27,8 +34,16 @@ commander
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
-  .option('--recommended-order <bool>', 'Use recommended order')
-  .option('-W, --werror <bool>', 'Set werror flag value (default: true)')
+  .option(
+    '--recommended-order <bool>',
+    'Use recommended order',
+    validateBool('recommended-order')
+  )
+  .option(
+    '-W, --werror <bool>',
+    'Set werror flag value (default: true)',
+    validateBool('werror')
+  )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
