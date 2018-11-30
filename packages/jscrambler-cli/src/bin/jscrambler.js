@@ -12,7 +12,8 @@ import {mergeAndParseParams} from '../cli';
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
   if(!/^(true|false)$/i.test(val)) {
-    throw new Error(`*${option} requires a <bool> value.`)
+    console.error(`*${option} requires a <bool> value.`);
+    process.exit(1);
   }
   return val.toLowerCase();
 };
