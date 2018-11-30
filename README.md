@@ -37,6 +37,7 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Vue.js Framework](https://blog.jscrambler.com/how-to-protect-your-vue-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [Angular Framework](https://blog.jscrambler.com/how-to-protect-angular-code-against-theft-and-reverse-engineering/?utm_source=github.com&utm_medium=referral)
 - [Angular.js Framework](https://blog.jscrambler.com/how-to-protect-your-angular-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [More information about Framework Compatibility](https://jscrambler.com/javascript-frameworks-and-libraries#compatible-frameworks?utm_source=github.com&utm_medium=referral)
 
 ## Jscrambler Tutorials
 
@@ -47,3 +48,4 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Jscrambler 101 — Control Flow Flattening](https://blog.jscrambler.com/jscrambler-101-control-flow-flattening/?utm_source=github.com&utm_medium=referral)
 - [Jscrambler 101 — Code Locks](https://blog.jscrambler.com/jscrambler-101-code-locks/?utm_source=github.com&utm_medium=referral)
 - [Jscrambler 101 — How to use the CLI](https://blog.jscrambler.com/jscrambler-101-how-to-use-the-cli/?utm_source=github.com&utm_medium=referral)
+- [Jscrambler 101 — Source Maps](https://blog.jscrambler.com/jscrambler-101-source-maps/?utm_source=github.com&utm_medium=referral)
