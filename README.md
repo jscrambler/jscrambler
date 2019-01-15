@@ -37,6 +37,8 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Vue.js Framework](https://blog.jscrambler.com/how-to-protect-your-vue-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [Angular Framework](https://blog.jscrambler.com/how-to-protect-angular-code-against-theft-and-reverse-engineering/?utm_source=github.com&utm_medium=referral)
 - [Angular.js Framework](https://blog.jscrambler.com/how-to-protect-your-angular-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [Ember.js Framework](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/emberjs?utm_source=github.com&utm_medium=referral)
+- [Meteor Framework](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/meteor?utm_source=github.com&utm_medium=referral)
 - [More information about Framework Compatibility](https://jscrambler.com/javascript-frameworks-and-libraries#compatible-frameworks?utm_source=github.com&utm_medium=referral)
 
 ## Jscrambler Tutorials
