@@ -24,7 +24,7 @@ class JscramblerPlugin {
       return;
     }
 
-    compiler.plugin('emit', (compilation, callback) => {
+    compiler.hooks.emit.tapAsync('JscramblerPlugin', (compilation, callback) => {
       const sources = [];
       compilation.chunks.forEach(chunk => {
         if (
