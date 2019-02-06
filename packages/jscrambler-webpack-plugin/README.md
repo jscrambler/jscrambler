@@ -4,7 +4,7 @@ This plugin protects your webpack output using Jscrambler.
 
 # Usage
 
-Simple add the plugin to your configuration, we recommend placing it after every other plugin that also modifies your code. It will automatically gather all javascript and html files and protect them.
+Simply add the plugin to your configuration. We recommend placing it after every other plugin that also modifies your code. It will automatically gather all JavaScript and HTML files and protect them.
 
 Example `webpack.config.js`:
 
