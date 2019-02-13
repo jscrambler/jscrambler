@@ -138,7 +138,8 @@ export default {
       jscramblerVersion,
       debugMode,
       proxy,
-      clientId
+      clientId,
+      tolerateMinification
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -239,7 +240,8 @@ export default {
 
     const updateData = {
       _id: applicationId,
-      debugMode: !!debugMode
+      debugMode: !!debugMode,
+      tolerateMinification: !!tolerateMinification
     };
 
     if (params && Object.keys(params).length) {
@@ -301,7 +303,7 @@ export default {
     const createApplicationProtectionRes = await this.createApplicationProtection(
       client,
       applicationId,
-      {bail, randomizationSeed, source, ...updateData}
+      {bail, randomizationSeed, tolerateMinification, source, ...updateData}
     );
     errorHandler(createApplicationProtectionRes);
 

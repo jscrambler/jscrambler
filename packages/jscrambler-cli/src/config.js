@@ -9,7 +9,8 @@ const config = rc(
     host: 'api4.jscrambler.com',
     jscramblerVersion: 'stable',
     werror: true,
-    clientId: 0
+    clientId: 0,
+    tolerateMinification: true 
   },
   []
 );
