@@ -44,6 +44,11 @@ commander
     'Set werror flag value (default: true)',
     validateBool('werror')
   )
+  .option(
+    '-t, --tolerate-minification <bool>',
+    `Don't detect minification as malicious tampering (default: true)` ,
+    validateBool('tolerate-minification')
+  )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
@@ -76,6 +81,9 @@ config.cwd = commander.cwd || config.cwd;
 config.useRecommendedOrder = commander.recommendedOrder
   ? commander.recommendedOrder !== 'false'
   : config.useRecommendedOrder;
+config.tolerateMinification = commander.tolerateMinification
+  ? commander.tolerateMinification !== 'false'
+  : config.tolerateMinification;
 config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
@@ -161,6 +169,7 @@ const {
   sourceMaps = false,
   useRecommendedOrder,
   werror,
+  tolerateMinification,
   jscramblerVersion,
   debugMode,
   proxy
@@ -213,6 +222,7 @@ if (commander.sourceMaps) {
       sourceMaps,
       randomizationSeed,
       useRecommendedOrder,
+      tolerateMinification,
       jscramblerVersion,
       debugMode,
       proxy
