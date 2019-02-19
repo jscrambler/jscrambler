@@ -45,7 +45,7 @@ commander
     validateBool('werror')
   )
   .option(
-    '-t, --tolerate-minification <bool>',
+    '--tolerate-minification <bool>',
     `Don't detect minification as malicious tampering (default: true)` ,
     validateBool('tolerate-minification')
   )
