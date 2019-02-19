@@ -60,6 +60,13 @@ fragment InputValue on __InputValue {
 fragment TypeRef on __Type {
   kind
   name
+  inputFields {
+    name
+    type {
+      name
+      kind
+    }
+  }
   ofType {
     kind
     name
