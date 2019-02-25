@@ -21,7 +21,6 @@ const validateBool = option => val => {
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
-  .option('-v, --version')
   .option('-a, --access-key <accessKey>', 'Access key')
   .option('-c, --config <config>', 'JScrambler configuration options')
   .option('-H, --host <host>', 'Hostname')
@@ -95,6 +94,7 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
   );
   process.exit(1);
 }
+
 
 config = defaults(config, _config);
 

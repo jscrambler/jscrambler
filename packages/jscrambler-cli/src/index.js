@@ -241,7 +241,7 @@ export default {
     const updateData = {
       _id: applicationId,
       debugMode: !!debugMode,
-      tolerateMinification: !!tolerateMinification
+      tolerateMinification
     };
 
     if (params && Object.keys(params).length) {
