@@ -138,7 +138,8 @@ export default {
       jscramblerVersion,
       debugMode,
       proxy,
-      clientId
+      clientId,
+      tolerateMinification
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -239,7 +240,8 @@ export default {
 
     const updateData = {
       _id: applicationId,
-      debugMode: !!debugMode
+      debugMode: !!debugMode,
+      tolerateMinification
     };
 
     if (params && Object.keys(params).length) {
@@ -301,7 +303,7 @@ export default {
     const createApplicationProtectionRes = await this.createApplicationProtection(
       client,
       applicationId,
-      {bail, randomizationSeed, source, ...updateData}
+      {bail, randomizationSeed, tolerateMinification, source, ...updateData}
     );
     errorHandler(createApplicationProtectionRes);
 
@@ -313,9 +315,9 @@ export default {
       protectionId,
       await getProtectionDefaultFragments(client)
     );
-    if (protection.growthWarning){
-      const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`
-      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${url}`);
+    if (protection.growthWarning) {
+      const url = 'https://app.jscrambler.com';
+      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${url}.`);
     }
     if (debug) {
       console.log('Finished protecting');
@@ -355,8 +357,8 @@ export default {
       if (sourcesErrors.length > 0) {
         printSourcesErrors(sourcesErrors);
       }
-      const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`;
-      throw new Error(`Protection failed. For more information visit: ${url}`);
+      const url = 'https://app.jscrambler.com';
+      throw new Error(`Protection failed. For more information visit: ${url}.`);
     } else if (sourcesErrors.length > 0) {
       if (protection.bail) {
         printSourcesErrors(sourcesErrors);
@@ -449,12 +451,12 @@ export default {
         protectionId,
         fragments
       );
-      const url = `https://app.jscrambler.com/app/${applicationId}/protections/${protectionId}`;
+      const url = `https://app.jscrambler.com`;
       if (applicationProtection.errors) {
         console.log('Error polling protection', applicationProtection.errors);
 
         throw new Error(
-          `Protection failed. For more information visit: ${url}`
+          `Protection failed. For more information visit: ${url}.`
         );
       } else {
         const {state} = applicationProtection.data.applicationProtection;

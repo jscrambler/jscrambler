@@ -21,7 +21,6 @@ const validateBool = option => val => {
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
-  .option('-v, --version')
   .option('-a, --access-key <accessKey>', 'Access key')
   .option('-c, --config <config>', 'JScrambler configuration options')
   .option('-H, --host <host>', 'Hostname')
@@ -43,6 +42,11 @@ commander
     '-W, --werror <bool>',
     'Set werror flag value (default: true)',
     validateBool('werror')
+  )
+  .option(
+    '--tolerate-minification <bool>',
+    `Don't detect minification as malicious tampering (default: true)` ,
+    validateBool('tolerate-minification')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
@@ -76,6 +80,9 @@ config.cwd = commander.cwd || config.cwd;
 config.useRecommendedOrder = commander.recommendedOrder
   ? commander.recommendedOrder !== 'false'
   : config.useRecommendedOrder;
+config.tolerateMinification = commander.tolerateMinification
+  ? commander.tolerateMinification !== 'false'
+  : config.tolerateMinification;
 config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
@@ -87,6 +94,7 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
   );
   process.exit(1);
 }
+
 
 config = defaults(config, _config);
 
@@ -161,6 +169,7 @@ const {
   sourceMaps = false,
   useRecommendedOrder,
   werror,
+  tolerateMinification,
   jscramblerVersion,
   debugMode,
   proxy
@@ -213,6 +222,7 @@ if (commander.sourceMaps) {
       sourceMaps,
       randomizationSeed,
       useRecommendedOrder,
+      tolerateMinification,
       jscramblerVersion,
       debugMode,
       proxy

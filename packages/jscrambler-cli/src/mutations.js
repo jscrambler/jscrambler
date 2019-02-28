@@ -1,3 +1,5 @@
+import cleanupInputFields from './cleanup-input-fields';
+
 const createApplicationDefaultFragments = `
   _id,
   createdAt,
@@ -325,10 +327,15 @@ const createProtectionDefaultFragments = `
 
 export function createApplicationProtection(
   applicationId,
-  fragments = createProtectionDefaultFragments,
-  options,
+  _fragments = createProtectionDefaultFragments,
+  _options,
   args
 ) {
+  let fragments = _fragments;
+  let options = _options;
+
+  [options, fragments] = cleanupInputFields(args, fragments, options);
+
   if (!args.some(f => f.name === 'options')) {
     const {bail, randomizationSeed} = options;
 

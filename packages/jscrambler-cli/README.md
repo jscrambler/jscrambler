@@ -152,7 +152,7 @@ There are two possible types of errors:
       }
     ]
 
-    Protection failed. For more information visit: https://app.jscrambler.com/app/_YOUR_APPLICATION_ID_/protections/_PROTECTION_ID_
+    Protection failed. For more information visit: https://app.jscrambler.com.
     ```
 
 * Errors parsing jscrambler [code annotations](https://docs.jscrambler.com/code-annotations/overview.html)
@@ -204,7 +204,7 @@ There are two possible types of errors:
       }
     ]
 
-    Protection failed. For more information visit: https://app.jscrambler.com/app/_YOUR_APPLICATION_ID_/protections/_PROTECTION_ID_
+    Protection failed. For more information visit: https://app.jscrambler.com.
     ```
 
 ### Using a proxy to make requests ###
