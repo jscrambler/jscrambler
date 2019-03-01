@@ -73,7 +73,6 @@ npm install -g jscrambler
   Options:
 
     -V, --version                    output the version number
-    -v, --version
     -a, --access-key <accessKey>     Access key
     -c, --config <config>            JScrambler configuration options
     -H, --host <host>                Hostname
@@ -88,6 +87,7 @@ npm install -g jscrambler
     -R, --randomization-seed <seed>  Set randomization seed
     --recommended-order <bool>       Use recommended order
     -W, --werror <bool>              Set werror flag value (default: true)
+    --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
     --jscramblerVersion <version>    Use a specific Jscrambler version
     --debugMode                      Protect in debug mode
     -h, --help                       output usage information
