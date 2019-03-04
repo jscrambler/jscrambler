@@ -2,7 +2,7 @@
 
 ## Jscrambler
 
-Jscrambler is a JavaScript protection technology for Web and Mobile Hybrid Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
+Jscrambler is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
 ## JavaScript Protection Technology
 
@@ -20,6 +20,10 @@ Jscrambler has a **Polymorphic Behavior**, so each new code deployment generates
 
 **Source maps** provide a way of mapping obfuscated code back to its original source code, helping the debugging process of obfuscated code as if you were running the original source code.
 
+### JavaScript Threat Monitoring
+
+From version 6.0 onwards, Jscrambler enables monitoring threats to protected code in real-time. Any attempt to modify or debug protected code will display a detailed alert in the Live Feed dashboard.
+
 ## Jscrambler JavaScript Client and Integrations
 
 You can integrate Jscrambler into your build process easily with its API client. It also has several integrations.
@@ -30,15 +34,16 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Webpack](packages/jscrambler-webpack-plugin)
 - [Ember](packages/ember-cli-jscrambler)
 
-## Jscrambler JavaScript Framework Integrations
+## Jscrambler JavaScript Framework/Library Integrations
 
-- [Ionic Framework](https://blog.jscrambler.com/protecting-hybrid-mobile-apps-with-ionic-and-jscrambler/?utm_source=github.com&utm_medium=referral)
-- [NativeScript Framework](https://blog.jscrambler.com/protecting-your-nativescript-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
-- [Vue.js Framework](https://blog.jscrambler.com/how-to-protect-your-vue-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
-- [Angular Framework](https://blog.jscrambler.com/how-to-protect-angular-code-against-theft-and-reverse-engineering/?utm_source=github.com&utm_medium=referral)
-- [Angular.js Framework](https://blog.jscrambler.com/how-to-protect-your-angular-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
-- [Ember.js Framework](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/emberjs?utm_source=github.com&utm_medium=referral)
-- [Meteor Framework](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/meteor?utm_source=github.com&utm_medium=referral)
+- [React](https://blog.jscrambler.com/protecting-your-react-js-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [Angular](https://blog.jscrambler.com/how-to-protect-angular-code-against-theft-and-reverse-engineering/?utm_source=github.com&utm_medium=referral)
+- [Angular.js](https://blog.jscrambler.com/how-to-protect-your-angular-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [Vue.js](https://blog.jscrambler.com/how-to-protect-your-vue-js-application-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [Ember.js](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/emberjs?utm_source=github.com&utm_medium=referral)
+- [Meteor](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/meteor?utm_source=github.com&utm_medium=referral)
+- [Ionic](https://blog.jscrambler.com/protecting-hybrid-mobile-apps-with-ionic-and-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [NativeScript](https://blog.jscrambler.com/protecting-your-nativescript-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [More information about Framework Compatibility](https://jscrambler.com/javascript-frameworks-and-libraries#compatible-frameworks?utm_source=github.com&utm_medium=referral)
 
 ## Jscrambler Tutorials
