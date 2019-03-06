@@ -1,4 +1,4 @@
-export default function cleanupInputFields(args, fragments, options) {
+export default function cleanupInputFields(args, fragments, options = {}) {
   let cleanedUpFragments = fragments;
 
   // tolerateMinification
