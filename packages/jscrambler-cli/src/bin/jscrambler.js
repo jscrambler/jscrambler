@@ -19,7 +19,7 @@ const validateBool = option => val => {
   return val.toLowerCase();
 };
 
-const validateFIleSizeInput = option => val => {
+const validateFileSizeFormat = option => val => {
   try {
     return filesizeParser(val);
   } catch (e) {
@@ -48,7 +48,7 @@ commander
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
-    validateFIleSizeInput('code-hardening-threshold')
+    validateFileSizeFormat('code-hardening-threshold')
   )
   .option(
     '--recommended-order <bool>',
