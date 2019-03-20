@@ -19,15 +19,17 @@ const validateBool = option => val => {
   return val.toLowerCase();
 };
 
-const validateFileSizeFormat = option => val => {
+const validateCodeHardeningThreshold = val => {
+  let inBytes;
   try {
-    return filesizeParser(val);
+    inBytes = filesizeParser(val);
   } catch (e) {
     console.error(
-      `*${option}* requires a valid <threshold> value. Format: {number}{unit="b,kb,mb"}. Example: --code-hardening-threshold 200kb`
+      '*code-hardening-threshold* requires a valid <threshold> value. Format: {number}{unit="b,kb,mb"}. Example: --code-hardening-threshold 200kb'
     );
     process.exit(1);
   }
+  return inBytes;
 };
 
 commander
@@ -48,7 +50,7 @@ commander
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
-    validateFileSizeFormat('code-hardening-threshold')
+    validateCodeHardeningThreshold
   )
   .option(
     '--recommended-order <bool>',
@@ -105,7 +107,10 @@ config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
 config.codeHardeningThreshold =
-  commander.codeHardeningThreshold || config.codeHardeningThreshold;
+  commander.codeHardeningThreshold ||
+  (config.codeHardeningThreshold
+    ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
+    : undefined);
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
