@@ -139,7 +139,8 @@ export default {
       debugMode,
       proxy,
       clientId,
-      tolerateMinification
+      tolerateMinification,
+      codeHardeningThreshold
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -241,7 +242,8 @@ export default {
     const updateData = {
       _id: applicationId,
       debugMode: !!debugMode,
-      tolerateMinification
+      tolerateMinification,
+      codeHardeningThreshold
     };
 
     if (params && Object.keys(params).length) {

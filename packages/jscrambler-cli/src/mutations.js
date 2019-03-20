@@ -355,6 +355,8 @@ export function createApplicationProtection(
     };
   }
 
+  console.log(options);
+
   // Check if createApplicationProtection supports "data" argument
   if (args.some(arg => arg.name === 'data')) {
     return {

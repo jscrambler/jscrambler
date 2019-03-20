@@ -4,6 +4,7 @@ import commander from 'commander';
 import defaults from 'lodash.defaults';
 import glob from 'glob';
 import path from 'path';
+import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
@@ -16,6 +17,17 @@ const validateBool = option => val => {
     process.exit(1);
   }
   return val.toLowerCase();
+};
+
+const validateFIleSizeInput = option => val => {
+  try {
+    return filesizeParser(val);
+  } catch (e) {
+    console.error(
+      `*${option}* requires a valid <threshold> value. Format: {number}{unit="b,kb,mb"}. Example: --code-hardening-threshold 200kb`
+    );
+    process.exit(1);
+  }
 };
 
 commander
@@ -33,6 +45,11 @@ commander
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
+  .option(
+    '--code-hardening-threshold <threshold>',
+    'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
+    validateFIleSizeInput('code-hardening-threshold')
+  )
   .option(
     '--recommended-order <bool>',
     'Use recommended order',
@@ -87,6 +104,8 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
+config.codeHardeningThreshold =
+  commander.codeHardeningThreshold || config.codeHardeningThreshold;
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
@@ -172,7 +191,8 @@ const {
   tolerateMinification,
   jscramblerVersion,
   debugMode,
-  proxy
+  proxy,
+  codeHardeningThreshold
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -225,7 +245,8 @@ if (commander.sourceMaps) {
       tolerateMinification,
       jscramblerVersion,
       debugMode,
-      proxy
+      proxy,
+      codeHardeningThreshold
     };
     try {
       if (typeof werror !== 'undefined') {
