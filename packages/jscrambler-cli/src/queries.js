@@ -167,7 +167,10 @@ const getProtectionDefaultFragments = {
     _id,
     state,
     bail,
-    deprecations,
+    deprecations {
+      type,
+      entity
+    },
     errorMessage,
     sources {
       filename,
