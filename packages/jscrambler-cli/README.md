@@ -74,7 +74,7 @@ npm install -g jscrambler
 
     -V, --version                    output the version number
     -a, --access-key <accessKey>     Access key
-    -c, --config <config>            JScrambler configuration options
+    -c, --config <config>            Jscrambler configuration options
     -H, --host <host>                Hostname
     -i, --application-id <id>        Application ID
     -o, --output-dir <dir>           Output directory
