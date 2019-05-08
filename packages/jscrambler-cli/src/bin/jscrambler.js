@@ -36,7 +36,7 @@ commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
   .option('-a, --access-key <accessKey>', 'Access key')
-  .option('-c, --config <config>', 'JScrambler configuration options')
+  .option('-c, --config <config>', 'Jscrambler configuration options')
   .option('-H, --host <host>', 'Hostname')
   .option('-i, --application-id <id>', 'Application ID')
   .option('-o, --output-dir <dir>', 'Output directory')
