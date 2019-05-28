@@ -69,7 +69,7 @@ class JscramblerPlugin {
             this.processResult(protectionId, compilation, callback)
           )
           .catch(err => {
-            throw err;
+            callback(err);
           });
       } else {
         callback();
