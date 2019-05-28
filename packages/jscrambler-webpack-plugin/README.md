@@ -32,7 +32,7 @@ module.exports = {
   plugins: [
     new JscramblerWebpack({
       enable: true, // optional, defaults to true
-      chunks: ['protected'] // optional, defaults to all chunks
+      chunks: ['protected'], // optional, defaults to all chunks
       params: [], 
       applicationTypes: {}
       // and other jscrambler configurations
