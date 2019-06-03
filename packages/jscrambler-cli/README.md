@@ -120,6 +120,34 @@ where `config.json` is a file that optionally contains any of the Jscrambler opt
 
 ## Options
 
+### Current working directory (--cwd)
+
+JavaScript projects usually have a folder structure that must be preserved in order for the application to work properly. 
+In order to make sure that that structure is preserved, the `jscrambler` client needs to know what is the path of the root folder of your project's file structure.
+We call this path the Current Working Directory (CWD). The folder structure of all the subdirectories of the paths that match the patterns passed to the `jscrambler` 
+cli will be replicated in the output folder (specified by the `filesDest` parameter.)
+
+There are three ways to define this setting:
+  - If you use relative paths as input patterns, then the CWD is assumed to be the path on which the CLI was executed.
+    For example, the following command, executed in `/home/user` (assuming `config.js` does not define neither `filesSrc` nor `filesDest`):
+    ```bash
+    jscrambler --config config.js -o out/ project/dist/*.js
+    ```
+    will output the protected files as `/home/user/out/project/dist/<filename>.js`.
+   
+  - If you use absolute paths as input patterns, then the CWD is assumed to be the root of the filesystem (`/`). 
+    For example, changing the previous command to use an absolute path:
+    ```bash
+    jscrambler --config config.js -o out/ /home/user/project/dist/*.js
+    ```
+    results in the files being output to `/home/user/out/home/user/project/dist/<filename>.js`
+      
+  - To change this behaviour, you can use the `--cwd` option to explicitly set the CWD:
+    ```bash
+    jscrambler --config config.js --cwd /home/user -o out/ /home/user/project/dist/*.js
+    ```
+    which results in the files being output to `/home/user/out/project/dist/<filename>.js` 
+
 ### Flag -W / --werror (default: **true**)
 
 By default, Jscrambler will not protect your application when errors occur in some or all of your files. For example: if your app have 5 files and one of them has syntax errors, Jscrambler will not protect any of your files. To override this behavior you must set the `werror` flag to `false`.
