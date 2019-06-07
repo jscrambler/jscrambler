@@ -1,24 +1,28 @@
 # Jscrambler Metro Plugin
 
-This plugin protects your metro output using Jscrambler.
+This metro plugin protects your React Native bundle using Jscrambler.
 
 # Usage
 
 Include the plugin in your `metro.config.js` and add the following code:
 
 ```js
-const jscramblerMetro = require('jscrambler-metro-plugin');
-
-jscramblerMetro.install();
-
-module.exports = {
-  transformer: {
-    // Only necessary to use Jscrambler annotations. If your code does not use
-    // annotations, the install() function call above is sufficient.
-    minifierPath: jscramblerMetro.getDummyMinifierPath()
+const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
+  /* optional */
+  {
+    params: [
+      {
+        name: 'selfDefending',
+        options: {
+          threshold: 1
+        }
+      }
+    ]
   }
-};
+);
+
+module.exports = jscramblerMetroPlugin;
 ```
 
-The Jscrambler client will use .jscramblerrc as usual.
-
+You can pass your Jscrambler configuration using the plugin parameter or using
+the usual `.jscramblerrc` file.
