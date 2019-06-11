@@ -1,0 +1,17 @@
+{
+  "name": "jscrambler-metro-plugin",
+  "version": "5.3.3",
+  "description": "A plugin to use metro with Jscrambler",
+  "main": "lib/index.js",
+  "dependencies": {
+    "fs-extra": "^8.0.1",
+    "jscrambler": "^5.3.3"
+  },
+  "keywords": [
+    "jscrambler",
+    "javascript",
+    "metro"
+  ],
+  "author": "Jscrambler <support@jscrambler.com>",
+  "license": "MIT"
+}
