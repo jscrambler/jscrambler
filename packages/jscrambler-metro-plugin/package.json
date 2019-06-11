@@ -1,5 +1,5 @@
 {
-  "name": "metro-jscrambler-plugin",
+  "name": "jscrambler-metro-plugin",
   "version": "5.3.3",
   "description": "A plugin to use metro with Jscrambler",
   "main": "lib/index.js",
