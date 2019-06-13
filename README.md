@@ -6,11 +6,12 @@ Jscrambler is a JavaScript protection technology for Web and Mobile Applications
 
 ## JavaScript Protection Technology
 
-Jscrambler includes three security layers:
+Jscrambler includes four security layers:
 
 - **Advanced Obfuscation**: transformations to Strings, Variables, Functions, and Objects, through reordering, encoding, splitting, renaming, and logic concealing techniques that make the code extremely difficult to read and reverse-engineer. Includes **control-flow flattening** by adding opaque predicates and irrelevant code clones and flattening the control-flow;
 - **Code Locks**: ability to prevent the protected code from running outside whitelisted domains, browsers, date ranges, and OS'es;
-- **Self-Defending**: anti-tampering and anti-debugging techniques that break the code functionality when debugging or a tampering attempt occurs.
+- **Self-Defending**: anti-tampering and anti-debugging techniques that break the code functionality when debugging or a tampering attempt occurs;
+- **Self-Healing**: ability to recover from tampering attacks by preserving the original behavior of the application even after attacker modifications.
 
 ### Polymorphic Behavior
 
@@ -45,6 +46,7 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Meteor](https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/meteor?utm_source=github.com&utm_medium=referral)
 - [Ionic](https://blog.jscrambler.com/protecting-hybrid-mobile-apps-with-ionic-and-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [NativeScript](https://blog.jscrambler.com/protecting-your-nativescript-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
+- [React Native](https://blog.jscrambler.com/how-to-protect-react-native-apps-with-jscrambler/?utm_source=github.com&utm_medium=referral)
 - [More information about Framework Compatibility](https://jscrambler.com/javascript-frameworks-and-libraries#compatible-frameworks?utm_source=github.com&utm_medium=referral)
 
 ## Jscrambler Tutorials
