@@ -1,5 +1,6 @@
 const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
+const commander = require('commander');
 const fs = require('fs');
 const path = require('path');
 
@@ -13,10 +14,9 @@ const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = ['.js', '.jsx'];
 
 function getBundlePath() {
-  for (let i = 0; i < process.argv.length; i++) {
-    if (process.argv[i] === BUNDLE_OUTPUT_CLI_ARG) {
-      return process.argv[i + 1];
-    }
+  commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
+  if (commander.bundleOutput) {
+    return commander.bundleOutput;
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
