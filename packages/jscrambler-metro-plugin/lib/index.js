@@ -7,11 +7,11 @@ const path = require('path');
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
-const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
+const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist`;
 const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
 const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
-const JSCRAMBLER_EXTS = ['.js', '.jsx'];
+const JSCRAMBLER_EXTS = ['.js', '.jsx', '.tsx'];
 
 function getBundlePath() {
   commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
@@ -49,7 +49,10 @@ function obfuscateBundle(bundlePath, fileNames, config) {
     .then(() =>
       Promise.all(
         userFiles.map((c, i) =>
-          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${fileNames[i]}`, c)
+          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${fileNames[i].replace(
+              '.tsx',
+              '.js'
+            )}`, c)
         )
       )
     )
@@ -62,7 +65,10 @@ function obfuscateBundle(bundlePath, fileNames, config) {
     .then(() =>
       Promise.all(
         userFiles.map((c, i) =>
-          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
+          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i].replace(
+              '.tsx',
+              '.js'
+            )}`, 'utf8')
         )
       )
     )
