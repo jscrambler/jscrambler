@@ -11,7 +11,7 @@ const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
 const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
 const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
-const JSCRAMBLER_EXTS = ['.js', '.jsx', '.tsx'];
+const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
 function getBundlePath() {
   commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
@@ -49,10 +49,7 @@ function obfuscateBundle(bundlePath, fileNames, config) {
     .then(() =>
       Promise.all(
         userFiles.map((c, i) =>
-          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${fileNames[i].replace(
-              '.tsx',
-              '.js'
-            )}`, c)
+          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${fileNames[i]}`, c)
         )
       )
     )
@@ -65,10 +62,7 @@ function obfuscateBundle(bundlePath, fileNames, config) {
     .then(() =>
       Promise.all(
         userFiles.map((c, i) =>
-          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i].replace(
-              '.tsx',
-              '.js'
-            )}`, 'utf8')
+          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
         )
       )
     )
@@ -121,12 +115,14 @@ module.exports = function(config = {}, projectRoot = process.cwd()) {
           _module.path.indexOf('node_modules') !== -1 ||
           typeof _module.path !== 'string' ||
           !fs.existsSync(_module.path) ||
-          !JSCRAMBLER_EXTS.includes(path.extname(_module.path))
+          !path.extname(_module.path).match(JSCRAMBLER_EXTS)
         ) {
           return true;
         }
 
-        fileNames.add(_module.path.replace(projectRoot, ''));
+        fileNames.add(
+          _module.path.replace(JSCRAMBLER_EXTS, ".js").replace(projectRoot, "")
+        );
         _module.output.forEach(({data}) =>
           wrapCodeWithTags(
             data,
