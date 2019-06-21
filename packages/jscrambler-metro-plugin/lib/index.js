@@ -11,7 +11,7 @@ const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
 const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
 const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
-const JSCRAMBLER_EXTS = ['.js', '.jsx'];
+const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
 function getBundlePath() {
   commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
@@ -115,12 +115,14 @@ module.exports = function(config = {}, projectRoot = process.cwd()) {
           _module.path.indexOf('node_modules') !== -1 ||
           typeof _module.path !== 'string' ||
           !fs.existsSync(_module.path) ||
-          !JSCRAMBLER_EXTS.includes(path.extname(_module.path))
+          !path.extname(_module.path).match(JSCRAMBLER_EXTS)
         ) {
           return true;
         }
 
-        fileNames.add(_module.path.replace(projectRoot, ''));
+        fileNames.add(
+          _module.path.replace(JSCRAMBLER_EXTS, ".js").replace(projectRoot, "")
+        );
         _module.output.forEach(({data}) =>
           wrapCodeWithTags(
             data,
