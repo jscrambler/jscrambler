@@ -83,15 +83,23 @@ JScramblerClient.prototype.request = function(
   isJSON = true
 ) {
   let signedData;
-  if (this.token) {
-    params.token = this.token;
-  } else {
-    if (!this.options.keys.accessKey) {
-      throw new Error('Required *accessKey* not provided');
+  if (this.options.useHeaderAuth) {
+    if (!this.token) {
+      throw new Error(
+        'Generating auth token when useHeaderAuth === true is not yet supported. You need to set the jscramblerClient token property explicitly.'
+      );
     }
+  } else {
+    if (this.token) {
+      params.token = this.token;
+    } else {
+      if (!this.options.keys.accessKey) {
+        throw new Error('Required *accessKey* not provided');
+      }
 
-    if (!this.options.keys.secretKey) {
-      throw new Error('Required *secretKey* not provided');
+      if (!this.options.keys.secretKey) {
+        throw new Error('Required *secretKey* not provided');
+      }
     }
   }
 
@@ -205,5 +213,23 @@ JScramblerClient.prototype.request = function(
 JScramblerClient.prototype.post = function(path, params) {
   return this.request('POST', path, params);
 };
+
+let _token;
+
+Object.defineProperty(JScramblerClient.prototype, 'token', {
+  get() {
+    return _token;
+  },
+  set(value) {
+    _token = value;
+    if (value) {
+      if (this.options.useHeaderAuth) {
+        this.axiosInstance.defaults.headers['x-user-authentication'] = _token;
+      }
+    } else {
+      delete this.axiosInstance.defaults.headers['x-user-authentication'];
+    }
+  }
+});
 
 exports = module.exports = JScramblerClient;
