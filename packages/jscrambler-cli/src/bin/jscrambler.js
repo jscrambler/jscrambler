@@ -64,8 +64,13 @@ commander
   )
   .option(
     '--tolerate-minification <bool>',
-    `Don't detect minification as malicious tampering (default: true)` ,
+    `Don't detect minification as malicious tampering (default: true)`,
     validateBool('tolerate-minification')
+  )
+  .option(
+    '--use-profiling-data <bool>',
+    `Protection should use the existing profiling data (default: true)`,
+    validateBool('use-profiling-data')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
