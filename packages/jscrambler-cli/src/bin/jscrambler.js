@@ -114,6 +114,9 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
 }
+config.useProfilingData = commander.useProfilingData
+  ? commander.useProfilingData !== 'false'
+  : config.useProfilingData;
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
@@ -121,7 +124,6 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
   );
   process.exit(1);
 }
-
 
 config = defaults(config, _config);
 
@@ -200,7 +202,8 @@ const {
   jscramblerVersion,
   debugMode,
   proxy,
-  codeHardeningThreshold
+  codeHardeningThreshold,
+  useProfilingData
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -254,7 +257,8 @@ if (commander.sourceMaps) {
       jscramblerVersion,
       debugMode,
       proxy,
-      codeHardeningThreshold
+      codeHardeningThreshold,
+      useProfilingData
     };
     try {
       if (typeof werror !== 'undefined') {
