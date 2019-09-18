@@ -121,7 +121,7 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 }
 config.useProfilingData = commander.useProfilingData
   ? commander.useProfilingData !== 'false'
-  : config.useProfilingData;
+  : config.useProfilingData || true;
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
