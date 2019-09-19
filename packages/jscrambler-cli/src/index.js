@@ -140,7 +140,8 @@ export default {
       proxy,
       clientId,
       tolerateMinification,
-      codeHardeningThreshold
+      codeHardeningThreshold,
+      useProfilingData
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -243,7 +244,8 @@ export default {
       _id: applicationId,
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold
+      codeHardeningThreshold,
+      useProfilingData
     };
 
     if (params && Object.keys(params).length) {

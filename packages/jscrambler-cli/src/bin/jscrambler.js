@@ -64,8 +64,13 @@ commander
   )
   .option(
     '--tolerate-minification <bool>',
-    `Don't detect minification as malicious tampering (default: true)` ,
+    `Don't detect minification as malicious tampering (default: true)`,
     validateBool('tolerate-minification')
+  )
+  .option(
+    '--use-profiling-data <bool>',
+    `Protection should use the existing profiling data (default: true)`,
+    validateBool('use-profiling-data')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
@@ -114,6 +119,9 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
 }
+config.useProfilingData = commander.useProfilingData
+  ? commander.useProfilingData !== 'false'
+  : config.useProfilingData || true;
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
@@ -121,7 +129,6 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
   );
   process.exit(1);
 }
-
 
 config = defaults(config, _config);
 
@@ -200,7 +207,8 @@ const {
   jscramblerVersion,
   debugMode,
   proxy,
-  codeHardeningThreshold
+  codeHardeningThreshold,
+  useProfilingData
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -254,7 +262,8 @@ if (commander.sourceMaps) {
       jscramblerVersion,
       debugMode,
       proxy,
-      codeHardeningThreshold
+      codeHardeningThreshold,
+      useProfilingData
     };
     try {
       if (typeof werror !== 'undefined') {
