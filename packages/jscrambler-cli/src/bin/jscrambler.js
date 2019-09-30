@@ -119,9 +119,10 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
 }
-config.useProfilingData = commander.useProfilingData
-  ? commander.useProfilingData !== 'false'
-  : config.useProfilingData || true;
+
+if (commander.useProfilingData) {
+  config.useProfilingData = commander.useProfilingData !== 'false';
+}
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
   console.error(
