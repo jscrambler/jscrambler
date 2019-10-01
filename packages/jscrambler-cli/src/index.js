@@ -244,8 +244,7 @@ export default {
       _id: applicationId,
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold,
-      useProfilingData
+      codeHardeningThreshold
     };
 
     if (params && Object.keys(params).length) {
@@ -271,6 +270,10 @@ export default {
 
     if (typeof sourceMaps !== 'undefined') {
       updateData.sourceMaps = sourceMaps;
+    }
+
+    if (useProfilingData !== undefined) {
+      updateData.useProfilingData = useProfilingData;
     }
 
     if (
