@@ -57,7 +57,7 @@ function obfuscateBundle(bundlePath, fileNames, config) {
       config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js`];
       config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
-      return jscrambler.protectAndDownload(config);
+      return jscrambler.protectAndDownload(Object.assign(config, {clientId: 6}));
     })
     .then(() =>
       Promise.all(
