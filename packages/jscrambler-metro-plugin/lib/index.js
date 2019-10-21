@@ -6,6 +6,7 @@ const path = require('path');
 
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 
+const JSCRAMBLER_CLIENT_ID = 6;
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
 const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
 const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
@@ -57,6 +58,7 @@ function obfuscateBundle(bundlePath, fileNames, config) {
       config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js`];
       config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
+      config.clientId = JSCRAMBLER_CLIENT_ID;
       return jscrambler.protectAndDownload(config);
     })
     .then(() =>
