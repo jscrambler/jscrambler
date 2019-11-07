@@ -1,4 +1,4 @@
-const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
+const {emptyDir, remove, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
 const commander = require('commander');
 const fs = require('fs');
@@ -10,6 +10,7 @@ const JSCRAMBLER_CLIENT_ID = 6;
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
 const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
 const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
+const JSCRAMBLER_PROTECTION_ID_FILE = `${JSCRAMBLER_TEMP_FOLDER}/protectionId`;
 const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
@@ -29,7 +30,8 @@ function obfuscateBundle(bundlePath, fileNames, config) {
 
   return Promise.all([
     emptyDir(JSCRAMBLER_SRC_TEMP_FOLDER),
-    emptyDir(JSCRAMBLER_DIST_TEMP_FOLDER)
+    emptyDir(JSCRAMBLER_DIST_TEMP_FOLDER),
+    remove(JSCRAMBLER_PROTECTION_ID_FILE)
   ])
     .then(() => readFile(bundlePath, 'utf8'))
     .then(bundleCode => {
@@ -61,6 +63,9 @@ function obfuscateBundle(bundlePath, fileNames, config) {
       config.clientId = JSCRAMBLER_CLIENT_ID;
       return jscrambler.protectAndDownload(config);
     })
+    .then(protectionId =>
+      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId)
+    )
     .then(() =>
       Promise.all(
         userFiles.map((c, i) =>
