@@ -142,7 +142,7 @@ export default {
       tolerateMinification,
       codeHardeningThreshold,
       useProfilingData,
-      useAppAnalysis
+      useAppClassification
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -276,8 +276,8 @@ export default {
     if (useProfilingData !== undefined) {
       updateData.useProfilingData = useProfilingData;
     }
-    if (useAppAnalysis !== undefined) {
-      updateData.useAppAnalysis = useAppAnalysis;
+    if (useAppClassification !== undefined) {
+      updateData.useAppClassification = useAppClassification;
     }
 
     if (

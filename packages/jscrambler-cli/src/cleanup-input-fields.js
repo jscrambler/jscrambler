@@ -18,7 +18,7 @@ export default function cleanupInputFields(args, fragments, options = {}) {
     }
   }
 
-  ['tolerateMinification', 'useProfilingData', 'useAppAnalysis'].forEach(fieldCleanUp);
+  ['tolerateMinification', 'useProfilingData', 'useAppClassification'].forEach(fieldCleanUp);
 
   return [options, cleanedUpFragments];
 }

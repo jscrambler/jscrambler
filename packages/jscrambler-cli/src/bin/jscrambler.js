@@ -73,9 +73,9 @@ commander
     validateBool('use-profiling-data')
   )
   .option(
-    '--use-app-analysis <bool>',
-    'Protection should use information provided by the app analysis engine (default: true)',
-    validateBool('--use-app-analysis')
+    '--use-app-classification <bool>',
+    'Protection should use Application Classification metadata when protecting (default: true)',
+    validateBool('--use-app-classification')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
@@ -128,8 +128,8 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 if (commander.useProfilingData) {
   config.useProfilingData = commander.useProfilingData !== 'false';
 }
-if (commander.useAppAnalysis) {
-  config.useAppAnalysis = commander.useAppAnalysis !== 'false';
+if (commander.useAppClassification) {
+  config.useAppClassification = commander.useAppClassification !== 'false';
 }
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
@@ -218,7 +218,7 @@ const {
   proxy,
   codeHardeningThreshold,
   useProfilingData,
-  useAppAnalysis
+  useAppClassification
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -274,7 +274,7 @@ if (commander.sourceMaps) {
       proxy,
       codeHardeningThreshold,
       useProfilingData,
-      useAppAnalysis
+      useAppClassification
     };
     try {
       if (typeof werror !== 'undefined') {
