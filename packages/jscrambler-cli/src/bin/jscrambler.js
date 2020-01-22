@@ -209,7 +209,8 @@ const {
   debugMode,
   proxy,
   codeHardeningThreshold,
-  useProfilingData
+  useProfilingData,
+  browsers
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -264,7 +265,8 @@ if (commander.sourceMaps) {
       debugMode,
       proxy,
       codeHardeningThreshold,
-      useProfilingData
+      useProfilingData,
+      browsers
     };
     try {
       if (typeof werror !== 'undefined') {

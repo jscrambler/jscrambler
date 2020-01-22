@@ -45,6 +45,10 @@ function printSourcesErrors(errors) {
   console.error('');
 }
 
+function normalizeBrowsers(browsers) {
+  return  browsers.map(({browser, options}) => ({browser: browser.toLowerCase(), options}));
+}
+
 function normalizeParameters(parameters) {
   let result;
 
@@ -141,7 +145,8 @@ export default {
       clientId,
       tolerateMinification,
       codeHardeningThreshold,
-      useProfilingData
+      useProfilingData,
+      browsers
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -276,10 +281,15 @@ export default {
       updateData.useProfilingData = useProfilingData;
     }
 
+    if(browsers && Object.keys(browsers).length) {
+      updateData.browsers = normalizeBrowsers(browsers);
+    }
+
     if (
       updateData.parameters ||
       updateData.applicationTypes ||
       updateData.languageSpecifications ||
+      updateData.browsers ||
       typeof updateData.areSubscribersOrdered !== 'undefined'
     ) {
       if (debug) {
