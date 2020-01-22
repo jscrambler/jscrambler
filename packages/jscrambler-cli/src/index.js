@@ -46,7 +46,11 @@ function printSourcesErrors(errors) {
 }
 
 function normalizeBrowsers(browsers) {
-  return  browsers.map(({browser, options}) => ({browser: browser.toLowerCase(), options}));
+  let _browsers = {};
+
+  Object.keys(browsers).forEach(key => _browsers[key.toLowerCase()] = browsers[key]);
+
+  return _browsers;
 }
 
 function normalizeParameters(parameters) {
@@ -281,7 +285,7 @@ export default {
       updateData.useProfilingData = useProfilingData;
     }
 
-    if(browsers && Object.keys(browsers).length) {
+    if(browsers && Object.keys(browsers).length > 0) {
       updateData.browsers = normalizeBrowsers(browsers);
     }
 
