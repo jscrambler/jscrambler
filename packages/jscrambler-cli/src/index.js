@@ -278,7 +278,7 @@ export default {
       updateData.useProfilingData = useProfilingData;
     }
 
-    if(browsers && browsers.length > 0) {
+    if (browsers) {
       updateData.browsers = browsers;
     }
 
