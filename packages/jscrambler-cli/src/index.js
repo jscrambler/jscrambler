@@ -45,6 +45,7 @@ function printSourcesErrors(errors) {
   console.error('');
 }
 
+
 function normalizeParameters(parameters) {
   let result;
 
@@ -142,6 +143,7 @@ export default {
       tolerateMinification,
       codeHardeningThreshold,
       useProfilingData,
+      browsers,
       useAppClassification
     } = finalConfig;
 
@@ -280,10 +282,15 @@ export default {
       updateData.useAppClassification = useAppClassification;
     }
 
+    if (browsers) {
+      updateData.browsers = browsers;
+    }
+
     if (
       updateData.parameters ||
       updateData.applicationTypes ||
       updateData.languageSpecifications ||
+      updateData.browsers ||
       typeof updateData.areSubscribersOrdered !== 'undefined'
     ) {
       if (debug) {

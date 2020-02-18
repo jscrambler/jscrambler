@@ -218,6 +218,7 @@ const {
   proxy,
   codeHardeningThreshold,
   useProfilingData,
+  browsers,
   useAppClassification
 } = config;
 
@@ -274,6 +275,7 @@ if (commander.sourceMaps) {
       proxy,
       codeHardeningThreshold,
       useProfilingData,
+      browsers,
       useAppClassification
     };
     try {
