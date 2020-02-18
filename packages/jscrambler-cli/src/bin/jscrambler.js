@@ -72,6 +72,11 @@ commander
     `Protection should use the existing profiling data (default: true)`,
     validateBool('use-profiling-data')
   )
+  .option(
+    '--use-app-classification <bool>',
+    'Protection should use Application Classification metadata when protecting (default: true)',
+    validateBool('--use-app-classification')
+  )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
@@ -122,6 +127,9 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 
 if (commander.useProfilingData) {
   config.useProfilingData = commander.useProfilingData !== 'false';
+}
+if (commander.useAppClassification) {
+  config.useAppClassification = commander.useAppClassification !== 'false';
 }
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
@@ -209,7 +217,8 @@ const {
   debugMode,
   proxy,
   codeHardeningThreshold,
-  useProfilingData
+  useProfilingData,
+  useAppClassification
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -264,7 +273,8 @@ if (commander.sourceMaps) {
       debugMode,
       proxy,
       codeHardeningThreshold,
-      useProfilingData
+      useProfilingData,
+      useAppClassification
     };
     try {
       if (typeof werror !== 'undefined') {
