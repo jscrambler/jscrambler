@@ -45,6 +45,7 @@ function printSourcesErrors(errors) {
   console.error('');
 }
 
+
 function normalizeParameters(parameters) {
   let result;
 
@@ -141,7 +142,9 @@ export default {
       clientId,
       tolerateMinification,
       codeHardeningThreshold,
-      useProfilingData
+      useProfilingData,
+      browsers,
+      useAppClassification
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -275,11 +278,19 @@ export default {
     if (useProfilingData !== undefined) {
       updateData.useProfilingData = useProfilingData;
     }
+    if (useAppClassification !== undefined) {
+      updateData.useAppClassification = useAppClassification;
+    }
+
+    if (browsers) {
+      updateData.browsers = browsers;
+    }
 
     if (
       updateData.parameters ||
       updateData.applicationTypes ||
       updateData.languageSpecifications ||
+      updateData.browsers ||
       typeof updateData.areSubscribersOrdered !== 'undefined'
     ) {
       if (debug) {

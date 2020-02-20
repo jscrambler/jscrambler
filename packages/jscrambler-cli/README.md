@@ -89,6 +89,7 @@ npm install -g jscrambler
     -W, --werror <bool>              Set werror flag value (default: true)
     --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
     --use-profiling-data <bool>      Protection should use the existing profiling data (default: true)
+    --use-app-classification <bool>  Protection should use Application Classification metadata when protecting (default: true)
     --jscramblerVersion <version>    Use a specific Jscrambler version
     --debugMode                      Protect in debug mode
     -h, --help                       output usage information
