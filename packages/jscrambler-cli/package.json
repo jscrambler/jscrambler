@@ -30,7 +30,7 @@
     "node": ">= 6.10.0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.19.1",
     "babel-polyfill": "^6.9.1",
     "commander": "^2.8.1",
     "filesize-parser": "1.5.0",
