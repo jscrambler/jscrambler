@@ -250,6 +250,7 @@ If your requests need to go through a proxy, there is an option where you can sp
     }
   }
 }
+```
 
 ### Recommended Order (default: **false**)
 ```bash
