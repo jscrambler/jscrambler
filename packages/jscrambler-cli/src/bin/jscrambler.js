@@ -32,6 +32,21 @@ const validateCodeHardeningThreshold = val => {
   return inBytes;
 };
 
+const validateProfilingDataMode = mode => {
+  const availableModes = ['automatic', 'annotations', 'off'];
+
+  const normalizedMode = mode.toLowerCase();
+
+  if (!availableModes.includes(normalizedMode)) {
+    console.error(
+      '*profiling-data-mode* requires one of the following modes: {automatic | annotations | off}. Example: --profiling-data-mode annotations'
+    );
+    process.exit(1);
+  }
+
+  return normalizedMode;
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -71,6 +86,11 @@ commander
     '--use-profiling-data <bool>',
     `Protection should use the existing profiling data (default: true)`,
     validateBool('use-profiling-data')
+  )
+  .option(
+    '--profiling-data-mode <mode>',
+    `Select profiling mode (default: automatic)`,
+    validateProfilingDataMode
   )
   .option(
     '--use-app-classification <bool>',
@@ -116,6 +136,8 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
+config.profilingDataMode = commander.profilingDataMode || config.profilingDataMode;
+
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
   config.codeHardeningThreshold = config.codeHardeningThreshold
@@ -128,6 +150,7 @@ if (typeof commander.codeHardeningThreshold === 'undefined') {
 if (commander.useProfilingData) {
   config.useProfilingData = commander.useProfilingData !== 'false';
 }
+
 if (commander.useAppClassification) {
   config.useAppClassification = commander.useAppClassification !== 'false';
 }
@@ -218,6 +241,7 @@ const {
   proxy,
   codeHardeningThreshold,
   useProfilingData,
+  profilingDataMode,
   browsers,
   useAppClassification
 } = config;
@@ -275,6 +299,7 @@ if (commander.sourceMaps) {
       proxy,
       codeHardeningThreshold,
       useProfilingData,
+      profilingDataMode,
       browsers,
       useAppClassification
     };
