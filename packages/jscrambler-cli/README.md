@@ -88,7 +88,8 @@ npm install -g jscrambler
     --recommended-order <bool>       Use recommended order
     -W, --werror <bool>              Set werror flag value (default: true)
     --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
-    --use-profiling-data <bool>      Protection should use the existing profiling data (default: true)
+    --use-profiling-data <bool>      (version 6.2 only) Protection should use the existing profiling data (default: true)
+    --profiling-data-mode <mode>     (version 6.3 and above) Select profiling mode (default: automatic)
     --use-app-classification <bool>  Protection should use Application Classification metadata when protecting (default: true)
     --jscramblerVersion <version>    Use a specific Jscrambler version
     --debugMode                      Protect in debug mode
@@ -277,6 +278,27 @@ jscrambler --recommended-order false input1.js -o output/
 To enable:
 ```bash
 jscrambler --recommended-order true input1.js -o output/
+```
+
+### Profiling Data Mode (default: **automatic**)
+
+**Note**: Users should opt for the **profiling-data-mode** option in contempt to **use-profiling-data** flag, which is only maintained for compatibility purposes and will eventually be deprecated.
+
+The **profiling-data-mode** option can be set to three different modes:
+* **Annotations**: considers only the profiling annotations;
+* **Automatic (default)**: ignores the existing profiling annotations and only considers the application's profiling data;
+* **Off**: uses neither profiling data nor profiling annotations.
+
+The following behaviour:
+
+```
+jscrambler --profiling-data-mode off ...
+```
+
+Has the same effect as:
+
+```
+jscrambler --use-profiling-data false ...
 ```
 
 ## API
