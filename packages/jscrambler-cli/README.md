@@ -250,23 +250,6 @@ If your requests need to go through a proxy, there is an option where you can sp
     }
   }
 }
-
-```
-
-WARNING: currently we only support HTTP proxies. In order to make it use your proxy, you just need to add the proxy details to the Jscrambler config file as above and use the port 80 of our service (this is the HTTP port of the Jscrambler API).
-
-```
-{
-  port: 80,
-  proxy: {
-      host: '',
-      port: 1234,
-      auth: {
-        username: '',
-        password: ''
-      }
-  }
-}
 ```
 
 ### Recommended Order (default: **false**)
