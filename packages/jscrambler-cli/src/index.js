@@ -144,7 +144,8 @@ export default {
       codeHardeningThreshold,
       useProfilingData,
       browsers,
-      useAppClassification
+      useAppClassification,
+      profilingDataMode
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -277,6 +278,9 @@ export default {
 
     if (useProfilingData !== undefined) {
       updateData.useProfilingData = useProfilingData;
+    }
+    if (profilingDataMode !== undefined) {
+      updateData.profilingDataMode = profilingDataMode;
     }
     if (useAppClassification !== undefined) {
       updateData.useAppClassification = useAppClassification;
