@@ -136,15 +136,22 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
-config.profilingDataMode = commander.profilingDataMode || validateProfilingDataMode(config.profilingDataMode);
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
   config.codeHardeningThreshold = config.codeHardeningThreshold
-    ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
-    : undefined;
+  ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
+  : undefined;
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
+}
+
+if (commander.profilingDataMode) {
+  config.profilingDataMode = commander.profilingDataMode;
+} else {
+  config.profilingDataMode = config.profilingDataMode ?
+  validateProfilingDataMode(config.profilingDataMode) :
+  undefined;  
 }
 
 if (commander.useProfilingData) {
@@ -163,6 +170,9 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
 }
 
 config = defaults(config, _config);
+
+validateCodeHardeningThreshold(config.codeHardeningThreshold);
+validateProfilingDataMode(config.profilingDataMode);
 
 globSrc = config.filesSrc;
 // If src paths have been provided
