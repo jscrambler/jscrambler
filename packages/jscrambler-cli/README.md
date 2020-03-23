@@ -282,7 +282,7 @@ jscrambler --recommended-order true input1.js -o output/
 
 ### Profiling Data Mode (default: **automatic**)
 
-**Note**: Users should opt for the **profiling-data-mode** option in contempt to **use-profiling-data** flag, which is only maintained for compatibility purposes and will eventually be deprecated.
+**Note**: Users should opt for the **profiling-data-mode** instead of the **use-profiling-data** option which is maintained for compatibility reasons and will eventually be deprecated.
 
 The **profiling-data-mode** option can be set to three different modes:
 * **Annotations**: considers only the profiling annotations;
