@@ -172,11 +172,11 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
 config = defaults(config, _config);
 
 if (config.codeHardeningThreshold){
-  validateCodeHardeningThreshold(config.codeHardeningThreshold);
+  config.codeHardeningThreshold = validateCodeHardeningThreshold(config.codeHardeningThreshold);
 }
 
 if (config.profilingDataMode) { 
-  validateProfilingDataMode(config.profilingDataMode);
+  config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
 }
 
 globSrc = config.filesSrc;
