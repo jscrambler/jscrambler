@@ -39,7 +39,7 @@ const validateProfilingDataMode = mode => {
 
   if (!availableModes.includes(normalizedMode)) {
     console.error(
-      '*profiling-data-mode* requires one of the following modes: {automatic | annotations | off}. Example: --profiling-data-mode annotations'
+      `*profiling-data-mode* requires one of the following modes: {${availableModes.toString()}}. Example: --profiling-data-mode ${availableModes[0]}`
     );
     process.exit(1);
   }
@@ -136,7 +136,7 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
-config.profilingDataMode = commander.profilingDataMode || config.profilingDataMode;
+config.profilingDataMode = commander.profilingDataMode || validateProfilingDataMode(config.profilingDataMode);
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
