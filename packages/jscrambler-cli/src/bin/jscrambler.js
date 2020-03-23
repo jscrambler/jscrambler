@@ -171,8 +171,13 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
 
 config = defaults(config, _config);
 
-validateCodeHardeningThreshold(config.codeHardeningThreshold);
-validateProfilingDataMode(config.profilingDataMode);
+if (config.codeHardeningThreshold){
+  validateCodeHardeningThreshold(config.codeHardeningThreshold);
+}
+
+if (config.profilingDataMode) { 
+  validateProfilingDataMode(config.profilingDataMode);
+}
 
 globSrc = config.filesSrc;
 // If src paths have been provided
