@@ -1,11 +1,12 @@
 const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
 
-const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
 const jscramblerOp = instrument
   ? client.instrumentAndDownload
   : client.protectAndDownload;
+// turn off source-maps download if jscramblerOp is instrumentAndDowload
+const sourceMaps = !instrument && !!client.config.sourceMaps;
 
 class JscramblerPlugin {
   constructor(_options) {
