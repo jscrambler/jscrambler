@@ -2,6 +2,10 @@ const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
 
 const sourceMaps = !!client.config.sourceMaps;
+const instrument = !!client.config.instrument;
+const jscramblerOp = instrument
+  ? client.instrumentAndDownload
+  : client.protectAndDownload;
 
 class JscramblerPlugin {
   constructor(_options) {
@@ -55,7 +59,8 @@ class JscramblerPlugin {
 
       if (sources.length > 0) {
         Promise.resolve(
-          client.protectAndDownload(
+          jscramblerOp.call(
+            client,
             Object.assign(this.options, {
               sources,
               stream: false
