@@ -819,8 +819,7 @@ export default {
     const instrumentation = await client
       .get('/profiling-run', {applicationId})
       .catch(e => {
-        // 400 - means not found
-        if (e.statusCode !== 400) throw e;
+        if (e.statusCode !== 404) throw e;
       });
 
     if (instrumentation) {
