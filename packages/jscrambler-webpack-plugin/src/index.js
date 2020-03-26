@@ -45,7 +45,7 @@ class JscramblerPlugin {
             sources.push({content, filename});
           }
 
-          if (sourceMaps && /\.(js.map)$/.test(filename)) {
+          if ((instrument || sourceMaps) && /\.(js.map)$/.test(filename)) {
             const sourceMapContent = compilation.assets[filename].source();
             if (sourceMapContent) {
               sources.push({
