@@ -280,6 +280,14 @@ To enable:
 jscrambler --recommended-order true input1.js -o output/
 ```
 
+### Instrument (`--instrument`)
+
+Instrument is used when you want to [Profile](https://docs.jscrambler.com/code-integrity/documentation/profiling) your application. It is a similar process as protecting your application, but it will just instrument your application so that we can collect some data about how it runs. When you instrument an application, `jscrambler` will output the instrumented version of that application to the specified file/directory. Check our [documentation](https://docs.jscrambler.com/code-integrity/documentation/profiling) for more detailed information.
+
+**NOTE**: When you run this command, the existing profiling information will be **deleted** (if any). 
+
+**WARNING:** DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
+
 ## API
 ```bash
 npm install jscrambler

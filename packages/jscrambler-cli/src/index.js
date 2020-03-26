@@ -534,9 +534,14 @@ export default {
       console.log('Finished unzipping files');
     }
 
+    console.warn(`
+      WARNING: DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
+    `);
+
     console.log(
       `Application ${applicationId} was instrumented. Bootstrap your application, go to ${APP_URL} and start profiling!`
     );
+
 
     return instrumentation.data.id;
   },
