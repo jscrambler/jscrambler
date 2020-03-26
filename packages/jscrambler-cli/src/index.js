@@ -73,9 +73,11 @@ export default {
    * Remove and Add application sources
    * @param {object} client
    * @param {string} applicationId
-   * @param {Array.<{filename: string, content: string}>} [sources]
-   * @param {Array.<string>} [filesSrc]
-   * @param {string} [cwd]
+   * @param {{
+   *  sources: Array.<{filename: string, content: string}>,
+   *  filesSrc: Array.<string>,
+   *  cwd: string
+   * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
