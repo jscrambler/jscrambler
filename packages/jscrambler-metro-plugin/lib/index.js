@@ -3,6 +3,7 @@ const jscrambler = require('jscrambler').default;
 const commander = require('commander');
 const fs = require('fs');
 const path = require('path');
+const metroSourceMap = require('metro-source-map');
 
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 
@@ -15,6 +16,7 @@ const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
+const sourceMaps = !!jscrambler.config.sourceMaps;
 const instrument = !!jscrambler.config.instrument;
 const jscramblerOp = instrument
   ? jscrambler.instrumentAndDownload
@@ -29,7 +31,7 @@ function getBundlePath() {
   return process.exit(-1);
 }
 
-function obfuscateBundle(bundlePath, fileNames, config) {
+function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
   let userFiles;
   let filesWithMycode;
 
@@ -61,8 +63,15 @@ function obfuscateBundle(bundlePath, fileNames, config) {
         )
       )
     )
+    .then(() =>
+      Promise.all(
+        sourceMapFiles.map(({filename, content}) =>
+          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${filename}`, content)
+        )
+      )
+    )
     .then(() => {
-      config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js`];
+      config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
       config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
       config.clientId = JSCRAMBLER_CLIENT_ID;
@@ -106,13 +115,33 @@ function wrapCodeWithTags(data, startTag, endTag) {
   data.code = init + startTag + clientCode + endTag + end;
 }
 
+/**
+ * Use 'metro-source-map' to build a standard source-map from raw mappings
+ * @param {{code: string: map: Array.<Array<number>>}} output
+ * @param {string} modulePath
+ * @param {string} source
+ * @returns {string}
+ */
+function buildModuleSourceMap(output, modulePath, source) {
+  return metroSourceMap
+    .fromRawMappings([
+      {
+        ...output,
+        source,
+        path: modulePath
+      }
+    ])
+    .toString(modulePath);
+}
+
 module.exports = function(config = {}, projectRoot = process.cwd()) {
   const bundlePath = getBundlePath();
   const fileNames = new Set();
+  const sourceMapFiles = [];
 
   process.on('beforeExit', function(exitCode) {
     console.log('Obfuscating code');
-    obfuscateBundle(bundlePath, Array.from(fileNames), config)
+    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
       .catch(err => {
         console.error(err);
         process.exit(1);
@@ -132,16 +161,26 @@ module.exports = function(config = {}, projectRoot = process.cwd()) {
           return true;
         }
 
-        fileNames.add(
-          _module.path.replace(JSCRAMBLER_EXTS, ".js").replace(projectRoot, "")
-        );
-        _module.output.forEach(({data}) =>
+        const relativePath = _module.path.replace(projectRoot, '');
+        const normalizePath = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+        fileNames.add(normalizePath);
+        _module.output.forEach(({data}) => {
+          if ((instrument || sourceMaps) && Array.isArray(data.map)) {
+            sourceMapFiles.push({
+              filename: `${normalizePath}.map`,
+              content: buildModuleSourceMap(
+                data,
+                relativePath,
+                _module.getSource().toString()
+              )
+            });
+          }
           wrapCodeWithTags(
             data,
             JSCRAMBLER_BEG_ANNOTATION,
             JSCRAMBLER_END_ANNOTATION
-          )
-        );
+          );
+        });
         return true;
       }
     }
