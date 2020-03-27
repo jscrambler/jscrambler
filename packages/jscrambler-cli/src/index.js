@@ -546,11 +546,11 @@ export default {
   },
 
   /**
-   * Starts profiling (requires the instrumentation to be finished).
+   * Change the profiling run stat.
    * @param configPathOrObject
    * @returns {Promise<*>}
    */
-  async startProfiling(configPathOrObject) {
+  async setProfilingState(configPathOrObject, state) {
     const finalConfig = buildFinalConfig(configPathOrObject);
   
     const {
@@ -584,50 +584,7 @@ export default {
       throw new Error('There is no active profiling run. Instrument your application first.');
     }
     await client.patch(`/profiling-run/${instrumentation.data.id}`, {
-      state: 'RUNNING'
-    });
-  },
-
-  /**
-   * Stops profiling (requires the instrumentation to be finished)
-   * @param configPathOrObject
-   * @returns {Promise<*>}
-   */
-  async stopProfiling(configPathOrObject) {
-    const finalConfig = buildFinalConfig(configPathOrObject);
-  
-    const {
-      keys,
-      host,
-      port,
-      protocol,
-      cafile,
-      applicationId,
-      proxy
-    } = finalConfig;
-
-    const {accessKey, secretKey} = keys;
-
-    const client = new this.Client({
-      accessKey,
-      secretKey,
-      host,
-      port,
-      protocol,
-      cafile,
-      proxy
-    });
-    const instrumentation = await client
-      .get('/profiling-run', {applicationId})
-      .catch(e => {
-        if (e.statusCode !== 404) throw e;
-      });
-
-    if (!instrumentation) {
-      throw new Error('There is no active profiling run. Instrument your application first.');
-    }
-    await client.patch(`/profiling-run/${instrumentation.data.id}`, {
-      state: 'READY'
+      state
     });
   },
 

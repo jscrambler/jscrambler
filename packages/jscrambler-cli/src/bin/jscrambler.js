@@ -282,19 +282,25 @@ if (commander.sourceMaps) {
     });
 } else if (commander.startProfiling) {
   jscrambler
-    .startProfiling({
-      ...commonSettings,
-      applicationId
-    }).catch(error => {
+    .setProfilingState(
+      {
+        ...commonSettings,
+        applicationId
+      },
+      'RUNNING'
+    ).catch(error => {
       console.error(error);
       process.exit(1);
     });
 } else if (commander.stopProfiling) {
   jscrambler
-    .stopProfiling({
-      ...commonSettings,
-      applicationId
-    }).catch(error => {
+    .setProfilingState(
+      {
+        ...commonSettings,
+        applicationId
+      },
+      'READY'
+    ).catch(error => {
       console.error(error);
       process.exit(1);
     });
