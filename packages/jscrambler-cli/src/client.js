@@ -204,6 +204,12 @@ JScramblerClient.prototype.request = function(
         err.response.data.message
       ) {
         errorMessage += ` - ${err.response.data.message}`;
+      } else if (
+        err.response.data &&
+        err.response.data.errors &&
+        err.response.data.errors.length > 0
+      ) {
+        errorMessage += ` - ${err.response.data.errors}`;
       }
 
     } else {
