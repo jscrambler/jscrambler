@@ -11,6 +11,11 @@ const MatcherCollection = require('matcher-collection');
 
 const silent = process.argv.indexOf('--silent') !== -1;
 
+const instrument = !!jscrambler.config.instrument;
+const jscramblerOp = instrument
+  ? jscrambler.instrumentAndDownload
+  : jscrambler.protectAndDownload;
+
 const ensureDir = memoize(filename => {
   const p = path.dirname(filename);
   mkdirp.sync(p);
@@ -105,8 +110,9 @@ JscramblerWriter.prototype.build = function() {
 
   const output = [];
 
-  return jscrambler
-    .protectAndDownload(
+  return jscramblerOp
+    .call(
+      jscrambler,
       Object.assign({}, this.options.jscrambler, {
         sources,
         stream: false,

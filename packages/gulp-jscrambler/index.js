@@ -6,6 +6,11 @@ var path = require('path');
 var PluginError = require('plugin-error');
 var through = require('through2');
 
+const instrument = !!jScrambler.config.instrument;
+const jscramblerOp = instrument
+  ? jScrambler.instrumentAndDownload
+  : jScrambler.protectAndDownload;
+
 module.exports = function (options) {
   options = defaults(options || {}, {
     cwd: process.cwd(),
@@ -48,7 +53,7 @@ module.exports = function (options) {
       self.push(file);
     };
 
-    jScrambler.protectAndDownload(options, dest).then(function (protectionId) {
+    jscramblerOp.call(jScrambler, options, dest).then(function (protectionId) {
       self.emit('protectionId', protectionId);
       done(null);
     }).catch(function (error) {
