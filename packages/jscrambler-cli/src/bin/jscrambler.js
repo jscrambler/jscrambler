@@ -48,6 +48,8 @@ commander
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
+  .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
+  .option('--stop-profiling', 'Stops profiling')
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
@@ -225,62 +227,92 @@ const {
 
 const params = mergeAndParseParams(commander, config.params);
 
+const incompatibleOptions = ['sourceMaps', 'instrument', 'startProfiling', 'stopProfiling'];
+const usedIncompatibleOptions = [];
+for (const incompatibleOption of incompatibleOptions) {
+  if (commander[incompatibleOption]) {
+    usedIncompatibleOptions.push(incompatibleOption);
+  }
+}
+if (usedIncompatibleOptions.length > 1) {
+  console.error('Using mutually exclusive options:', usedIncompatibleOptions);
+  process.exit(1);
+}
+
+const clientSettings = {
+  keys: {
+    accessKey,
+    secretKey
+  },
+  host,
+  port,
+  protocol,
+  cafile,
+  proxy,
+  jscramblerVersion
+};
+
 if (commander.sourceMaps) {
   // Go, go, go download
   (async () => {
     try {
       await jscrambler.downloadSourceMaps({
-        keys: {
-          accessKey,
-          secretKey
-        },
-        host,
-        port,
-        protocol,
-        cafile,
+        ...clientSettings,
         filesDest,
         filesSrc,
         protectionId: commander.sourceMaps
       });
     } catch (error) {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     }
   })();
 } else if (commander.instrument) {
   jscrambler
     .instrumentAndDownload({
-      keys: {
-        accessKey,
-        secretKey
-      },
-      host,
-      port,
-      protocol,
-      cafile,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
-      cwd,
-      jscramblerVersion,
-      proxy
+      cwd
     })
     .catch(error => {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    });
+} else if (commander.startProfiling) {
+  jscrambler
+    .setProfilingState(
+      {
+        ...clientSettings,
+        applicationId
+      },
+      'RUNNING',
+      'STARTED'
+    )
+    .catch(error => {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    });
+} else if (commander.stopProfiling) {
+  jscrambler
+    .setProfilingState(
+      {
+        ...clientSettings,
+        applicationId
+      },
+      'READY',
+      'STOPPED'
+    )
+    .catch(error => {
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     });
 } else {
   // Go, go, go
   (async () => {
     const protectAndDownloadOptions = {
-      keys: {
-        accessKey,
-        secretKey
-      },
-      host,
-      port,
-      protocol,
-      cafile,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
@@ -293,9 +325,7 @@ if (commander.sourceMaps) {
       randomizationSeed,
       useRecommendedOrder,
       tolerateMinification,
-      jscramblerVersion,
       debugMode,
-      proxy,
       codeHardeningThreshold,
       useProfilingData,
       browsers,

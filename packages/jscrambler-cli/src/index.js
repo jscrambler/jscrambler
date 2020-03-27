@@ -65,6 +65,15 @@ function normalizeParameters(parameters) {
   return result;
 }
 
+function buildFinalConfig(configPathOrObject) {
+  const _config =
+    typeof configPathOrObject === 'string'
+      ? require(configPathOrObject)
+      : configPathOrObject;
+
+  return defaults(_config, config);
+}
+
 export default {
   Client: JscramblerClient,
   config,
@@ -193,12 +202,7 @@ export default {
   // Jscrambler or if you're provided access to beta features of our product.
   //
   async protectAndDownload(configPathOrObject, destCallback) {
-    const _config =
-      typeof configPathOrObject === 'string'
-        ? require(configPathOrObject)
-        : configPathOrObject;
-
-    const finalConfig = defaults(_config, config);
+    const finalConfig = buildFinalConfig(configPathOrObject);
 
     const {
       applicationId,
@@ -442,12 +446,7 @@ export default {
    * @returns {Promise<string>}
    */
   async instrumentAndDownload(configPathOrObject, destCallback) {
-    const _config =
-      typeof configPathOrObject === 'string'
-        ? require(configPathOrObject)
-        : configPathOrObject;
-
-    const finalConfig = defaults(_config, config);
+    const finalConfig = buildFinalConfig(configPathOrObject);
 
     const {
       applicationId,
@@ -544,6 +543,68 @@ export default {
 
 
     return instrumentation.data.id;
+  },
+
+  /**
+   * Change the profiling run stat.
+   * @param configPathOrObject
+   * @param state
+   * @param label
+   * @returns {Promise<string>} The previous state
+   */
+  async setProfilingState(configPathOrObject, state, label) {
+    const finalConfig = buildFinalConfig(configPathOrObject);
+
+    const {
+      keys,
+      host,
+      port,
+      protocol,
+      cafile,
+      applicationId,
+      proxy,
+      jscramblerVersion,
+      clientId
+    } = finalConfig;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      proxy,
+      jscramblerVersion,
+      clientId
+    });
+    const instrumentation = await client
+      .get('/profiling-run', {applicationId})
+      .catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
+
+    if (!instrumentation) {
+      throw new Error(
+        'There is no active profiling run. Instrument your application first.'
+      );
+    }
+
+    const previousState = instrumentation.data.state;
+    if (previousState === state) {
+      console.log(
+        `Profiling was already ${label} for application ${applicationId}.`
+      );
+      return;
+    }
+
+    await client.patch(`/profiling-run/${instrumentation.data.id}`, {
+      state
+    });
+
+    console.log(`Profiling was ${label} for application ${applicationId}.`);
   },
 
   async downloadSourceMaps(configs, destCallback) {

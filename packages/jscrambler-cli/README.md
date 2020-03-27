@@ -86,6 +86,8 @@ npm install -g jscrambler
     -m, --source-maps <id>           Download source maps
     -R, --randomization-seed <seed>  Set randomization seed
     --instrument                     Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
+    --start-profiling                Starts profiling (assumes an already instrumented application)
+    --stop-profiling                 Stops profiling
     --recommended-order <bool>       Use recommended order
     -W, --werror <bool>              Set werror flag value (default: true)
     --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
