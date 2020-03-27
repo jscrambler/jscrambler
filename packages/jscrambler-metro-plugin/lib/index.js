@@ -16,12 +16,6 @@ const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
-const sourceMaps = !!jscrambler.config.sourceMaps;
-const instrument = !!jscrambler.config.instrument;
-const jscramblerOp = instrument
-  ? jscrambler.instrumentAndDownload
-  : jscrambler.protectAndDownload;
-
 function getBundlePath() {
   commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
   if (commander.bundleOutput) {
@@ -75,6 +69,11 @@ function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
       config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
       config.clientId = JSCRAMBLER_CLIENT_ID;
+
+      const jscramblerOp = !!config.instrument
+        ? jscrambler.instrumentAndDownload
+        : jscrambler.protectAndDownload;
+
       return jscramblerOp.call(jscrambler, config);
     })
     .then(protectionId =>
@@ -134,10 +133,14 @@ function buildModuleSourceMap(output, modulePath, source) {
     .toString(modulePath);
 }
 
-module.exports = function(config = {}, projectRoot = process.cwd()) {
+module.exports = function(_config = {}, projectRoot = process.cwd()) {
   const bundlePath = getBundlePath();
   const fileNames = new Set();
   const sourceMapFiles = [];
+  const config = Object.assign({}, jscrambler.config, _config);
+
+  const sourceMaps = !!config.sourceMaps;
+  const instrument = !!config.instrument;
 
   process.on('beforeExit', function(exitCode) {
     console.log('Obfuscating code');
