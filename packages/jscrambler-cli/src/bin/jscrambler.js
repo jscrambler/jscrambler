@@ -288,7 +288,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'RUNNING'
-    ).catch(error => {
+    )
+    .catch(error => {
       console.error(error);
       process.exit(1);
     });
@@ -300,7 +301,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'READY'
-    ).catch(error => {
+    )
+    .catch(error => {
       console.error(error);
       process.exit(1);
     });
@@ -308,7 +310,7 @@ if (commander.sourceMaps) {
   // Go, go, go
   (async () => {
     const protectAndDownloadOptions = {
-      ...commonSettings,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
