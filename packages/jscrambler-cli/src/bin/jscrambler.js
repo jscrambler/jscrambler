@@ -287,9 +287,9 @@ if (commander.sourceMaps) {
         ...clientSettings,
         applicationId
       },
-      'RUNNING'
+      'RUNNING',
+      'STARTED'
     )
-    .then(() => console.log('Started profiling run for application', applicationId))
     .catch(error => {
       console.error(debug ? error : error.message || error);
       process.exit(1);
@@ -301,15 +301,9 @@ if (commander.sourceMaps) {
         ...clientSettings,
         applicationId
       },
-      'READY'
+      'READY',
+      'STOPPED'
     )
-    .then(previousState => {
-      if (previousState === 'READY') {
-        console.log('Application was already stopped', applicationId);
-      } else {
-        console.log('Stopped profiling run for application', applicationId)
-      }
-    })
     .catch(error => {
       console.error(debug ? error : error.message || error);
       process.exit(1);

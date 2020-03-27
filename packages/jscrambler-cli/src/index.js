@@ -549,11 +549,12 @@ export default {
    * Change the profiling run stat.
    * @param configPathOrObject
    * @param state
+   * @param label
    * @returns {Promise<string>} The previous state
    */
-  async setProfilingState(configPathOrObject, state) {
+  async setProfilingState(configPathOrObject, state, label) {
     const finalConfig = buildFinalConfig(configPathOrObject);
-  
+
     const {
       keys,
       host,
@@ -586,12 +587,24 @@ export default {
       });
 
     if (!instrumentation) {
-      throw new Error('There is no active profiling run. Instrument your application first.');
+      throw new Error(
+        'There is no active profiling run. Instrument your application first.'
+      );
     }
+
+    const previousState = instrumentation.data.state;
+    if (previousState === state) {
+      console.log(
+        `Profiling was already ${label} for application ${applicationId}.`
+      );
+      return;
+    }
+
     await client.patch(`/profiling-run/${instrumentation.data.id}`, {
       state
     });
-    return instrumentation.data.state;
+
+    console.log(`Profiling was ${label} for application ${applicationId}.`);
   },
 
   async downloadSourceMaps(configs, destCallback) {
