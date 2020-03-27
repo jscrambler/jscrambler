@@ -549,7 +549,7 @@ export default {
    * Change the profiling run stat.
    * @param configPathOrObject
    * @param state
-   * @returns {Promise<*>}
+   * @returns {Promise<string>} The previous state
    */
   async setProfilingState(configPathOrObject, state) {
     const finalConfig = buildFinalConfig(configPathOrObject);
@@ -591,6 +591,7 @@ export default {
     await client.patch(`/profiling-run/${instrumentation.data.id}`, {
       state
     });
+    return instrumentation.data.state;
   },
 
   async downloadSourceMaps(configs, destCallback) {

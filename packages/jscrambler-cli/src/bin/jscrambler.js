@@ -303,7 +303,13 @@ if (commander.sourceMaps) {
       },
       'READY'
     )
-    .then(() => console.log('Stopped profiling run for application', applicationId))
+    .then(previousState => {
+      if (previousState === 'READY') {
+        console.log('Application was already stopped', applicationId);
+      } else {
+        console.log('Stopped profiling run for application', applicationId)
+      }
+    })
     .catch(error => {
       console.error(error);
       process.exit(1);
