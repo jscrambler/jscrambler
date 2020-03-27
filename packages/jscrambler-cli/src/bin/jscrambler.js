@@ -47,6 +47,7 @@ commander
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
+  .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
@@ -246,6 +247,28 @@ if (commander.sourceMaps) {
       process.exit(1);
     }
   })();
+} else if (commander.instrument) {
+  jscrambler
+    .instrumentAndDownload({
+      keys: {
+        accessKey,
+        secretKey
+      },
+      host,
+      port,
+      protocol,
+      cafile,
+      applicationId,
+      filesSrc,
+      filesDest,
+      cwd,
+      jscramblerVersion,
+      proxy
+    })
+    .catch(error => {
+      console.error(error);
+      process.exit(1);
+    });
 } else {
   // Go, go, go
   (async () => {

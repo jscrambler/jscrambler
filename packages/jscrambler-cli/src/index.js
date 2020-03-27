@@ -19,6 +19,7 @@ import getProtectionDefaultFragments from './get-protection-default-fragments';
 const {intoObjectType} = introspection;
 
 const debug = !!process.env.DEBUG;
+const APP_URL = 'https://app.jscrambler.com';
 
 function errorHandler(res) {
   if (res.errors && res.errors.length) {
@@ -68,6 +69,87 @@ export default {
   Client: JscramblerClient,
   config,
   generateSignedParams,
+  /**
+   * Remove and Add application sources
+   * @param {object} client
+   * @param {string} applicationId
+   * @param {{
+   *  sources: Array.<{filename: string, content: string}>,
+   *  filesSrc: Array.<string>,
+   *  cwd: string
+   * }} opts
+   * @returns {Promise<{extension: string, filename: string, content: *}>}
+   */
+  async updateApplicationSources(
+    client,
+    applicationId,
+    {sources, filesSrc, cwd}
+  ) {
+    if (sources || (filesSrc && filesSrc.length)) {
+      const removeSourceRes = await this.removeSourceFromApplication(
+        client,
+        '',
+        applicationId
+      );
+
+      errorHandler(removeSourceRes);
+    }
+
+    let zipped;
+    let source;
+
+    if (filesSrc && filesSrc.length) {
+      let _filesSrc = [];
+      for (let i = 0, l = filesSrc.length; i < l; i += 1) {
+        if (typeof filesSrc[i] === 'string') {
+          // TODO Replace `glob.sync` with async version
+          _filesSrc = _filesSrc.concat(
+            glob.sync(filesSrc[i], {
+              dot: true
+            })
+          );
+        } else {
+          _filesSrc.push(filesSrc[i]);
+        }
+      }
+
+      if (debug) {
+        console.log('Creating zip from source files');
+      }
+
+      zipped = await zip(_filesSrc, cwd);
+    } else if (sources) {
+      if (debug) {
+        console.log('Creating zip from sources');
+      }
+
+      zipped = await zipSources(sources);
+    }
+
+    if (zipped) {
+      const content = zipped
+        .generate({
+          type: 'nodebuffer'
+        })
+        .toString('base64');
+
+      if (debug) {
+        console.log('Adding sources to application');
+      }
+
+      source = {
+        content,
+        filename: 'application.zip',
+        extension: 'zip'
+      };
+
+      errorHandler(
+        await this.addApplicationSource(client, applicationId, source)
+      );
+    }
+
+    return source;
+  },
   // This method is a shortcut method that accepts an object with everything needed
   // for the entire process of requesting an application protection and downloading
   // that same protection when the same ends.
@@ -163,7 +245,6 @@ export default {
 
     let filesSrc = finalConfig.filesSrc;
     let filesDest = finalConfig.filesDest;
-    let source;
 
     if (sources) {
       filesSrc = undefined;
@@ -181,67 +262,11 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    if (sources || (filesSrc && filesSrc.length)) {
-      const removeSourceRes = await this.removeSourceFromApplication(
-        client,
-        '',
-        applicationId
-      );
-
-      errorHandler(removeSourceRes);
-    }
-
-    let zipped;
-
-    if (filesSrc && filesSrc.length) {
-      let _filesSrc = [];
-      for (let i = 0, l = filesSrc.length; i < l; i += 1) {
-        if (typeof filesSrc[i] === 'string') {
-          // TODO Replace `glob.sync` with async version
-          _filesSrc = _filesSrc.concat(
-            glob.sync(filesSrc[i], {
-              dot: true
-            })
-          );
-        } else {
-          _filesSrc.push(filesSrc[i]);
-        }
-      }
-
-      if (debug) {
-        console.log('Creating zip from source files');
-      }
-
-      zipped = await zip(_filesSrc, cwd);
-    } else if (sources) {
-      if (debug) {
-        console.log('Creating zip from sources');
-      }
-
-      zipped = await zipSources(sources);
-    }
-
-    if (zipped) {
-      const content = zipped
-        .generate({
-          type: 'nodebuffer'
-        })
-        .toString('base64');
-
-      if (debug) {
-        console.log('Adding sources to application');
-      }
-
-      source = {
-        content,
-        filename: 'application.zip',
-        extension: 'zip'
-      };
-
-      errorHandler(
-        await this.addApplicationSource(client, applicationId, source)
-      );
-    }
+    const source = await this.updateApplicationSources(client, applicationId, {
+      sources,
+      filesSrc,
+      cwd
+    });
 
     const updateData = {
       _id: applicationId,
@@ -334,8 +359,7 @@ export default {
       await getProtectionDefaultFragments(client)
     );
     if (protection.growthWarning) {
-      const url = 'https://app.jscrambler.com';
-      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${url}.`);
+      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
     }
     if (debug) {
       console.log('Finished protecting');
@@ -375,8 +399,7 @@ export default {
       if (sourcesErrors.length > 0) {
         printSourcesErrors(sourcesErrors);
       }
-      const url = 'https://app.jscrambler.com';
-      throw new Error(`Protection failed. For more information visit: ${url}.`);
+      throw new Error(`Protection failed. For more information visit: ${APP_URL}.`);
     } else if (sourcesErrors.length > 0) {
       if (protection.bail) {
         printSourcesErrors(sourcesErrors);
@@ -411,6 +434,116 @@ export default {
     console.log(protectionId);
 
     return protectionId;
+  },
+  /**
+   * Instrument and download application sources for profiling purposes
+   * @param {object} configPathOrObject
+   * @param {function} [destCallback]
+   * @returns {Promise<string>}
+   */
+  async instrumentAndDownload(configPathOrObject, destCallback) {
+    const _config =
+      typeof configPathOrObject === 'string'
+        ? require(configPathOrObject)
+        : configPathOrObject;
+
+    const finalConfig = defaults(_config, config);
+
+    const {
+      applicationId,
+      host,
+      port,
+      protocol,
+      cafile,
+      keys,
+      sources,
+      stream = true,
+      cwd,
+      jscramblerVersion,
+      proxy,
+      clientId
+    } = finalConfig;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      clientId
+    });
+
+    let {filesSrc, filesDest} = finalConfig;
+
+    if (sources) {
+      filesSrc = undefined;
+    }
+
+    if (destCallback) {
+      filesDest = undefined;
+    }
+
+    if (!applicationId) {
+      throw new Error('Required *applicationId* not provided');
+    }
+
+    if (!filesDest && !destCallback) {
+      throw new Error('Required *filesDest* not provided');
+    }
+
+    await this.updateApplicationSources(client, applicationId, {
+      sources,
+      filesSrc,
+      cwd
+    });
+
+    let instrumentation = await this.startInstrumentation(
+      client,
+      applicationId
+    );
+    errorHandler(instrumentation);
+
+    instrumentation = await this.pollInstrumentation(
+      client,
+      instrumentation.data.id
+    );
+    if (debug) {
+      console.log(
+        `Finished instrumention with id ${instrumentation.data.id}. Downloading...`
+      );
+    }
+
+    const download = await this.downloadApplicationInstrumented(
+      client,
+      instrumentation.data.id
+    );
+    errorHandler(download);
+
+    if (debug) {
+      console.log('Unzipping files');
+    }
+
+    unzip(download, filesDest || destCallback, stream);
+
+    if (debug) {
+      console.log('Finished unzipping files');
+    }
+
+    console.warn(`
+      WARNING: DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
+    `);
+
+    console.log(
+      `Application ${applicationId} was instrumented. Bootstrap your application, go to ${APP_URL} and start profiling!`
+    );
+
+
+    return instrumentation.data.id;
   },
 
   async downloadSourceMaps(configs, destCallback) {
@@ -460,7 +593,39 @@ export default {
     }
     unzip(download, filesDest || destCallback, stream);
   },
-
+  /**
+   * Polls a instrumentation every 500ms until the state be equal to
+   * FINISHED_INSTRUMENTATION, FAILED_INSTRUMENTATION or DELETED
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {Promise<object>}
+   * @throws {Error} due to errors in instrumentation process or user cancel the operation
+   */
+  async pollInstrumentation(client, instrumentationId) {
+    const poll = async () => {
+      const instrumentation = await this.getInstrumentation(
+        client,
+        instrumentationId
+      );
+      switch (instrumentation.data.state) {
+        case 'DELETED':
+          throw new Error('Protection canceled by user');
+        case 'FAILED_INSTRUMENTATION':
+          instrumentation.errors = instrumentation.errors.concat(
+            instrumentation.data.instrumentationErrors.map(e => ({
+              message: `${e.message} at ${e.fileName}:${e.lineNumber}`
+            }))
+          );
+          return errorHandler(instrumentation);
+        case 'FINISHED_INSTRUMENTATION':
+          return instrumentation;
+        default:
+          await new Promise(resolve => setTimeout(resolve, 500));
+          return poll();
+      }
+    };
+    return poll();
+  },
   async pollProtection(client, applicationId, protectionId, fragments) {
     const poll = async () => {
       const applicationProtection = await this.getApplicationProtection(
@@ -469,12 +634,11 @@ export default {
         protectionId,
         fragments
       );
-      const url = `https://app.jscrambler.com`;
       if (applicationProtection.errors) {
         console.log('Error polling protection', applicationProtection.errors);
 
         throw new Error(
-          `Protection failed. For more information visit: ${url}.`
+          `Protection failed. For more information visit: ${APP_URL}.`
         );
       } else {
         const {state} = applicationProtection.data.applicationProtection;
@@ -651,6 +815,27 @@ export default {
     const mutation = await mutations.updateTemplate(template, fragments);
     return client.post('/application', mutation);
   },
+  /**
+   * Starts a new instrumentation process.
+   * Previous instrumentation must be deleted, before starting a new one.
+   * @param client
+   * @param applicationId
+   * @returns {Promise<*>}
+   */
+  async startInstrumentation(client, applicationId) {
+    const instrumentation = await client
+      .get('/profiling-run', {applicationId})
+      .catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
+
+    if (instrumentation) {
+      await client.patch(`/profiling-run/${instrumentation.data.id}`, {
+        state: 'DELETED'
+      });
+    }
+    return client.post('/profiling-run', {applicationId});
+  },
   //
   async createApplicationProtection(
     client,
@@ -671,6 +856,14 @@ export default {
     );
 
     return client.post('/application', mutation);
+  },
+  /**
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {Promise<object>}
+   */
+  async getInstrumentation(client, instrumentationId) {
+    return client.get(`/profiling-run/${instrumentationId}`);
   },
   //
   async getApplicationProtection(
@@ -693,6 +886,18 @@ export default {
   //
   async downloadApplicationProtection(client, protectionId) {
     return client.get(`/application/download/${protectionId}`, null, false);
+  },
+  /**
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {*}
+   */
+  downloadApplicationInstrumented(client, instrumentationId) {
+    return client.get(
+      `/profiling-run/${instrumentationId}/instrumented-bundle`,
+      null,
+      false
+    );
   }
 };
 
