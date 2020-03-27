@@ -117,7 +117,7 @@ function wrapCodeWithTags(data, startTag, endTag) {
 
 /**
  * Use 'metro-source-map' to build a standard source-map from raw mappings
- * @param {{code: string: map: Array.<Array<number>>}} output
+ * @param {{code: string, map: Array.<Array<number>>}} output
  * @param {string} modulePath
  * @param {string} source
  * @returns {string}
