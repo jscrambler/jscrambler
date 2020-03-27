@@ -263,7 +263,7 @@ if (commander.sourceMaps) {
         protectionId: commander.sourceMaps
       });
     } catch (error) {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     }
   })();
@@ -277,7 +277,7 @@ if (commander.sourceMaps) {
       cwd
     })
     .catch(error => {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     });
 } else if (commander.startProfiling) {
@@ -291,7 +291,7 @@ if (commander.sourceMaps) {
     )
     .then(() => console.log('Started profiling run for application', applicationId))
     .catch(error => {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     });
 } else if (commander.stopProfiling) {
@@ -311,7 +311,7 @@ if (commander.sourceMaps) {
       }
     })
     .catch(error => {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     });
 } else {
