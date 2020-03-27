@@ -312,7 +312,7 @@ if (commander.sourceMaps) {
   // Go, go, go
   (async () => {
     const protectAndDownloadOptions = {
-      ...commonSettings,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
