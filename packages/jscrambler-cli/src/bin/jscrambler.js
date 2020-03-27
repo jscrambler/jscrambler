@@ -288,7 +288,9 @@ if (commander.sourceMaps) {
         applicationId
       },
       'RUNNING'
-    ).catch(error => {
+    )
+    .then(() => console.log('Started profiling run for application', applicationId))
+    .catch(error => {
       console.error(error);
       process.exit(1);
     });
@@ -300,7 +302,9 @@ if (commander.sourceMaps) {
         applicationId
       },
       'READY'
-    ).catch(error => {
+    )
+    .then(() => console.log('Stopped profiling run for application', applicationId))
+    .catch(error => {
       console.error(error);
       process.exit(1);
     });
