@@ -32,6 +32,21 @@ const validateCodeHardeningThreshold = val => {
   return inBytes;
 };
 
+const validateProfilingDataMode = mode => {
+  const availableModes = ['automatic', 'annotations', 'off'];
+
+  const normalizedMode = mode.toLowerCase();
+
+  if (!availableModes.includes(normalizedMode)) {
+    console.error(
+      `*profiling-data-mode* requires one of the following modes: {${availableModes.toString()}}. Example: --profiling-data-mode ${availableModes[0]}`
+    );
+    process.exit(1);
+  }
+
+  return normalizedMode;
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -74,6 +89,11 @@ commander
     '--use-profiling-data <bool>',
     `Protection should use the existing profiling data (default: true)`,
     validateBool('use-profiling-data')
+  )
+  .option(
+    '--profiling-data-mode <mode>',
+    `Select profiling mode (default: automatic)`,
+    validateProfilingDataMode
   )
   .option(
     '--use-app-classification <bool>',
@@ -119,18 +139,28 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
+
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
   config.codeHardeningThreshold = config.codeHardeningThreshold
-    ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
-    : undefined;
+  ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
+  : undefined;
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
+}
+
+if (commander.profilingDataMode) {
+  config.profilingDataMode = commander.profilingDataMode;
+} else {
+  config.profilingDataMode = config.profilingDataMode ?
+  validateProfilingDataMode(config.profilingDataMode) :
+  undefined;  
 }
 
 if (commander.useProfilingData) {
   config.useProfilingData = commander.useProfilingData !== 'false';
 }
+
 if (commander.useAppClassification) {
   config.useAppClassification = commander.useAppClassification !== 'false';
 }
@@ -143,6 +173,14 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
 }
 
 config = defaults(config, _config);
+
+if (config.codeHardeningThreshold){
+  config.codeHardeningThreshold = validateCodeHardeningThreshold(config.codeHardeningThreshold);
+}
+
+if (config.profilingDataMode) { 
+  config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
+}
 
 globSrc = config.filesSrc;
 // If src paths have been provided
@@ -221,6 +259,7 @@ const {
   proxy,
   codeHardeningThreshold,
   useProfilingData,
+  profilingDataMode,
   browsers,
   useAppClassification
 } = config;
@@ -328,6 +367,7 @@ if (commander.sourceMaps) {
       debugMode,
       codeHardeningThreshold,
       useProfilingData,
+      profilingDataMode,
       browsers,
       useAppClassification
     };
