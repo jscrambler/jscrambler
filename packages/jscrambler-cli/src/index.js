@@ -548,6 +548,7 @@ export default {
   /**
    * Change the profiling run stat.
    * @param configPathOrObject
+   * @param state
    * @returns {Promise<*>}
    */
   async setProfilingState(configPathOrObject, state) {
