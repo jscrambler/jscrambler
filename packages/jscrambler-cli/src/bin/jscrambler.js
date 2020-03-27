@@ -239,7 +239,7 @@ if (usedIncompatibleOptions.length > 1) {
   process.exit(1);
 }
 
-const commonSettings = {
+const clientSettings = {
   keys: {
     accessKey,
     secretKey
@@ -257,7 +257,7 @@ if (commander.sourceMaps) {
   (async () => {
     try {
       await jscrambler.downloadSourceMaps({
-        ...commonSettings,
+        ...clientSettings,
         filesDest,
         filesSrc,
         protectionId: commander.sourceMaps
@@ -270,7 +270,7 @@ if (commander.sourceMaps) {
 } else if (commander.instrument) {
   jscrambler
     .instrumentAndDownload({
-      ...commonSettings,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
@@ -284,7 +284,7 @@ if (commander.sourceMaps) {
   jscrambler
     .setProfilingState(
       {
-        ...commonSettings,
+        ...clientSettings,
         applicationId
       },
       'RUNNING'
@@ -296,7 +296,7 @@ if (commander.sourceMaps) {
   jscrambler
     .setProfilingState(
       {
-        ...commonSettings,
+        ...clientSettings,
         applicationId
       },
       'READY'

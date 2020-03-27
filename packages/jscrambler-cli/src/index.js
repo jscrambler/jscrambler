@@ -561,7 +561,9 @@ export default {
       protocol,
       cafile,
       applicationId,
-      proxy
+      proxy,
+      jscramblerVersion,
+      clientId
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -573,7 +575,9 @@ export default {
       port,
       protocol,
       cafile,
-      proxy
+      proxy,
+      jscramblerVersion,
+      clientId
     });
     const instrumentation = await client
       .get('/profiling-run', {applicationId})
