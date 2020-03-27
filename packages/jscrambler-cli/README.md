@@ -86,6 +86,8 @@ npm install -g jscrambler
     -m, --source-maps <id>           Download source maps
     -R, --randomization-seed <seed>  Set randomization seed
     --instrument                     Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
+    --start-profiling                Starts profiling (assumes an already instrumented application)
+    --stop-profiling                 Stops profiling
     --recommended-order <bool>       Use recommended order
     -W, --werror <bool>              Set werror flag value (default: true)
     --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
@@ -125,9 +127,9 @@ where `config.json` is a file that optionally contains any of the Jscrambler opt
 
 ### Current working directory (--cwd)
 
-JavaScript projects usually have a folder structure that must be preserved in order for the application to work properly. 
+JavaScript projects usually have a folder structure that must be preserved in order for the application to work properly.
 In order to make sure that that structure is preserved, the `jscrambler` client needs to know what is the path of the root folder of your project's file structure.
-We call this path the Current Working Directory (CWD). The folder structure of all the subdirectories of the paths that match the patterns passed to the `jscrambler` 
+We call this path the Current Working Directory (CWD). The folder structure of all the subdirectories of the paths that match the patterns passed to the `jscrambler`
 cli will be replicated in the output folder (specified by the `filesDest` parameter.)
 
 There are three ways to define this setting:
@@ -137,19 +139,19 @@ There are three ways to define this setting:
     jscrambler --config config.js -o out/ project/dist/*.js
     ```
     will output the protected files as `/home/user/out/project/dist/<filename>.js`.
-   
-  - If you use absolute paths as input patterns, then the CWD is assumed to be the root of the filesystem (`/`). 
+
+  - If you use absolute paths as input patterns, then the CWD is assumed to be the root of the filesystem (`/`).
     For example, changing the previous command to use an absolute path:
     ```bash
     jscrambler --config config.js -o out/ /home/user/project/dist/*.js
     ```
     results in the files being output to `/home/user/out/home/user/project/dist/<filename>.js`
-      
+
   - To change this behaviour, you can use the `--cwd` option to explicitly set the CWD:
     ```bash
     jscrambler --config config.js --cwd /home/user -o out/ /home/user/project/dist/*.js
     ```
-    which results in the files being output to `/home/user/out/project/dist/<filename>.js` 
+    which results in the files being output to `/home/user/out/project/dist/<filename>.js`
 
 ### Flag -W / --werror (default: **true**)
 
@@ -284,7 +286,7 @@ jscrambler --recommended-order true input1.js -o output/
 
 Instrument is used when you want to [Profile](https://docs.jscrambler.com/code-integrity/documentation/profiling) your application. It is a similar process as protecting your application, but it will just instrument your application so that we can collect some data about how it runs. When you instrument an application, `jscrambler` will output the instrumented version of that application to the specified file/directory. Check our [documentation](https://docs.jscrambler.com/code-integrity/documentation/profiling) for more detailed information.
 
-**NOTE**: When you run this command, the existing profiling information will be **deleted** (if any). 
+**NOTE**: When you run this command, the existing profiling information will be **deleted** (if any).
 
 **WARNING:** DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
 

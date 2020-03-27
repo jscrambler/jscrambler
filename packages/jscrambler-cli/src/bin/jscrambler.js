@@ -48,8 +48,8 @@ commander
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
-  .option('--start-profiling', 'Starts profiling (assumes a finished instrumentation exists)')
-  .option('--stop-profiling', 'Stops profiling (assumes a started profiling run exists)')
+  .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
+  .option('--stop-profiling', 'Stops profiling')
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
