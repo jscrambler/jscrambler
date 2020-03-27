@@ -142,6 +142,10 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
   const sourceMaps = !!config.sourceMaps;
   const instrument = !!config.instrument;
 
+  if (sourceMaps) {
+    throw new Error(`Currently, Jscrambler doesn't support React Native source maps`);
+  }
+
   process.on('beforeExit', function(exitCode) {
     console.log('Obfuscating code');
     obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
