@@ -3,9 +3,6 @@ const {SourceMapSource} = require('webpack-sources');
 
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
-const jscramblerOp = instrument
-  ? client.instrumentAndDownload
-  : client.protectAndDownload;
 
 class JscramblerPlugin {
   constructor(_options) {
@@ -16,6 +13,14 @@ class JscramblerPlugin {
       clientId: 2
     });
 
+    this.instrument = instrument;
+    if (typeof options.instrument === 'boolean') {
+      this.instrument = options.instrument;
+    }
+
+    this.jscramblerOp = this.instrument
+      ? client.instrumentAndDownload
+      : client.protectAndDownload;
     this.processResult = this.processResult.bind(this);
     this.processSourceMaps = this.processSourceMaps.bind(this);
   }
@@ -45,7 +50,7 @@ class JscramblerPlugin {
             sources.push({content, filename});
           }
 
-          if ((instrument || sourceMaps) && /\.(js.map)$/.test(filename)) {
+          if ((this.instrument || sourceMaps) && /\.(js.map)$/.test(filename)) {
             const sourceMapContent = compilation.assets[filename].source();
             if (sourceMapContent) {
               sources.push({
@@ -59,7 +64,7 @@ class JscramblerPlugin {
 
       if (sources.length > 0) {
         Promise.resolve(
-          jscramblerOp.call(
+          this.jscramblerOp.call(
             client,
             Object.assign(this.options, {
               sources,
@@ -128,7 +133,7 @@ class JscramblerPlugin {
     }
 
     // turn off source-maps download if jscramblerOp is instrumentAndDowload
-    if (!instrument && sourceMaps) {
+    if (!this.instrument && sourceMaps) {
       client.downloadSourceMaps(
         Object.assign({}, client.config, {stream: false, protectionId}),
         res => this.processSourceMaps(res, compilation, callback)
