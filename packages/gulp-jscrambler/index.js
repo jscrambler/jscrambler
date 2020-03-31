@@ -6,11 +6,6 @@ var path = require('path');
 var PluginError = require('plugin-error');
 var through = require('through2');
 
-const instrument = !!jScrambler.config.instrument;
-const jscramblerOp = instrument
-  ? jScrambler.instrumentAndDownload
-  : jScrambler.protectAndDownload;
-
 module.exports = function (options) {
   options = defaults(options || {}, {
     cwd: process.cwd(),
@@ -18,6 +13,11 @@ module.exports = function (options) {
     keys: {},
     clientId: 3
   });
+
+  const instrument = !!options.instrument;
+  const jscramblerOp = instrument
+    ? jScrambler.instrumentAndDownload
+    : jScrambler.protectAndDownload;
 
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
