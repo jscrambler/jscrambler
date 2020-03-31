@@ -40,7 +40,7 @@ function JscramblerWriter(inputNodes, options) {
 
   this.options = defaults(options, {
     jscrambler: {},
-    sourcemaps: true
+    sourcemaps: false
   });
 
   this.inputNodes = inputNodes;
@@ -132,7 +132,7 @@ JscramblerWriter.prototype.build = function() {
       }
     )
     .then(protectionId => {
-      if (this.options.sourcemaps) {
+      if (this.options.sourcemaps && !instrument) {
         return new Promise((resolve, reject) =>
           jscrambler.downloadSourceMaps(
             Object.assign({}, jscrambler.config, {stream: false, protectionId}),
