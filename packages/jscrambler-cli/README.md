@@ -1,17 +1,25 @@
 # [![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)](https://jscrambler.com/?utm_source=github.com&utm_medium=referral)
 Jscrambler Client for Browser and Node.js
 
-- [RC configuration](#rc-configuration)
-- [CLI](#cli)
-  - [Required Fields](#required-fields)
-  - [Output to a single file](#output-to-a-single-file)
-  - [Output multiple files to a directory](#output-multiple-files-to-a-directory)
-  - [Using minimatch](#using-minimatch)
-  - [Using configuration file](#using-configuration-file)
+- [Jscrambler](https://jscrambler.com/?utm_source=github.com&utm_medium=referral)
+  - [Installation](#installation)
+  - [RC configuration](#rc-configuration)
+  - [CLI](#cli)
+    - [Required Fields](#required-fields)
+    - [Output to a single file](#output-to-a-single-file)
+    - [Output multiple files to a directory](#output-multiple-files-to-a-directory)
+    - [Using minimatch](#using-minimatch)
+    - [Using configuration file](#using-configuration-file)
   - [Options](#options)
-- [API](#api)
-  - [Quick example](#quick-example)
-- [Jscrambler Parameters](#jscrambler-parameters)
+    - [Current working directory (--cwd)](#current-working-directory---cwd)
+    - [Flag -W / --werror (default: **true**)](#flag--w----werror-default-true)
+    - [Using a proxy to make requests](#using-a-proxy-to-make-requests)
+    - [Recommended Order (default: **false**)](#recommended-order-default-false)
+    - [Profiling Data Mode (default: **automatic**)](#profiling-data-mode-default-automatic)
+    - [Instrument (`--instrument`)](#instrument---instrument)
+  - [API](#api)
+    - [Quick example](#quick-example)
+  - [Jscrambler Parameters](#jscrambler-parameters)
 
 ## Installation
 
@@ -68,35 +76,35 @@ npm install -g jscrambler
 ```
 
 ```
-  Usage: jscrambler [options] <file ...>
+Usage: jscrambler [options] <file ...>
 
-  Options:
-
-    -V, --version                    output the version number
-    -a, --access-key <accessKey>     Access key
-    -c, --config <config>            Jscrambler configuration options
-    -H, --host <host>                Hostname
-    -i, --application-id <id>        Application ID
-    -o, --output-dir <dir>           Output directory
-    -p, --port <port>                Port
-    --protocol <protocol>            Protocol (http or https)
-    --cafile <path>                  Internal certificate authority
-    -C, --cwd <dir>                  Current Working Directory
-    -s, --secret-key <secretKey>     Secret key
-    -m, --source-maps <id>           Download source maps
-    -R, --randomization-seed <seed>  Set randomization seed
-    --instrument                     Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
-    --start-profiling                Starts profiling (assumes an already instrumented application)
-    --stop-profiling                 Stops profiling
-    --recommended-order <bool>       Use recommended order
-    -W, --werror <bool>              Set werror flag value (default: true)
-    --tolerate-minification <bool>   Don't detect minification as malicious tampering (default: true)
-    --use-profiling-data <bool>      (version 6.2 only) Protection should use the existing profiling data (default: true)
-    --profiling-data-mode <mode>     (version 6.3 and above) Select profiling mode (default: automatic)
-    --use-app-classification <bool>  Protection should use Application Classification metadata when protecting (default: true)
-    --jscramblerVersion <version>    Use a specific Jscrambler version
-    --debugMode                      Protect in debug mode
-    -h, --help                       output usage information
+Options:
+  -V, --version                           output the version number
+  -a, --access-key <accessKey>            Access key
+  -c, --config <config>                   Jscrambler configuration options
+  -H, --host <host>                       Hostname
+  -i, --application-id <id>               Application ID
+  -o, --output-dir <dir>                  Output directory
+  -p, --port <port>                       Port
+  --protocol <protocol>                   Protocol (http or https)
+  --cafile <path>                         Internal certificate authority
+  -C, --cwd <dir>                         Current Working Directory
+  -s, --secret-key <secretKey>            Secret key
+  -m, --source-maps <id>                  Download source maps
+  -R, --randomization-seed <seed>         Set randomization seed
+  --instrument                            Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
+  --start-profiling                       Starts profiling (assumes an already instrumented application)
+  --stop-profiling                        Stops profiling
+  --code-hardening-threshold <threshold>  Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb
+  --recommended-order <bool>              Use recommended order
+  -W, --werror <bool>                     Set werror flag value (default: true)
+  --tolerate-minification <bool>          Don't detect minification as malicious tampering (default: true)
+  --use-profiling-data <bool>             (version 6.2 only) Protection should use the existing profiling data (default: true)
+  --profiling-data-mode <mode>            (version 6.3 and above) Select profiling mode (default: automatic)
+  --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
+  --jscramblerVersion <version>           Use a specific Jscrambler version
+  --debugMode                             Protect in debug mode
+  -h, --help                              output usage information
 ```
 
 
