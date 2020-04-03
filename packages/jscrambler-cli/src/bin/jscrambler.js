@@ -87,17 +87,17 @@ commander
   )
   .option(
     '--use-profiling-data <bool>',
-    `Protection should use the existing profiling data (default: true)`,
+    `(version 6.2 only) Protection should use the existing profiling data (default: true)`,
     validateBool('use-profiling-data')
   )
   .option(
     '--profiling-data-mode <mode>',
-    `Select profiling mode (default: automatic)`,
+    `(version 6.3 and above) Select profiling mode (default: automatic)`,
     validateProfilingDataMode
   )
   .option(
     '--use-app-classification <bool>',
-    'Protection should use Application Classification metadata when protecting (default: true)',
+    '(version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)',
     validateBool('--use-app-classification')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
