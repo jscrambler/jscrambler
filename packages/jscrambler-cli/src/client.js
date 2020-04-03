@@ -10,6 +10,13 @@ import generateSignedParams from './generate-signed-params';
 
 const debug = !!process.env.DEBUG;
 
+class ClientError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
 /**
  * @class JScramblerClient
  * @param {Object} options
@@ -180,6 +187,7 @@ JScramblerClient.prototype.request = function(
     return res.data;
   }).catch(err => {
     let errorMessage = 'Unexpected Response: ';
+    let statusCode = 500;
 
     if (err.response) {
       if (debug) {
@@ -187,6 +195,7 @@ JScramblerClient.prototype.request = function(
       }
 
       errorMessage += `${err.response.status} ${err.response.statusText}`;
+      statusCode = err.response.status;
 
       // For when we have API error messages
       if (
@@ -195,13 +204,19 @@ JScramblerClient.prototype.request = function(
         err.response.data.message
       ) {
         errorMessage += ` - ${err.response.data.message}`;
+      } else if (
+        err.response.data &&
+        err.response.data.errors &&
+        err.response.data.errors.length > 0
+      ) {
+        errorMessage += ` - ${err.response.data.errors}`;
       }
 
     } else {
       errorMessage += err.message;
     }
 
-    throw new Error(errorMessage);
+    throw new ClientError(errorMessage, statusCode);
   });
 };
 /**
@@ -212,6 +227,14 @@ JScramblerClient.prototype.request = function(
  */
 JScramblerClient.prototype.post = function(path, params) {
   return this.request('POST', path, params);
+};
+/**
+ * Patch request.
+ * @param {string} path
+ * @param {object} params
+ */
+JScramblerClient.prototype.patch = function(path, params) {
+  return this.request('PATCH', path, params);
 };
 
 let _token;

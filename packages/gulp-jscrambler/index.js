@@ -14,6 +14,11 @@ module.exports = function (options) {
     clientId: 3
   });
 
+  const instrument = !!options.instrument;
+  const jscramblerOp = instrument
+    ? jScrambler.instrumentAndDownload
+    : jScrambler.protectAndDownload;
+
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
       options.filesSrc.push(file);
@@ -48,7 +53,7 @@ module.exports = function (options) {
       self.push(file);
     };
 
-    jScrambler.protectAndDownload(options, dest).then(function (protectionId) {
+    jscramblerOp.call(jScrambler, options, dest).then(function (protectionId) {
       self.emit('protectionId', protectionId);
       done(null);
     }).catch(function (error) {

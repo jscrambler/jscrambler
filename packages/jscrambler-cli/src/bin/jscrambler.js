@@ -32,6 +32,21 @@ const validateCodeHardeningThreshold = val => {
   return inBytes;
 };
 
+const validateProfilingDataMode = mode => {
+  const availableModes = ['automatic', 'annotations', 'off'];
+
+  const normalizedMode = mode.toLowerCase();
+
+  if (!availableModes.includes(normalizedMode)) {
+    console.error(
+      `*profiling-data-mode* requires one of the following modes: {${availableModes.toString()}}. Example: --profiling-data-mode ${availableModes[0]}`
+    );
+    process.exit(1);
+  }
+
+  return normalizedMode;
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -47,6 +62,9 @@ commander
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
+  .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
+  .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
+  .option('--stop-profiling', 'Stops profiling')
   .option(
     '--code-hardening-threshold <threshold>',
     'Set code hardening file size threshold. Format: {value}{unit="b,kb,mb"}. Example: 200kb',
@@ -69,12 +87,17 @@ commander
   )
   .option(
     '--use-profiling-data <bool>',
-    `Protection should use the existing profiling data (default: true)`,
+    `(version 6.2 only) Protection should use the existing profiling data (default: true)`,
     validateBool('use-profiling-data')
   )
   .option(
+    '--profiling-data-mode <mode>',
+    `(version 6.3 and above) Select profiling mode (default: automatic)`,
+    validateProfilingDataMode
+  )
+  .option(
     '--use-app-classification <bool>',
-    'Protection should use Application Classification metadata when protecting (default: true)',
+    '(version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)',
     validateBool('--use-app-classification')
   )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
@@ -116,18 +139,28 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.debugMode = commander.debugMode || config.debugMode;
+
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
   config.codeHardeningThreshold = config.codeHardeningThreshold
-    ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
-    : undefined;
+  ? validateCodeHardeningThreshold(config.codeHardeningThreshold)
+  : undefined;
 } else {
   config.codeHardeningThreshold = commander.codeHardeningThreshold;
+}
+
+if (commander.profilingDataMode) {
+  config.profilingDataMode = commander.profilingDataMode;
+} else {
+  config.profilingDataMode = config.profilingDataMode ?
+  validateProfilingDataMode(config.profilingDataMode) :
+  undefined;  
 }
 
 if (commander.useProfilingData) {
   config.useProfilingData = commander.useProfilingData !== 'false';
 }
+
 if (commander.useAppClassification) {
   config.useAppClassification = commander.useAppClassification !== 'false';
 }
@@ -140,6 +173,14 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
 }
 
 config = defaults(config, _config);
+
+if (config.codeHardeningThreshold){
+  config.codeHardeningThreshold = validateCodeHardeningThreshold(config.codeHardeningThreshold);
+}
+
+if (config.profilingDataMode) { 
+  config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
+}
 
 globSrc = config.filesSrc;
 // If src paths have been provided
@@ -218,46 +259,99 @@ const {
   proxy,
   codeHardeningThreshold,
   useProfilingData,
+  profilingDataMode,
   browsers,
   useAppClassification
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
 
+const incompatibleOptions = ['sourceMaps', 'instrument', 'startProfiling', 'stopProfiling'];
+const usedIncompatibleOptions = [];
+for (const incompatibleOption of incompatibleOptions) {
+  if (commander[incompatibleOption]) {
+    usedIncompatibleOptions.push(incompatibleOption);
+  }
+}
+if (usedIncompatibleOptions.length > 1) {
+  console.error('Using mutually exclusive options:', usedIncompatibleOptions);
+  process.exit(1);
+}
+
+const clientSettings = {
+  keys: {
+    accessKey,
+    secretKey
+  },
+  host,
+  port,
+  protocol,
+  cafile,
+  proxy,
+  jscramblerVersion
+};
+
 if (commander.sourceMaps) {
   // Go, go, go download
   (async () => {
     try {
       await jscrambler.downloadSourceMaps({
-        keys: {
-          accessKey,
-          secretKey
-        },
-        host,
-        port,
-        protocol,
-        cafile,
+        ...clientSettings,
         filesDest,
         filesSrc,
         protectionId: commander.sourceMaps
       });
     } catch (error) {
-      console.error(error);
+      console.error(debug ? error : error.message || error);
       process.exit(1);
     }
   })();
+} else if (commander.instrument) {
+  jscrambler
+    .instrumentAndDownload({
+      ...clientSettings,
+      applicationId,
+      filesSrc,
+      filesDest,
+      cwd
+    })
+    .catch(error => {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    });
+} else if (commander.startProfiling) {
+  jscrambler
+    .setProfilingState(
+      {
+        ...clientSettings,
+        applicationId
+      },
+      'RUNNING',
+      'STARTED'
+    )
+    .catch(error => {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    });
+} else if (commander.stopProfiling) {
+  jscrambler
+    .setProfilingState(
+      {
+        ...clientSettings,
+        applicationId
+      },
+      'READY',
+      'STOPPED'
+    )
+    .catch(error => {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    });
 } else {
   // Go, go, go
   (async () => {
     const protectAndDownloadOptions = {
-      keys: {
-        accessKey,
-        secretKey
-      },
-      host,
-      port,
-      protocol,
-      cafile,
+      ...clientSettings,
       applicationId,
       filesSrc,
       filesDest,
@@ -270,11 +364,10 @@ if (commander.sourceMaps) {
       randomizationSeed,
       useRecommendedOrder,
       tolerateMinification,
-      jscramblerVersion,
       debugMode,
-      proxy,
       codeHardeningThreshold,
       useProfilingData,
+      profilingDataMode,
       browsers,
       useAppClassification
     };

@@ -19,6 +19,7 @@ import getProtectionDefaultFragments from './get-protection-default-fragments';
 const {intoObjectType} = introspection;
 
 const debug = !!process.env.DEBUG;
+const APP_URL = 'https://app.jscrambler.com';
 
 function errorHandler(res) {
   if (res.errors && res.errors.length) {
@@ -64,123 +65,35 @@ function normalizeParameters(parameters) {
   return result;
 }
 
+function buildFinalConfig(configPathOrObject) {
+  const _config =
+    typeof configPathOrObject === 'string'
+      ? require(configPathOrObject)
+      : configPathOrObject;
+
+  return defaults(_config, config);
+}
+
 export default {
   Client: JscramblerClient,
   config,
   generateSignedParams,
-  // This method is a shortcut method that accepts an object with everything needed
-  // for the entire process of requesting an application protection and downloading
-  // that same protection when the same ends.
-  //
-  // `configPathOrObject` can be a path to a JSON or directly an object containing
-  // the following structure:
-  //
-  // ```json
-  // {
-  //   "keys": {
-  //     "accessKey": "",
-  //     "secretKey": ""
-  //   },
-  //   "applicationId": "",
-  //   "filesDest": ""
-  // }
-  // ```
-  //
-  // Also the following optional parameters are accepted:
-  //
-  // ```json
-  // {
-  //   "filesSrc": [""],
-  //   "params": {},
-  //   "cwd": "",
-  //   "host": "api.jscrambler.com",
-  //   "port": "443"
-  // }
-  // ```
-  //
-  // `filesSrc` supports glob patterns, and if it's provided it will replace the
-  // entire application sources.
-  //
-  // `params` if provided will replace all the application transformation parameters.
-  //
-  // `cwd` allows you to set the current working directory to resolve problems with
-  // relative paths with your `filesSrc` is outside the current working directory.
-  //
-  // Finally, `host` and `port` can be overridden if you to engage with a different
-  // endpoint than the default one, useful if you're running an enterprise version of
-  // Jscrambler or if you're provided access to beta features of our product.
-  //
-  async protectAndDownload(configPathOrObject, destCallback) {
-    const _config =
-      typeof configPathOrObject === 'string'
-        ? require(configPathOrObject)
-        : configPathOrObject;
-
-    const finalConfig = defaults(_config, config);
-
-    const {
-      applicationId,
-      host,
-      port,
-      protocol,
-      cafile,
-      keys,
-      sources,
-      stream = true,
-      cwd,
-      params,
-      applicationTypes,
-      languageSpecifications,
-      sourceMaps,
-      randomizationSeed,
-      areSubscribersOrdered,
-      useRecommendedOrder,
-      bail = true,
-      jscramblerVersion,
-      debugMode,
-      proxy,
-      clientId,
-      tolerateMinification,
-      codeHardeningThreshold,
-      useProfilingData,
-      browsers,
-      useAppClassification
-    } = finalConfig;
-
-    const {accessKey, secretKey} = keys;
-
-    const client = new this.Client({
-      accessKey,
-      secretKey,
-      host,
-      port,
-      protocol,
-      cafile,
-      jscramblerVersion,
-      proxy,
-      clientId
-    });
-
-    let filesSrc = finalConfig.filesSrc;
-    let filesDest = finalConfig.filesDest;
-    let source;
-
-    if (sources) {
-      filesSrc = undefined;
-    }
-
-    if (destCallback) {
-      filesDest = undefined;
-    }
-
-    if (!applicationId) {
-      throw new Error('Required *applicationId* not provided');
-    }
-
-    if (!filesDest && !destCallback) {
-      throw new Error('Required *filesDest* not provided');
-    }
-
+  /**
+   * Remove and Add application sources
+   * @param {object} client
+   * @param {string} applicationId
+   * @param {{
+   *  sources: Array.<{filename: string, content: string}>,
+   *  filesSrc: Array.<string>,
+   *  cwd: string
+   * }} opts
+   * @returns {Promise<{extension: string, filename: string, content: *}>}
+   */
+  async updateApplicationSources(
+    client,
+    applicationId,
+    {sources, filesSrc, cwd}
+  ) {
     if (sources || (filesSrc && filesSrc.length)) {
       const removeSourceRes = await this.removeSourceFromApplication(
         client,
@@ -192,6 +105,7 @@ export default {
     }
 
     let zipped;
+    let source;
 
     if (filesSrc && filesSrc.length) {
       let _filesSrc = [];
@@ -243,6 +157,122 @@ export default {
       );
     }
 
+    return source;
+  },
+  // This method is a shortcut method that accepts an object with everything needed
+  // for the entire process of requesting an application protection and downloading
+  // that same protection when the same ends.
+  //
+  // `configPathOrObject` can be a path to a JSON or directly an object containing
+  // the following structure:
+  //
+  // ```json
+  // {
+  //   "keys": {
+  //     "accessKey": "",
+  //     "secretKey": ""
+  //   },
+  //   "applicationId": "",
+  //   "filesDest": ""
+  // }
+  // ```
+  //
+  // Also the following optional parameters are accepted:
+  //
+  // ```json
+  // {
+  //   "filesSrc": [""],
+  //   "params": {},
+  //   "cwd": "",
+  //   "host": "api.jscrambler.com",
+  //   "port": "443"
+  // }
+  // ```
+  //
+  // `filesSrc` supports glob patterns, and if it's provided it will replace the
+  // entire application sources.
+  //
+  // `params` if provided will replace all the application transformation parameters.
+  //
+  // `cwd` allows you to set the current working directory to resolve problems with
+  // relative paths with your `filesSrc` is outside the current working directory.
+  //
+  // Finally, `host` and `port` can be overridden if you to engage with a different
+  // endpoint than the default one, useful if you're running an enterprise version of
+  // Jscrambler or if you're provided access to beta features of our product.
+  //
+  async protectAndDownload(configPathOrObject, destCallback) {
+    const finalConfig = buildFinalConfig(configPathOrObject);
+
+    const {
+      applicationId,
+      host,
+      port,
+      protocol,
+      cafile,
+      keys,
+      sources,
+      stream = true,
+      cwd,
+      params,
+      applicationTypes,
+      languageSpecifications,
+      sourceMaps,
+      randomizationSeed,
+      areSubscribersOrdered,
+      useRecommendedOrder,
+      bail = true,
+      jscramblerVersion,
+      debugMode,
+      proxy,
+      clientId,
+      tolerateMinification,
+      codeHardeningThreshold,
+      useProfilingData,
+      browsers,
+      useAppClassification,
+      profilingDataMode
+    } = finalConfig;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      clientId
+    });
+
+    let filesSrc = finalConfig.filesSrc;
+    let filesDest = finalConfig.filesDest;
+
+    if (sources) {
+      filesSrc = undefined;
+    }
+
+    if (destCallback) {
+      filesDest = undefined;
+    }
+
+    if (!applicationId) {
+      throw new Error('Required *applicationId* not provided');
+    }
+
+    if (!filesDest && !destCallback) {
+      throw new Error('Required *filesDest* not provided');
+    }
+
+    const source = await this.updateApplicationSources(client, applicationId, {
+      sources,
+      filesSrc,
+      cwd
+    });
+
     const updateData = {
       _id: applicationId,
       debugMode: !!debugMode,
@@ -277,6 +307,9 @@ export default {
 
     if (useProfilingData !== undefined) {
       updateData.useProfilingData = useProfilingData;
+    }
+    if (profilingDataMode !== undefined) {
+      updateData.profilingDataMode = profilingDataMode;
     }
     if (useAppClassification !== undefined) {
       updateData.useAppClassification = useAppClassification;
@@ -334,8 +367,7 @@ export default {
       await getProtectionDefaultFragments(client)
     );
     if (protection.growthWarning) {
-      const url = 'https://app.jscrambler.com';
-      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${url}.`);
+      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
     }
     if (debug) {
       console.log('Finished protecting');
@@ -375,8 +407,7 @@ export default {
       if (sourcesErrors.length > 0) {
         printSourcesErrors(sourcesErrors);
       }
-      const url = 'https://app.jscrambler.com';
-      throw new Error(`Protection failed. For more information visit: ${url}.`);
+      throw new Error(`Protection failed. For more information visit: ${APP_URL}.`);
     } else if (sourcesErrors.length > 0) {
       if (protection.bail) {
         printSourcesErrors(sourcesErrors);
@@ -411,6 +442,173 @@ export default {
     console.log(protectionId);
 
     return protectionId;
+  },
+  /**
+   * Instrument and download application sources for profiling purposes
+   * @param {object} configPathOrObject
+   * @param {function} [destCallback]
+   * @returns {Promise<string>}
+   */
+  async instrumentAndDownload(configPathOrObject, destCallback) {
+    const finalConfig = buildFinalConfig(configPathOrObject);
+
+    const {
+      applicationId,
+      host,
+      port,
+      protocol,
+      cafile,
+      keys,
+      sources,
+      stream = true,
+      cwd,
+      jscramblerVersion,
+      proxy,
+      clientId
+    } = finalConfig;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      clientId
+    });
+
+    let {filesSrc, filesDest} = finalConfig;
+
+    if (sources) {
+      filesSrc = undefined;
+    }
+
+    if (destCallback) {
+      filesDest = undefined;
+    }
+
+    if (!applicationId) {
+      throw new Error('Required *applicationId* not provided');
+    }
+
+    if (!filesDest && !destCallback) {
+      throw new Error('Required *filesDest* not provided');
+    }
+
+    await this.updateApplicationSources(client, applicationId, {
+      sources,
+      filesSrc,
+      cwd
+    });
+
+    let instrumentation = await this.startInstrumentation(
+      client,
+      applicationId
+    );
+    errorHandler(instrumentation);
+
+    instrumentation = await this.pollInstrumentation(
+      client,
+      instrumentation.data.id
+    );
+    if (debug) {
+      console.log(
+        `Finished instrumention with id ${instrumentation.data.id}. Downloading...`
+      );
+    }
+
+    const download = await this.downloadApplicationInstrumented(
+      client,
+      instrumentation.data.id
+    );
+    errorHandler(download);
+
+    if (debug) {
+      console.log('Unzipping files');
+    }
+
+    unzip(download, filesDest || destCallback, stream);
+
+    if (debug) {
+      console.log('Finished unzipping files');
+    }
+
+    console.warn(`
+      WARNING: DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
+    `);
+
+    console.log(
+      `Application ${applicationId} was instrumented. Bootstrap your application, go to ${APP_URL} and start profiling!`
+    );
+
+
+    return instrumentation.data.id;
+  },
+
+  /**
+   * Change the profiling run stat.
+   * @param configPathOrObject
+   * @param state
+   * @param label
+   * @returns {Promise<string>} The previous state
+   */
+  async setProfilingState(configPathOrObject, state, label) {
+    const finalConfig = buildFinalConfig(configPathOrObject);
+
+    const {
+      keys,
+      host,
+      port,
+      protocol,
+      cafile,
+      applicationId,
+      proxy,
+      jscramblerVersion,
+      clientId
+    } = finalConfig;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      proxy,
+      jscramblerVersion,
+      clientId
+    });
+    const instrumentation = await client
+      .get('/profiling-run', {applicationId})
+      .catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
+
+    if (!instrumentation) {
+      throw new Error(
+        'There is no active profiling run. Instrument your application first.'
+      );
+    }
+
+    const previousState = instrumentation.data.state;
+    if (previousState === state) {
+      console.log(
+        `Profiling was already ${label} for application ${applicationId}.`
+      );
+      return;
+    }
+
+    await client.patch(`/profiling-run/${instrumentation.data.id}`, {
+      state
+    });
+
+    console.log(`Profiling was ${label} for application ${applicationId}.`);
   },
 
   async downloadSourceMaps(configs, destCallback) {
@@ -460,7 +658,39 @@ export default {
     }
     unzip(download, filesDest || destCallback, stream);
   },
-
+  /**
+   * Polls a instrumentation every 500ms until the state be equal to
+   * FINISHED_INSTRUMENTATION, FAILED_INSTRUMENTATION or DELETED
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {Promise<object>}
+   * @throws {Error} due to errors in instrumentation process or user cancel the operation
+   */
+  async pollInstrumentation(client, instrumentationId) {
+    const poll = async () => {
+      const instrumentation = await this.getInstrumentation(
+        client,
+        instrumentationId
+      );
+      switch (instrumentation.data.state) {
+        case 'DELETED':
+          throw new Error('Protection canceled by user');
+        case 'FAILED_INSTRUMENTATION':
+          instrumentation.errors = instrumentation.errors.concat(
+            instrumentation.data.instrumentationErrors.map(e => ({
+              message: `${e.message} at ${e.fileName}:${e.lineNumber}`
+            }))
+          );
+          return errorHandler(instrumentation);
+        case 'FINISHED_INSTRUMENTATION':
+          return instrumentation;
+        default:
+          await new Promise(resolve => setTimeout(resolve, 500));
+          return poll();
+      }
+    };
+    return poll();
+  },
   async pollProtection(client, applicationId, protectionId, fragments) {
     const poll = async () => {
       const applicationProtection = await this.getApplicationProtection(
@@ -469,12 +699,11 @@ export default {
         protectionId,
         fragments
       );
-      const url = `https://app.jscrambler.com`;
       if (applicationProtection.errors) {
         console.log('Error polling protection', applicationProtection.errors);
 
         throw new Error(
-          `Protection failed. For more information visit: ${url}.`
+          `Protection failed. For more information visit: ${APP_URL}.`
         );
       } else {
         const {state} = applicationProtection.data.applicationProtection;
@@ -651,6 +880,27 @@ export default {
     const mutation = await mutations.updateTemplate(template, fragments);
     return client.post('/application', mutation);
   },
+  /**
+   * Starts a new instrumentation process.
+   * Previous instrumentation must be deleted, before starting a new one.
+   * @param client
+   * @param applicationId
+   * @returns {Promise<*>}
+   */
+  async startInstrumentation(client, applicationId) {
+    const instrumentation = await client
+      .get('/profiling-run', {applicationId})
+      .catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
+
+    if (instrumentation) {
+      await client.patch(`/profiling-run/${instrumentation.data.id}`, {
+        state: 'DELETED'
+      });
+    }
+    return client.post('/profiling-run', {applicationId});
+  },
   //
   async createApplicationProtection(
     client,
@@ -671,6 +921,14 @@ export default {
     );
 
     return client.post('/application', mutation);
+  },
+  /**
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {Promise<object>}
+   */
+  async getInstrumentation(client, instrumentationId) {
+    return client.get(`/profiling-run/${instrumentationId}`);
   },
   //
   async getApplicationProtection(
@@ -693,6 +951,18 @@ export default {
   //
   async downloadApplicationProtection(client, protectionId) {
     return client.get(`/application/download/${protectionId}`, null, false);
+  },
+  /**
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {*}
+   */
+  downloadApplicationInstrumented(client, instrumentationId) {
+    return client.get(
+      `/profiling-run/${instrumentationId}/instrumented-bundle`,
+      null,
+      false
+    );
   }
 };
 

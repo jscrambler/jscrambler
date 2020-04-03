@@ -9,6 +9,8 @@ var jscrambler = require('jscrambler').default;
 var path = require('path');
 var util = require('util');
 
+
+
 module.exports = function (grunt) {
   grunt.registerMultiTask('jscrambler', 'Obfuscate your source files', function () {
     var done = this.async();
@@ -19,6 +21,11 @@ module.exports = function (grunt) {
     });
 
     options.filesSrc = this.filesSrc;
+
+    const instrument = !!options.instrument;
+    const jscramblerOp = instrument
+      ? jscrambler.instrumentAndDownload
+      : jscrambler.protectAndDownload;
 
     function writeFile(buffer, file) {
       files.forEach(function (elem) {
@@ -34,8 +41,8 @@ module.exports = function (grunt) {
       });
     }
 
-    jscrambler
-      .protectAndDownload(options, writeFile)
+    jscramblerOp
+      .call(jscrambler, options, writeFile)
       .then(done)
       .catch(function (err) {
         grunt.fail.fatal(util.inspect(err));

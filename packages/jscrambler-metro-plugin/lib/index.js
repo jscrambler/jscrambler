@@ -3,6 +3,7 @@ const jscrambler = require('jscrambler').default;
 const commander = require('commander');
 const fs = require('fs');
 const path = require('path');
+const metroSourceMap = require('metro-source-map');
 
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 
@@ -24,7 +25,7 @@ function getBundlePath() {
   return process.exit(-1);
 }
 
-function obfuscateBundle(bundlePath, fileNames, config) {
+function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
   let userFiles;
   let filesWithMycode;
 
@@ -56,12 +57,24 @@ function obfuscateBundle(bundlePath, fileNames, config) {
         )
       )
     )
+    .then(() =>
+      Promise.all(
+        sourceMapFiles.map(({filename, content}) =>
+          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${filename}`, content)
+        )
+      )
+    )
     .then(() => {
-      config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js`];
+      config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
       config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
       config.clientId = JSCRAMBLER_CLIENT_ID;
-      return jscrambler.protectAndDownload(config);
+
+      const jscramblerOp = !!config.instrument
+        ? jscrambler.instrumentAndDownload
+        : jscrambler.protectAndDownload;
+
+      return jscramblerOp.call(jscrambler, config);
     })
     .then(protectionId =>
       writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId)
@@ -101,13 +114,45 @@ function wrapCodeWithTags(data, startTag, endTag) {
   data.code = init + startTag + clientCode + endTag + end;
 }
 
-module.exports = function(config = {}, projectRoot = process.cwd()) {
+/**
+ * Use 'metro-source-map' to build a standard source-map from raw mappings
+ * @param {{code: string, map: Array.<Array<number>>}} output
+ * @param {string} modulePath
+ * @param {string} source
+ * @returns {string}
+ */
+function buildModuleSourceMap(output, modulePath, source) {
+  return metroSourceMap
+    .fromRawMappings([
+      {
+        ...output,
+        source,
+        path: modulePath
+      }
+    ])
+    .toString(modulePath);
+}
+
+module.exports = function(_config = {}, projectRoot = process.cwd()) {
   const bundlePath = getBundlePath();
   const fileNames = new Set();
+  const sourceMapFiles = [];
+  const config = Object.assign({}, jscrambler.config, _config);
+
+  const sourceMaps = !!config.sourceMaps;
+  const instrument = !!config.instrument;
+
+  if (sourceMaps) {
+    throw new Error(`Currently, Jscrambler doesn't support React Native source maps`);
+  }
 
   process.on('beforeExit', function(exitCode) {
-    console.log('Obfuscating code');
-    obfuscateBundle(bundlePath, Array.from(fileNames), config)
+    console.log(
+      instrument
+        ? 'info Jscrambler Instrumenting Code'
+        : 'info Jscrambler Obfuscating Code'
+    );
+    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
       .catch(err => {
         console.error(err);
         process.exit(1);
@@ -127,16 +172,26 @@ module.exports = function(config = {}, projectRoot = process.cwd()) {
           return true;
         }
 
-        fileNames.add(
-          _module.path.replace(JSCRAMBLER_EXTS, ".js").replace(projectRoot, "")
-        );
-        _module.output.forEach(({data}) =>
+        const relativePath = _module.path.replace(projectRoot, '');
+        const normalizePath = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+        fileNames.add(normalizePath);
+        _module.output.forEach(({data}) => {
+          if ((instrument || sourceMaps) && Array.isArray(data.map)) {
+            sourceMapFiles.push({
+              filename: `${normalizePath}.map`,
+              content: buildModuleSourceMap(
+                data,
+                relativePath,
+                _module.getSource().toString()
+              )
+            });
+          }
           wrapCodeWithTags(
             data,
             JSCRAMBLER_BEG_ANNOTATION,
             JSCRAMBLER_END_ANNOTATION
-          )
-        );
+          );
+        });
         return true;
       }
     }
