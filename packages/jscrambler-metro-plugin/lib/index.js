@@ -147,7 +147,11 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
   }
 
   process.on('beforeExit', function(exitCode) {
-    console.log(instrument ? 'Instrumenting code' : 'Obfuscating code');
+    console.log(
+      instrument
+        ? 'info Jscrambler Instrumenting Code'
+        : 'info Jscrambler Obfuscating Code'
+    );
     obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
       .catch(err => {
         console.error(err);
