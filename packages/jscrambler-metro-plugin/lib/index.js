@@ -147,7 +147,7 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
   }
 
   process.on('beforeExit', function(exitCode) {
-    console.log('Obfuscating code');
+    console.log(instrument ? 'Instrumenting code' : 'Obfuscating code');
     obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
       .catch(err => {
         console.error(err);
