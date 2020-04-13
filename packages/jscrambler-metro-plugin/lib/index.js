@@ -1,6 +1,6 @@
 const {emptyDir, remove, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
-const commander = require('commander');
+const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
@@ -23,18 +23,20 @@ const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
  */
 function skipObfuscation() {
   let isBundleCmd = false;
-  commander
+  const command = new Command();
+  command
     .command(BUNDLE_CMD)
     .allowUnknownOption()
     .action(() => (isBundleCmd = true));
-  commander.parse(process.argv);
+  command.parse(process.argv);
   return !isBundleCmd;
 }
 
 function getBundlePath() {
-  commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
-  if (commander.bundleOutput) {
-    return commander.bundleOutput;
+  const command = new Command();
+  command.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
+  if (command.bundleOutput) {
+    return command.bundleOutput;
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
