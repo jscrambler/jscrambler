@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
 
+const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 
 const JSCRAMBLER_CLIENT_ID = 6;
@@ -15,6 +16,20 @@ const JSCRAMBLER_PROTECTION_ID_FILE = `${JSCRAMBLER_TEMP_FOLDER}/protectionId`;
 const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
+
+/**
+ * Only 'bundle' command triggers obfuscation
+ * @returns {boolean} true skips Jscrambler obfuscation
+ */
+function skipObfuscation() {
+  let isBundleCmd = false;
+  commander
+    .command(BUNDLE_CMD)
+    .allowUnknownOption()
+    .action(() => (isBundleCmd = true));
+  commander.parse(process.argv);
+  return !isBundleCmd;
+}
 
 function getBundlePath() {
   commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
@@ -134,6 +149,10 @@ function buildModuleSourceMap(output, modulePath, source) {
 }
 
 module.exports = function(_config = {}, projectRoot = process.cwd()) {
+  if (skipObfuscation()) {
+    console.log('warn Jscrambler Obfuscation SKIPPED');
+    return {};
+  }
   const bundlePath = getBundlePath();
   const fileNames = new Set();
   const sourceMapFiles = [];
