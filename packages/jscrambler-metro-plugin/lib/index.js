@@ -7,6 +7,7 @@ const metroSourceMap = require('metro-source-map');
 
 const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
+const BUNDLE_DEV_CLI_ARG = '--dev';
 
 const JSCRAMBLER_CLIENT_ID = 6;
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
@@ -19,7 +20,7 @@ const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
 /**
  * Only 'bundle' command triggers obfuscation
- * @returns {boolean} true skips Jscrambler obfuscation
+ * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
 function skipObfuscation() {
   let isBundleCmd = false;
@@ -28,8 +29,17 @@ function skipObfuscation() {
     .command(BUNDLE_CMD)
     .allowUnknownOption()
     .action(() => (isBundleCmd = true));
-  command.parse(process.argv);
-  return !isBundleCmd;
+  command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
+  if (!isBundleCmd) {
+    return 'Not a *bundle* command';
+  }
+  if (command.dev === 'true') {
+    return (
+      process.env.JSCRAMBLER_METRO_DEV !== 'true' &&
+      'Development mode. Override with JSCRAMBLER_METRO_DEV=true environment variable'
+    );
+  }
+  return null;
 }
 
 function getBundlePath() {
@@ -151,8 +161,9 @@ function buildModuleSourceMap(output, modulePath, source) {
 }
 
 module.exports = function(_config = {}, projectRoot = process.cwd()) {
-  if (skipObfuscation()) {
-    console.log('warn Jscrambler Obfuscation SKIPPED');
+  const skipReason = skipObfuscation();
+  if (skipReason) {
+    console.log(`warning: Jscrambler Obfuscation SKIPPED [${skipReason}]`);
     return {};
   }
   const bundlePath = getBundlePath();
