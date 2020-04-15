@@ -1,11 +1,13 @@
 const {emptyDir, remove, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
-const commander = require('commander');
+const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
 
+const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
+const BUNDLE_DEV_CLI_ARG = '--dev';
 
 const JSCRAMBLER_CLIENT_ID = 6;
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
@@ -16,10 +18,35 @@ const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
 const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
 const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
 
+/**
+ * Only 'bundle' command triggers obfuscation
+ * @returns {string} skip reason. If falsy value dont skip obfuscation
+ */
+function skipObfuscation() {
+  let isBundleCmd = false;
+  const command = new Command();
+  command
+    .command(BUNDLE_CMD)
+    .allowUnknownOption()
+    .action(() => (isBundleCmd = true));
+  command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
+  if (!isBundleCmd) {
+    return 'Not a *bundle* command';
+  }
+  if (command.dev === 'true') {
+    return (
+      process.env.JSCRAMBLER_METRO_DEV !== 'true' &&
+      'Development mode. Override with JSCRAMBLER_METRO_DEV=true environment variable'
+    );
+  }
+  return null;
+}
+
 function getBundlePath() {
-  commander.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
-  if (commander.bundleOutput) {
-    return commander.bundleOutput;
+  const command = new Command();
+  command.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
+  if (command.bundleOutput) {
+    return command.bundleOutput;
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
@@ -134,6 +161,11 @@ function buildModuleSourceMap(output, modulePath, source) {
 }
 
 module.exports = function(_config = {}, projectRoot = process.cwd()) {
+  const skipReason = skipObfuscation();
+  if (skipReason) {
+    console.log(`warning: Jscrambler Obfuscation SKIPPED [${skipReason}]`);
+    return {};
+  }
   const bundlePath = getBundlePath();
   const fileNames = new Set();
   const sourceMapFiles = [];
