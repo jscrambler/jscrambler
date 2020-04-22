@@ -9,7 +9,9 @@
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
-    "jscrambler": "^5.5.0"
+    "jscrambler": "^5.5.0",
+    "magic-string": "^0.25.7",
+    "merge-source-map": "^1.1.0"
   },
   "keywords": [
     "jscrambler",

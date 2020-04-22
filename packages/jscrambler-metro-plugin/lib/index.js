@@ -4,9 +4,12 @@ const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
+const MagicString = require('magic-string');
+const mergeSourceMap = require('merge-source-map');
 
 const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
+const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';
 
 const JSCRAMBLER_CLIENT_ID = 6;
@@ -44,17 +47,30 @@ function skipObfuscation() {
 
 function getBundlePath() {
   const command = new Command();
-  command.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
+  command
+    .option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`)
+    .option(`${BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG} <string>`)
+    .parse(process.argv);
   if (command.bundleOutput) {
-    return command.bundleOutput;
+    return {
+      bundlePath: command.bundleOutput,
+      bundleSourceMapPath: command.sourcemapOutput
+    };
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
 }
 
-function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
+function obfuscateBundle(
+  {bundlePath, bundleSourceMapPath},
+  fileNames,
+  sourceMapFiles,
+  config
+) {
   let userFiles;
   let filesWithMycode;
+  let filesIndexes;
+  let magicBundle;
 
   return Promise.all([
     emptyDir(JSCRAMBLER_SRC_TEMP_FOLDER),
@@ -63,6 +79,26 @@ function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
   ])
     .then(() => readFile(bundlePath, 'utf8'))
     .then(bundleCode => {
+      magicBundle = new MagicString(bundleCode);
+      filesIndexes = [];
+      /* BEG */
+      let res;
+      let regex1 = new RegExp(JSCRAMBLER_BEG_ANNOTATION, 'g');
+      // eslint-disable-next-line no-cond-assign
+      while ((res = regex1.exec(bundleCode)) !== null) {
+        filesIndexes.push([res.index]);
+      }
+
+      /* END */
+      regex1 = new RegExp(JSCRAMBLER_END_ANNOTATION, 'g');
+      let pos = 0;
+      // eslint-disable-next-line no-cond-assign
+      while ((res = regex1.exec(bundleCode)) !== null) {
+        filesIndexes[pos++].push(res.index);
+      }
+
+      console.log({filesIndexes});
+
       filesWithMycode = bundleCode.split(JSCRAMBLER_BEG_ANNOTATION);
 
       userFiles = filesWithMycode
@@ -113,23 +149,36 @@ function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
         )
       )
     )
-    .then(userFilesStr =>
-      filesWithMycode.map((c, i) => {
-        if (i === 0) {
-          return c;
-        }
-
-        const code = userFilesStr[i - 1];
-
-        const tillCodeEnd = c.substr(
-          c.indexOf(JSCRAMBLER_END_ANNOTATION) +
-            JSCRAMBLER_END_ANNOTATION.length,
-          c.length
-        );
-        return code + tillCodeEnd;
-      })
+    .then(userFilesStr => {
+      userFilesStr.forEach((c, i) => {
+        magicBundle.overwrite(filesIndexes[i][0], filesIndexes[i][1], c);
+      });
+      return magicBundle.toString();
+    })
+    .then(bundleCode => writeFile(bundlePath, bundleCode))
+    .then(
+      () =>
+        config.sourceMaps &&
+        bundleSourceMapPath &&
+        readFile(bundleSourceMapPath, 'utf8')
     )
-    .then(bundleList => writeFile(bundlePath, bundleList.join('')));
+    .then(bundleSourceMap => {
+      if (
+        typeof bundleSourceMap !== 'string' ||
+        bundleSourceMap.trim().length === 0
+      ) {
+        return undefined;
+      }
+      console.log('info Jscrambler Source Maps');
+      return mergeSourceMap(
+        JSON.parse(bundleSourceMap),
+        magicBundle.generateMap({hires: true})
+      );
+    })
+    .then(
+      mergedMap =>
+        mergedMap && writeFile(bundleSourceMapPath, JSON.stringify(mergedMap))
+    );
 }
 
 function wrapCodeWithTags(data, startTag, endTag) {
@@ -173,10 +222,6 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
 
   const sourceMaps = !!config.sourceMaps;
   const instrument = !!config.instrument;
-
-  if (sourceMaps) {
-    throw new Error(`Currently, Jscrambler doesn't support React Native source maps`);
-  }
 
   process.on('beforeExit', function(exitCode) {
     console.log(
