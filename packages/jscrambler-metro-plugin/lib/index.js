@@ -97,8 +97,6 @@ function obfuscateBundle(
         filesIndexes[pos++].push(res.index);
       }
 
-      console.log({filesIndexes});
-
       filesWithMycode = bundleCode.split(JSCRAMBLER_BEG_ANNOTATION);
 
       userFiles = filesWithMycode
