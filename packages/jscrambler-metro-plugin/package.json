@@ -4,7 +4,8 @@
   "description": "A plugin to use metro with Jscrambler",
   "main": "lib/index.js",
   "peerDependencies": {
-    "metro-source-map": "0.x"
+    "metro-source-map": "0.x",
+    "source-map": "*"
   },
   "dependencies": {
     "commander": "^2.20.0",

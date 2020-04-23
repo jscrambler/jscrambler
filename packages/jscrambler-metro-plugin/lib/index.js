@@ -4,8 +4,7 @@ const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
-const MagicString = require('magic-string');
-const mergeSourceMap = require('merge-source-map');
+const sourceMap = require('source-map');
 
 const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
@@ -65,12 +64,12 @@ function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
   fileNames,
   sourceMapFiles,
-  config
+  config,
+  projectRoot
 ) {
   let userFiles;
   let filesWithMycode;
-  let filesIndexes;
-  let magicBundle;
+  let protectionId;
 
   return Promise.all([
     emptyDir(JSCRAMBLER_SRC_TEMP_FOLDER),
@@ -79,24 +78,6 @@ function obfuscateBundle(
   ])
     .then(() => readFile(bundlePath, 'utf8'))
     .then(bundleCode => {
-      magicBundle = new MagicString(bundleCode);
-      filesIndexes = [];
-      /* BEG */
-      let res;
-      let regex1 = new RegExp(JSCRAMBLER_BEG_ANNOTATION, 'g');
-      // eslint-disable-next-line no-cond-assign
-      while ((res = regex1.exec(bundleCode)) !== null) {
-        filesIndexes.push([res.index]);
-      }
-
-      /* END */
-      regex1 = new RegExp(JSCRAMBLER_END_ANNOTATION, 'g');
-      let pos = 0;
-      // eslint-disable-next-line no-cond-assign
-      while ((res = regex1.exec(bundleCode)) !== null) {
-        filesIndexes[pos++].push(res.index);
-      }
-
       filesWithMycode = bundleCode.split(JSCRAMBLER_BEG_ANNOTATION);
 
       userFiles = filesWithMycode
@@ -137,46 +118,106 @@ function obfuscateBundle(
 
       return jscramblerOp.call(jscrambler, config);
     })
-    .then(protectionId =>
-      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId)
+    .then(_protectionId =>
+      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId = _protectionId)
     )
     .then(() =>
-      Promise.all(
-        userFiles.map((c, i) =>
-          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
-        )
+        config.sourceMaps && bundleSourceMapPath && jscrambler.downloadSourceMaps(Object.assign({protectionId},config))
+    )
+    .then(() =>
+      Promise.all([
+          Promise.all(userFiles.map((c, i) =>
+            readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
+          )),
+        config.sourceMaps && bundleSourceMapPath ?
+            Promise.all(userFiles.map((c, i) =>
+              readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}.map`, 'utf8')
+            )) :
+            Promise.resolve(),
+        config.sourceMaps && bundleSourceMapPath ?
+            readFile(bundleSourceMapPath, 'utf8') :
+            Promise.resolve()
+      ])
+    )
+    .then(([userFilesStr, userSourceMapsFiles, bundleSourceMap]) => {
+      let sourceMapConsumersJscrambler = {};
+      let sourceMapGenerator;
+      const bundleList = filesWithMycode.map((c, i) => {
+            if (i === 0) {
+              return c;
+            }
+
+            const code = userFilesStr[i - 1];
+
+            if (userSourceMapsFiles && bundleSourceMap) {
+              sourceMapConsumersJscrambler[fileNames[i - 1]] = new sourceMap.SourceMapConsumer(userSourceMapsFiles[i - 1]);
+            }
+
+            const tillCodeEnd = c.substr(
+                c.indexOf(JSCRAMBLER_END_ANNOTATION) +
+                JSCRAMBLER_END_ANNOTATION.length,
+                c.length
+            );
+            return code + tillCodeEnd;
+          }
       )
-    )
-    .then(userFilesStr => {
-      userFilesStr.forEach((c, i) => {
-        magicBundle.overwrite(filesIndexes[i][0], filesIndexes[i][1], c);
-      });
-      return magicBundle.toString();
-    })
-    .then(bundleCode => writeFile(bundlePath, bundleCode))
-    .then(
-      () =>
-        config.sourceMaps &&
-        bundleSourceMapPath &&
-        readFile(bundleSourceMapPath, 'utf8')
-    )
-    .then(bundleSourceMap => {
-      if (
-        typeof bundleSourceMap !== 'string' ||
-        bundleSourceMap.trim().length === 0
-      ) {
-        return undefined;
+
+      console.log({fileNames});
+
+      if(userSourceMapsFiles && bundleSourceMap) {
+        console.log('info Jscrambler Source Maps');
+        const sourceMapConsumer = new sourceMap.SourceMapConsumer(bundleSourceMap);
+        sourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath})
+        sourceMapConsumer.eachMapping((mapping) => {
+          console.log('mapping.source', mapping.source);
+          const normalizePath = buildNormalizePath(mapping.source, projectRoot);
+          if (fileNames.indexOf(normalizePath) === -1) {
+            sourceMapGenerator.addMapping({
+              original: {
+                line: mapping.originalLine,
+                column: mapping.originalColumn
+              },
+              generated: {
+                line: mapping.generatedLine,
+                column: mapping.generatedColumn
+              },
+              source: mapping.source,
+              name: mapping.name
+            });
+          } else {
+            const sourceMapJscrambler = sourceMapConsumersJscrambler[normalizePath];
+            const generatedPositions = sourceMapJscrambler.allGeneratedPositionsFor(
+                {
+                  line: mapping.originalLine,
+                  column: mapping.originalColumn,
+                  source: normalizePath
+                });
+            generatedPositions.forEach(({line, column}) => {
+              sourceMapGenerator.addMapping({
+                original: {
+                  line: mapping.originalLine,
+                  column: mapping.originalColumn
+                },
+                generated: {
+                  line: line + mapping.generatedLine,
+                  column: column
+                },
+                source: mapping.source,
+                name: mapping.name
+              });
+            });
+          }
+        })
       }
-      console.log('info Jscrambler Source Maps');
-      return mergeSourceMap(
-        JSON.parse(bundleSourceMap),
-        magicBundle.generateMap({hires: true})
-      );
+
+      return {bundleList, sourceMapGenerator};
     })
-    .then(
-      mergedMap =>
-        mergedMap && writeFile(bundleSourceMapPath, JSON.stringify(mergedMap))
-    );
+    .then(({bundleList, sourceMapGenerator}) => {
+      return Promise.all([
+          writeFile(bundlePath, bundleList.join('')),
+          sourceMapGenerator && writeFile(bundleSourceMapPath, sourceMapGenerator.toString())
+      ]);
+    })
 }
 
 function wrapCodeWithTags(data, startTag, endTag) {
@@ -207,6 +248,11 @@ function buildModuleSourceMap(output, modulePath, source) {
     .toString(modulePath);
 }
 
+function buildNormalizePath(path, projectRoot) {
+  const relativePath = path.replace(projectRoot, '');
+  return relativePath.replace(JSCRAMBLER_EXTS, '.js');
+}
+
 module.exports = function(_config = {}, projectRoot = process.cwd()) {
   const skipReason = skipObfuscation();
   if (skipReason) {
@@ -227,7 +273,7 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
         ? 'info Jscrambler Instrumenting Code'
         : 'info Jscrambler Obfuscating Code'
     );
-    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
+    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config, projectRoot)
       .catch(err => {
         console.error(err);
         process.exit(1);
@@ -247,8 +293,7 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
           return true;
         }
 
-        const relativePath = _module.path.replace(projectRoot, '');
-        const normalizePath = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+        const normalizePath = buildNormalizePath(_module.path, projectRoot);
         fileNames.add(normalizePath);
         _module.output.forEach(({data}) => {
           if ((instrument || sourceMaps) && Array.isArray(data.map)) {
@@ -256,7 +301,7 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
               filename: `${normalizePath}.map`,
               content: buildModuleSourceMap(
                 data,
-                relativePath,
+                _module.path.replace(projectRoot, ''),
                 _module.getSource().toString()
               )
             });
