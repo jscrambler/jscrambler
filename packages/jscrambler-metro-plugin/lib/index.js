@@ -167,7 +167,16 @@ function obfuscateBundle(
       if(userSourceMapsFiles && bundleSourceMap) {
         console.log('info Jscrambler Source Maps');
         const sourceMapConsumer = new sourceMap.SourceMapConsumer(bundleSourceMap);
-        sourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath})
+        sourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath});
+
+        sourceMapConsumer.sources.forEach(function(sourceFile) {
+          sourceMapGenerator._sources.add(sourceFile)
+          var sourceContent = consumer.sourceContentFor(sourceFile)
+          if (sourceContent != null) {
+            sourceMapGenerator.setSourceContent(sourceFile, sourceContent)
+          }
+        });
+
         sourceMapConsumer.eachMapping((mapping) => {
           console.log('mapping.source', mapping.source);
           const normalizePath = buildNormalizePath(mapping.source, projectRoot);
