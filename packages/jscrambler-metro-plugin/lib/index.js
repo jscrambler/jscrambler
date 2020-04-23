@@ -171,7 +171,7 @@ function obfuscateBundle(
 
         sourceMapConsumer.sources.forEach(function(sourceFile) {
           sourceMapGenerator._sources.add(sourceFile)
-          var sourceContent = consumer.sourceContentFor(sourceFile)
+          var sourceContent = sourceMapConsumer.sourceContentFor(sourceFile);
           if (sourceContent != null) {
             sourceMapGenerator.setSourceContent(sourceFile, sourceContent)
           }
@@ -224,7 +224,7 @@ function obfuscateBundle(
     .then(({bundleList, sourceMapGenerator}) => {
       return Promise.all([
           writeFile(bundlePath, bundleList.join('')),
-          sourceMapGenerator && writeFile(bundleSourceMapPath, sourceMapGenerator.toString())
+          sourceMapGenerator && writeFile(bundleSourceMapPath + "2", sourceMapGenerator.toString())
       ]);
     })
 }
