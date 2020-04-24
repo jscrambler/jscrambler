@@ -131,7 +131,7 @@ function obfuscateBundle(
           )),
         config.sourceMaps && bundleSourceMapPath ?
             Promise.all(userFiles.map((c, i) =>
-              readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}.map`, 'utf8')
+              readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}/jscramblerSourceMaps/${fileNames[i]}.map`, 'utf8')
             )) :
             Promise.resolve(),
         config.sourceMaps && bundleSourceMapPath ?
