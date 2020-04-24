@@ -112,72 +112,87 @@ function obfuscateBundle(
       config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
       config.clientId = JSCRAMBLER_CLIENT_ID;
 
-      const jscramblerOp = !!config.instrument
+      const jscramblerOp = config.instrument
         ? jscrambler.instrumentAndDownload
         : jscrambler.protectAndDownload;
 
       return jscramblerOp.call(jscrambler, config);
     })
     .then(_protectionId =>
-      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId = _protectionId)
+      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, (protectionId = _protectionId))
     )
-    .then(() =>
-        config.sourceMaps && bundleSourceMapPath && jscrambler.downloadSourceMaps(Object.assign({protectionId},config))
+    .then(
+      () =>
+        config.sourceMaps &&
+        bundleSourceMapPath &&
+        jscrambler.downloadSourceMaps(Object.assign({protectionId}, config))
     )
     .then(() =>
       Promise.all([
-          Promise.all(userFiles.map((c, i) =>
+        Promise.all(
+          userFiles.map((c, i) =>
             readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
-          )),
-        config.sourceMaps && bundleSourceMapPath ?
-            Promise.all(userFiles.map((c, i) =>
-              readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}/jscramblerSourceMaps/${fileNames[i]}.map`, 'utf8')
-            )) :
-            Promise.resolve(),
-        config.sourceMaps && bundleSourceMapPath ?
-            readFile(bundleSourceMapPath, 'utf8') :
-            Promise.resolve()
+          )
+        ),
+        config.sourceMaps && bundleSourceMapPath
+          ? Promise.all(
+              userFiles.map((c, i) =>
+                readFile(
+                  `${JSCRAMBLER_DIST_TEMP_FOLDER}/jscramblerSourceMaps/${fileNames[i]}.map`,
+                  'utf8'
+                )
+              )
+            )
+          : Promise.resolve(),
+        config.sourceMaps && bundleSourceMapPath
+          ? readFile(bundleSourceMapPath, 'utf8')
+          : Promise.resolve()
       ])
     )
     .then(([userFilesStr, userSourceMapsFiles, bundleSourceMap]) => {
-      let sourceMapConsumersJscrambler = {};
+      const sourceMapConsumersJscrambler = {};
       let sourceMapGenerator;
       const bundleList = filesWithMycode.map((c, i) => {
-            if (i === 0) {
-              return c;
-            }
+        if (i === 0) {
+          return c;
+        }
 
-            const code = userFilesStr[i - 1];
+        const code = userFilesStr[i - 1];
 
-            if (userSourceMapsFiles && bundleSourceMap) {
-              sourceMapConsumersJscrambler[fileNames[i - 1]] = new sourceMap.SourceMapConsumer(userSourceMapsFiles[i - 1]);
-            }
+        if (userSourceMapsFiles && bundleSourceMap) {
+          sourceMapConsumersJscrambler[
+            fileNames[i - 1]
+          ] = new sourceMap.SourceMapConsumer(userSourceMapsFiles[i - 1]);
+        }
 
-            const tillCodeEnd = c.substr(
-                c.indexOf(JSCRAMBLER_END_ANNOTATION) +
-                JSCRAMBLER_END_ANNOTATION.length,
-                c.length
-            );
-            return code + tillCodeEnd;
-          }
-      )
+        const tillCodeEnd = c.substr(
+          c.indexOf(JSCRAMBLER_END_ANNOTATION) +
+            JSCRAMBLER_END_ANNOTATION.length,
+          c.length
+        );
+        return code + tillCodeEnd;
+      });
 
       console.log({fileNames});
 
-      if(userSourceMapsFiles && bundleSourceMap) {
+      if (userSourceMapsFiles && bundleSourceMap) {
         console.log('info Jscrambler Source Maps');
-        const sourceMapConsumer = new sourceMap.SourceMapConsumer(bundleSourceMap);
-        sourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath});
+        const sourceMapConsumer = new sourceMap.SourceMapConsumer(
+          bundleSourceMap
+        );
+        sourceMapGenerator = new sourceMap.SourceMapGenerator({
+          file: bundlePath
+        });
 
         sourceMapConsumer.sources.forEach(function(sourceFile) {
-          sourceMapGenerator._sources.add(sourceFile)
-          var sourceContent = sourceMapConsumer.sourceContentFor(sourceFile);
+          sourceMapGenerator._sources.add(sourceFile);
+          const sourceContent = sourceMapConsumer.sourceContentFor(sourceFile);
           if (sourceContent != null) {
-            sourceMapGenerator.setSourceContent(sourceFile, sourceContent)
+            sourceMapGenerator.setSourceContent(sourceFile, sourceContent);
           }
         });
 
-        sourceMapConsumer.eachMapping((mapping) => {
+        sourceMapConsumer.eachMapping(mapping => {
           console.log('mapping.source', mapping.source);
           const normalizePath = buildNormalizePath(mapping.source, projectRoot);
           if (fileNames.indexOf(normalizePath) === -1) {
@@ -194,13 +209,15 @@ function obfuscateBundle(
               name: mapping.name
             });
           } else {
-            const sourceMapJscrambler = sourceMapConsumersJscrambler[normalizePath];
+            const sourceMapJscrambler =
+              sourceMapConsumersJscrambler[normalizePath];
             const generatedPositions = sourceMapJscrambler.allGeneratedPositionsFor(
-                {
-                  line: mapping.originalLine,
-                  column: mapping.originalColumn,
-                  source: normalizePath
-                });
+              {
+                line: mapping.originalLine,
+                column: mapping.originalColumn,
+                source: normalizePath
+              }
+            );
             generatedPositions.forEach(({line, column}) => {
               sourceMapGenerator.addMapping({
                 original: {
@@ -209,24 +226,25 @@ function obfuscateBundle(
                 },
                 generated: {
                   line: line + mapping.generatedLine,
-                  column: column
+                  column
                 },
                 source: mapping.source,
                 name: mapping.name
               });
             });
           }
-        })
+        });
       }
 
       return {bundleList, sourceMapGenerator};
     })
-    .then(({bundleList, sourceMapGenerator}) => {
-      return Promise.all([
-          writeFile(bundlePath, bundleList.join('')),
-          sourceMapGenerator && writeFile(bundleSourceMapPath + "2", sourceMapGenerator.toString())
-      ]);
-    })
+    .then(({bundleList, sourceMapGenerator}) =>
+      Promise.all([
+        writeFile(bundlePath, bundleList.join('')),
+        sourceMapGenerator &&
+          writeFile(`${bundleSourceMapPath}2`, sourceMapGenerator.toString())
+      ])
+    );
 }
 
 function wrapCodeWithTags(data, startTag, endTag) {
@@ -282,7 +300,13 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
         ? 'info Jscrambler Instrumenting Code'
         : 'info Jscrambler Obfuscating Code'
     );
-    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config, projectRoot)
+    obfuscateBundle(
+      bundlePath,
+      Array.from(fileNames),
+      sourceMapFiles,
+      config,
+      projectRoot
+    )
       .catch(err => {
         console.error(err);
         process.exit(1);
