@@ -173,8 +173,6 @@ function obfuscateBundle(
         return code + tillCodeEnd;
       });
 
-      console.log({fileNames});
-
       if (userSourceMapsFiles && bundleSourceMap) {
         console.log('info Jscrambler Source Maps');
         const sourceMapConsumer = new sourceMap.SourceMapConsumer(
