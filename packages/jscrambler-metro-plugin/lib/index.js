@@ -3,7 +3,6 @@ const jscrambler = require('jscrambler').default;
 const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
-const readLine = require('readline');
 const metroSourceMap = require('metro-source-map');
 const sourceMap = require('source-map');
 
@@ -77,16 +76,7 @@ function obfuscateBundle(
     emptyDir(JSCRAMBLER_DIST_TEMP_FOLDER),
     remove(JSCRAMBLER_PROTECTION_ID_FILE)
   ])
-    .then(() => new Promise((res) => {
-      let bundleCode = '';
-      readLine.createInterface({
-            input: fs.createReadStream(bundlePath, {encoding: 'utf8'}),
-          })
-          .on('line', line => {
-            bundleCode += line
-          })
-          .on('close', () => res(bundleCode));
-    }))
+    .then(() => readFile(bundlePath, 'utf8'))
     .then(bundleCode => {
       filesWithMycode = bundleCode.split(JSCRAMBLER_BEG_ANNOTATION);
 
@@ -171,6 +161,8 @@ function obfuscateBundle(
             return code + tillCodeEnd;
           }
       )
+
+      console.log({fileNames});
 
       if(userSourceMapsFiles && bundleSourceMap) {
         console.log('info Jscrambler Source Maps');
