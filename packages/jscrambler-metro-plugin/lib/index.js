@@ -60,6 +60,11 @@ function getBundlePath() {
   return process.exit(-1);
 }
 
+function buildNormalizePath(path, projectRoot) {
+  const relativePath = path.replace(projectRoot, '');
+  return relativePath.replace(JSCRAMBLER_EXTS, '.js');
+}
+
 function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
   fileNames,
@@ -271,11 +276,6 @@ function buildModuleSourceMap(output, modulePath, source) {
       }
     ])
     .toString(modulePath);
-}
-
-function buildNormalizePath(path, projectRoot) {
-  const relativePath = path.replace(projectRoot, '');
-  return relativePath.replace(JSCRAMBLER_EXTS, '.js');
 }
 
 module.exports = function(_config = {}, projectRoot = process.cwd()) {
