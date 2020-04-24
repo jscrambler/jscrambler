@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const metroSourceMap = require('metro-source-map');
 const sourceMap = require('source-map');
+const readline = require('readline');
+const {Readable} = require('stream');
 
 const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
@@ -157,95 +159,133 @@ function obfuscateBundle(
     .then(([userFilesStr, userSourceMapsFiles, bundleSourceMap]) => {
       const sourceMapConsumersJscrambler = {};
       let sourceMapGenerator;
-      const bundleList = filesWithMycode.map((c, i) => {
-        if (i === 0) {
-          return c;
-        }
-
-        const code = userFilesStr[i - 1];
-
-        if (userSourceMapsFiles && bundleSourceMap) {
-          sourceMapConsumersJscrambler[
-            fileNames[i - 1]
-          ] = new sourceMap.SourceMapConsumer(userSourceMapsFiles[i - 1]);
-        }
-
-        const tillCodeEnd = c.substr(
-          c.indexOf(JSCRAMBLER_END_ANNOTATION) +
-            JSCRAMBLER_END_ANNOTATION.length,
-          c.length
-        );
-        return code + tillCodeEnd;
-      });
-
-      if (userSourceMapsFiles && bundleSourceMap) {
-        console.log('info Jscrambler Source Maps');
-        const sourceMapConsumer = new sourceMap.SourceMapConsumer(
-          bundleSourceMap
-        );
-        sourceMapGenerator = new sourceMap.SourceMapGenerator({
-          file: bundlePath
-        });
-
-        sourceMapConsumer.sources.forEach(function(sourceFile) {
-          sourceMapGenerator._sources.add(sourceFile);
-          const sourceContent = sourceMapConsumer.sourceContentFor(sourceFile);
-          if (sourceContent != null) {
-            sourceMapGenerator.setSourceContent(sourceFile, sourceContent);
+      const bundleFirstLinesFor = {};
+      const bundleCode = filesWithMycode
+        .map((c, i) => {
+          if (i === 0) {
+            return c;
           }
-        });
 
-        sourceMapConsumer.eachMapping(mapping => {
-          console.log('mapping.source', mapping.source);
-          const normalizePath = buildNormalizePath(mapping.source, projectRoot);
-          if (fileNames.indexOf(normalizePath) === -1) {
-            sourceMapGenerator.addMapping({
-              original: {
-                line: mapping.originalLine,
-                column: mapping.originalColumn
-              },
-              generated: {
-                line: mapping.generatedLine,
-                column: mapping.generatedColumn
-              },
-              source: mapping.source,
-              name: mapping.name
-            });
-          } else {
-            const sourceMapJscrambler =
-              sourceMapConsumersJscrambler[normalizePath];
-            const generatedPositions = sourceMapJscrambler.allGeneratedPositionsFor(
-              {
-                line: mapping.originalLine,
-                column: mapping.originalColumn,
-                source: normalizePath
+          const code = userFilesStr[i - 1];
+
+          if (userSourceMapsFiles && bundleSourceMap) {
+            sourceMapConsumersJscrambler[
+              fileNames[i - 1]
+            ] = new sourceMap.SourceMapConsumer(userSourceMapsFiles[i - 1]);
+          }
+
+          const tillCodeEnd = c.substr(
+            c.indexOf(JSCRAMBLER_END_ANNOTATION) +
+              JSCRAMBLER_END_ANNOTATION.length,
+            c.length
+          );
+          return JSCRAMBLER_BEG_ANNOTATION + code + tillCodeEnd;
+        })
+        .join('');
+
+      return new Promise(res => {
+        if (userSourceMapsFiles && bundleSourceMap) {
+          const bundleCodeAsStream = new Readable({
+            read() {
+              this.push(this.sent ? null : bundleCode);
+              this.sent = true;
+            }
+          });
+
+          let lines = 0;
+          let filesRead = 0;
+          readline
+            .createInterface({
+              input: bundleCodeAsStream
+            })
+            .on('line', line => {
+              lines++;
+              if (line.indexOf(JSCRAMBLER_BEG_ANNOTATION) !== -1) {
+                bundleFirstLinesFor[fileNames[filesRead++]] = lines;
               }
-            );
-            generatedPositions.forEach(({line, column}) => {
-              sourceMapGenerator.addMapping({
-                original: {
-                  line: mapping.originalLine,
-                  column: mapping.originalColumn
-                },
-                generated: {
-                  line: line + mapping.generatedLine,
-                  column
-                },
-                source: mapping.source,
-                name: mapping.name
+            })
+            .on('close', () => {
+              console.log({bundleFirstLinesFor});
+              console.log('info Jscrambler Source Maps');
+              const sourceMapConsumer = new sourceMap.SourceMapConsumer(
+                bundleSourceMap
+              );
+              sourceMapGenerator = new sourceMap.SourceMapGenerator({
+                file: bundlePath
+              });
+
+              sourceMapConsumer.sources.forEach(function(sourceFile) {
+                sourceMapGenerator._sources.add(sourceFile);
+                const sourceContent = sourceMapConsumer.sourceContentFor(
+                  sourceFile
+                );
+                if (sourceContent != null) {
+                  sourceMapGenerator.setSourceContent(
+                    sourceFile,
+                    sourceContent
+                  );
+                }
+              });
+
+              sourceMapConsumer.eachMapping(mapping => {
+                console.log('mapping.source', mapping.source);
+                const normalizePath = buildNormalizePath(
+                  mapping.source,
+                  projectRoot
+                );
+                if (fileNames.indexOf(normalizePath) === -1) {
+                  sourceMapGenerator.addMapping({
+                    original: {
+                      line: mapping.originalLine,
+                      column: mapping.originalColumn
+                    },
+                    generated: {
+                      line: mapping.generatedLine,
+                      column: mapping.generatedColumn
+                    },
+                    source: mapping.source,
+                    name: mapping.name
+                  });
+                } else {
+                  const sourceMapJscrambler =
+                    sourceMapConsumersJscrambler[normalizePath];
+                  const generatedPositions = sourceMapJscrambler.allGeneratedPositionsFor(
+                    {
+                      line: mapping.originalLine,
+                      column: mapping.originalColumn,
+                      source: normalizePath
+                    }
+                  );
+                  generatedPositions.forEach(({line, column}) => {
+                    sourceMapGenerator.addMapping({
+                      original: {
+                        line: mapping.originalLine,
+                        column: mapping.originalColumn
+                      },
+                      generated: {
+                        line: line + bundleFirstLinesFor[normalizePath],
+                        column
+                      },
+                      source: mapping.source,
+                      name: mapping.name
+                    });
+                  });
+                }
               });
             });
-          }
-        });
-      }
-
-      return {bundleList, sourceMapGenerator};
+        } else {
+          res({bundleCode, sourceMapGenerator});
+        }
+      });
     })
-    .then(({bundleList, sourceMapGenerator}) =>
+    .then(({bundleCode, sourceMapGenerator}) =>
       Promise.all([
-        writeFile(bundlePath, bundleList.join('')),
+        writeFile(
+          bundlePath,
+          bundleCode.replace(new RegExp(JSCRAMBLER_BEG_ANNOTATION, 'g'), '')
+        ),
         sourceMapGenerator &&
-          writeFile(`${bundleSourceMapPath}2`, sourceMapGenerator.toString())
+          writeFile(`${bundleSourceMapPath}`, sourceMapGenerator.toString())
       ])
     );
 }
