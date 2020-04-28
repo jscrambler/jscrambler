@@ -1,199 +1,179 @@
-const {emptyDir, remove, mkdirp, readFile, writeFile} = require('fs-extra');
+const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
-const {Command} = require('commander');
 const fs = require('fs');
 const path = require('path');
-const metroSourceMap = require('metro-source-map');
+const sourceMap = require('source-map');
+const generateSourceMaps = require('./sourceMaps');
+const {
+  JSCRAMBLER_CLIENT_ID,
+  JSCRAMBLER_TEMP_FOLDER,
+  JSCRAMBLER_DIST_TEMP_FOLDER,
+  JSCRAMBLER_SRC_TEMP_FOLDER,
+  JSCRAMBLER_PROTECTION_ID_FILE,
+  JSCRAMBLER_BEG_ANNOTATION,
+  JSCRAMBLER_END_ANNOTATION,
+  JSCRAMBLER_EXTS
+} = require('./constants');
+const {
+  buildModuleSourceMap,
+  buildNormalizePath,
+  wrapCodeWithTags,
+  extractLocs,
+  getBundlePath,
+  skipObfuscation,
+  stripJscramblerTags
+} = require('./utils');
 
-const BUNDLE_CMD = 'bundle';
-const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
-const BUNDLE_DEV_CLI_ARG = '--dev';
+const debug = !!process.env.DEBUG;
 
-const JSCRAMBLER_CLIENT_ID = 6;
-const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
-const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist/`;
-const JSCRAMBLER_SRC_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/src`;
-const JSCRAMBLER_PROTECTION_ID_FILE = `${JSCRAMBLER_TEMP_FOLDER}/protectionId`;
-const JSCRAMBLER_BEG_ANNOTATION = '"JSCRAMBLER-BEG";';
-const JSCRAMBLER_END_ANNOTATION = '"JSCRAMBLER-END";';
-const JSCRAMBLER_EXTS = /.(j|t)s(x)?$/i;
+async function obfuscateBundle(
+  {bundlePath, bundleSourceMapPath},
+  fileNames,
+  sourceMapFiles,
+  config,
+  projectRoot
+) {
+  await emptyDir(JSCRAMBLER_TEMP_FOLDER);
 
-/**
- * Only 'bundle' command triggers obfuscation
- * @returns {string} skip reason. If falsy value dont skip obfuscation
- */
-function skipObfuscation() {
-  let isBundleCmd = false;
-  const command = new Command();
-  command
-    .command(BUNDLE_CMD)
-    .allowUnknownOption()
-    .action(() => (isBundleCmd = true));
-  command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
-  if (!isBundleCmd) {
-    return 'Not a *bundle* command';
-  }
-  if (command.dev === 'true') {
-    return (
-      process.env.JSCRAMBLER_METRO_DEV !== 'true' &&
-      'Development mode. Override with JSCRAMBLER_METRO_DEV=true environment variable'
+  const metroBundle = await readFile(bundlePath, 'utf8');
+  const metroBundleLocs = await extractLocs(metroBundle);
+  const metroBundleChunks = metroBundle.split(JSCRAMBLER_BEG_ANNOTATION);
+  const metroUserFilesOnly = metroBundleChunks
+    .filter((c, i) => i > 0)
+    .map((c, i) => {
+      return c.split(JSCRAMBLER_END_ANNOTATION)[0];
+    });
+
+  // build tmp src folders structure
+  await Promise.all(
+    fileNames.map(n =>
+      mkdirp(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${path.dirname(n)}`)
+    )
+  );
+
+  // write user files to tmp folder
+  await Promise.all(
+    metroUserFilesOnly.map((c, i) =>
+      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${fileNames[i]}`, c)
+    )
+  )
+
+  // write source map files to tmp folder (only for Instrumentation process)
+  Promise.all(
+    sourceMapFiles.map(({filename, content}) =>
+      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filename}`, content)
+    )
+  )
+
+  // adapt configs for react-native
+  config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
+  config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
+  config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
+  config.clientId = JSCRAMBLER_CLIENT_ID;
+
+  const jscramblerOp = !!config.instrument
+    ? jscrambler.instrumentAndDownload
+    : jscrambler.protectAndDownload;
+
+  // obfuscate or instrument
+  const protectionId = await jscramblerOp.call(jscrambler, config);
+
+  // store protection id
+  await writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId);
+
+  // read obfuscated user files
+  const obfusctedUserFiles = await Promise.all(metroUserFilesOnly.map((c, i) =>
+    readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}/${fileNames[i]}`, 'utf8')
+  ));
+
+  // build final bundle (with JSCRAMBLER TAGS still)
+  const finalBundle = metroBundleChunks.reduce((acc, c, i) => {
+    if (i === 0) {
+      return c;
+    }
+
+    const obfuscatedCode = obfusctedUserFiles[i - 1];
+    const tillCodeEnd = c.substr(
+      c.indexOf(JSCRAMBLER_END_ANNOTATION),
+      c.length
     );
+    return acc + JSCRAMBLER_BEG_ANNOTATION + obfuscatedCode + tillCodeEnd;
+  }, '');
+
+  await writeFile(bundlePath, stripJscramblerTags(finalBundle));
+  if(!config.sourceMaps || !bundleSourceMapPath) {
+    // nothing more to do
+    return;
   }
-  return null;
-}
 
-function getBundlePath() {
-  const command = new Command();
-  command.option(`${BUNDLE_OUTPUT_CLI_ARG} <string>`).parse(process.argv);
-  if (command.bundleOutput) {
-    return command.bundleOutput;
-  }
-  console.error('Bundle output path not found.');
-  return process.exit(-1);
-}
-
-function obfuscateBundle(bundlePath, fileNames, sourceMapFiles, config) {
-  let userFiles;
-  let filesWithMycode;
-
-  return Promise.all([
-    emptyDir(JSCRAMBLER_SRC_TEMP_FOLDER),
-    emptyDir(JSCRAMBLER_DIST_TEMP_FOLDER),
-    remove(JSCRAMBLER_PROTECTION_ID_FILE)
-  ])
-    .then(() => readFile(bundlePath, 'utf8'))
-    .then(bundleCode => {
-      filesWithMycode = bundleCode.split(JSCRAMBLER_BEG_ANNOTATION);
-
-      userFiles = filesWithMycode
-        .filter((c, i) => i > 0)
-        .map(c => c.split(JSCRAMBLER_END_ANNOTATION)[0]);
-      return userFiles;
-    })
-    .then(() =>
-      Promise.all(
-        fileNames.map(n =>
-          mkdirp(path.join(JSCRAMBLER_SRC_TEMP_FOLDER, path.dirname(n)))
-        )
-      )
-    )
-    .then(() =>
-      Promise.all(
-        userFiles.map((c, i) =>
-          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${fileNames[i]}`, c)
-        )
-      )
-    )
-    .then(() =>
-      Promise.all(
-        sourceMapFiles.map(({filename, content}) =>
-          writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}${filename}`, content)
-        )
-      )
-    )
-    .then(() => {
-      config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
-      config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
-      config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
-      config.clientId = JSCRAMBLER_CLIENT_ID;
-
-      const jscramblerOp = !!config.instrument
-        ? jscrambler.instrumentAndDownload
-        : jscrambler.protectAndDownload;
-
-      return jscramblerOp.call(jscrambler, config);
-    })
-    .then(protectionId =>
-      writeFile(JSCRAMBLER_PROTECTION_ID_FILE, protectionId)
-    )
-    .then(() =>
-      Promise.all(
-        userFiles.map((c, i) =>
-          readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}${fileNames[i]}`, 'utf8')
-        )
-      )
-    )
-    .then(userFilesStr =>
-      filesWithMycode.map((c, i) => {
-        if (i === 0) {
-          return c;
-        }
-
-        const code = userFilesStr[i - 1];
-
-        const tillCodeEnd = c.substr(
-          c.indexOf(JSCRAMBLER_END_ANNOTATION) +
-            JSCRAMBLER_END_ANNOTATION.length,
-          c.length
-        );
-        return code + tillCodeEnd;
-      })
-    )
-    .then(bundleList => writeFile(bundlePath, bundleList.join('')));
-}
-
-function wrapCodeWithTags(data, startTag, endTag) {
-  const startIndex = data.code.indexOf('{');
-  const endIndex = data.code.lastIndexOf('}');
-  const init = data.code.substring(0, startIndex + 1);
-  const clientCode = data.code.substring(startIndex + 1, endIndex);
-  const end = data.code.substr(endIndex, data.code.length);
-  data.code = init + startTag + clientCode + endTag + end;
+  // process Jscrambler SourceMaps
+  console.log('info Jscrambler Source Maps');
+  const finalSourceMap = await generateSourceMaps({
+    jscrambler,
+    config,
+    protectionId,
+    metroUserFilesOnly,
+    fileNames,
+    bundlePath,
+    bundleSourceMapPath,
+    finalBundle,
+    projectRoot,
+    debug,
+    metroBundleLocs
+  });
+  await writeFile(bundleSourceMapPath, finalSourceMap);
 }
 
 /**
- * Use 'metro-source-map' to build a standard source-map from raw mappings
- * @param {{code: string, map: Array.<Array<number>>}} output
- * @param {string} modulePath
- * @param {string} source
- * @returns {string}
+ * Add serialize.processModuleFilter option to metro and attach listener to beforeExit event.
+ * *config.fileSrc* and *config.filesDest* will be ignored.
+ * @param {object} _config
+ * @param {string} [projectRoot=process.cwd()]
+ * @returns {{serializer: {processModuleFilter(*): boolean}}}
  */
-function buildModuleSourceMap(output, modulePath, source) {
-  return metroSourceMap
-    .fromRawMappings([
-      {
-        ...output,
-        source,
-        path: modulePath
-      }
-    ])
-    .toString(modulePath);
-}
-
-module.exports = function(_config = {}, projectRoot = process.cwd()) {
+module.exports = function (_config = {}, projectRoot = process.cwd()) {
   const skipReason = skipObfuscation();
   if (skipReason) {
     console.log(`warning: Jscrambler Obfuscation SKIPPED [${skipReason}]`);
     return {};
   }
+
   const bundlePath = getBundlePath();
   const fileNames = new Set();
   const sourceMapFiles = [];
   const config = Object.assign({}, jscrambler.config, _config);
-
-  const sourceMaps = !!config.sourceMaps;
   const instrument = !!config.instrument;
 
-  if (sourceMaps) {
-    throw new Error(`Currently, Jscrambler doesn't support React Native source maps`);
+  if(config.filesDest || config.filesSrc) {
+    console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using METRO bundler own input/output values.')
   }
 
-  process.on('beforeExit', function(exitCode) {
-    console.log(
-      instrument
-        ? 'info Jscrambler Instrumenting Code'
-        : 'info Jscrambler Obfuscating Code'
-    );
-    obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config)
-      .catch(err => {
-        console.error(err);
-        process.exit(1);
-      })
-      .finally(() => process.exit(exitCode));
+  process.on('beforeExit', async function (exitCode) {
+    try{
+      console.log(
+        instrument
+          ? 'info Jscrambler Instrumenting Code'
+          : 'info Jscrambler Obfuscating Code'
+      );
+      // start obfuscation
+      await obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config, projectRoot);
+    } catch(err) {
+      console.error(err);
+      process.exit(1);
+    } finally {
+      process.exit(exitCode)
+    }
   });
 
   return {
     serializer: {
+      /**
+       * Select user files ONLY (no vendor) to be obfuscated. That code should be tagged with
+       * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
+       * Also gather metro source-maps in case of instrumentation process.
+       * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
+       * @returns {boolean}
+       */
       processModuleFilter(_module) {
         if (
           _module.path.indexOf('node_modules') !== -1 ||
@@ -204,25 +184,20 @@ module.exports = function(_config = {}, projectRoot = process.cwd()) {
           return true;
         }
 
-        const relativePath = _module.path.replace(projectRoot, '');
-        const normalizePath = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+        const normalizePath = buildNormalizePath(_module.path, projectRoot);
         fileNames.add(normalizePath);
         _module.output.forEach(({data}) => {
-          if ((instrument || sourceMaps) && Array.isArray(data.map)) {
+          if (instrument && Array.isArray(data.map)) {
             sourceMapFiles.push({
               filename: `${normalizePath}.map`,
               content: buildModuleSourceMap(
                 data,
-                relativePath,
+                normalizePath,
                 _module.getSource().toString()
               )
             });
           }
-          wrapCodeWithTags(
-            data,
-            JSCRAMBLER_BEG_ANNOTATION,
-            JSCRAMBLER_END_ANNOTATION
-          );
+          wrapCodeWithTags(data);
         });
         return true;
       }
