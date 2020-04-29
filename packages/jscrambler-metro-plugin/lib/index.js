@@ -2,7 +2,6 @@ const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
-const sourceMap = require('source-map');
 const generateSourceMaps = require('./sourceMaps');
 const {
   JSCRAMBLER_CLIENT_ID,
