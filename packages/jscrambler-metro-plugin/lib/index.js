@@ -59,7 +59,7 @@ async function obfuscateBundle(
   )
 
   // write source map files to tmp folder (only for Instrumentation process)
-  Promise.all(
+  await Promise.all(
     sourceMapFiles.map(({filename, content}) =>
       writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filename}`, content)
     )
