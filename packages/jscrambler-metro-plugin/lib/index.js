@@ -144,7 +144,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   const instrument = !!config.instrument;
 
   if(config.filesDest || config.filesSrc) {
-    console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using METRO bundler own input/output values.')
+    console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using input/output values of the metro bundler.')
   }
 
   process.on('beforeExit', async function (exitCode) {
