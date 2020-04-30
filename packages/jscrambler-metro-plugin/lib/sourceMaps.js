@@ -61,15 +61,16 @@ module.exports = async function generateSourceMaps(payload) {
   let tmpShiftLine = 0;
   let currSource;
   metroSourceMapConsumer.eachMapping(mapping => {
-    const newMapping = {
-      original: mapping.originalLine ? {line: mapping.originalLine, column: mapping.originalColumn} : null,
+    let original = mapping.originalLine ? {line: mapping.originalLine, column: mapping.originalColumn} : null;
+    let newMappings = [{
+      original,
       source: mapping.source,
       name: mapping.name,
       generated: {
         line: mapping.generatedLine,
         column: mapping.generatedColumn
       }
-    }
+    }];
     const normalizePath = buildNormalizePath(mapping.source, projectRoot);
     const fileNamesIndex = fileNames.indexOf(normalizePath);
 
@@ -85,8 +86,8 @@ module.exports = async function generateSourceMaps(payload) {
       const {lineStart: finalLineStart, lineEnd: finalLineEnd} = finalBundleLocs[fileNamesIndex];
       const allGeneratedPositionsFor = ofuscatedSourceMapConsumers[fileNamesIndex].allGeneratedPositionsFor({
         source: normalizePath,
-        line: newMapping.generated.line - lineStart + 1 /* avoid line=0 */,
-        column: newMapping.generated.column - columnStart
+        line: mapping.generatedLine - lineStart + 1 /* avoid line=0 */,
+        column: mapping.generatedColumn - columnStart
       });
 
       if (allGeneratedPositionsFor.length === 0) {
@@ -94,26 +95,29 @@ module.exports = async function generateSourceMaps(payload) {
         return;
       }
 
-      const obfLine = allGeneratedPositionsFor[0].line;
-      const obfColumn = allGeneratedPositionsFor[0].column;
+      newMappings = allGeneratedPositionsFor.map(({line: obfLine, column: obfColumn}) => {
+        const calcFinalLine = finalLineStart + obfLine - 1;
+        // add columnStart only on the first line
+        const calcFinalColumn = obfLine === 1 ? columnStart + obfColumn : obfColumn;
 
-      const calcFinalLine = finalLineStart + obfLine - 1;
-      // add columnStart only on the first line
-      const calcFinalColumn = obfLine === 1 ? columnStart + obfColumn : obfColumn;
+        debug && console.log('original', original, '->', 'final', {line: calcFinalLine, column: calcFinalColumn});
 
-      debug && console.log('metro', newMapping.generated, '->', 'final', {line: calcFinalLine, column: calcFinalColumn});
-
-      newMapping.generated.line = calcFinalLine;
-      newMapping.generated.column = calcFinalColumn;
+        return Object.assign({}, newMappings[0], {
+          generated: {
+            line: calcFinalLine,
+            column: calcFinalColumn
+          }
+        });
+      });
 
       // shift lines on next files
       tmpShiftLine = finalLineEnd - lineEnd;
     } else {
       /* vendor code */
-      newMapping.generated.line += shiftLines;
+      newMappings[0].generated.line += shiftLines;
     }
 
-    finalSourceMapGenerator.addMapping(newMapping);
+    newMappings.forEach((newMapping) => finalSourceMapGenerator.addMapping(newMapping));
   })
 
   return finalSourceMapGenerator.toString();
