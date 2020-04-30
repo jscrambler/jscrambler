@@ -61,7 +61,7 @@ module.exports = async function generateSourceMaps(payload) {
   let tmpShiftLine = 0;
   let currSource;
   metroSourceMapConsumer.eachMapping(mapping => {
-    let original = mapping.originalLine ? {line: mapping.originalLine, column: mapping.originalColumn} : null;
+    const original = mapping.originalLine ? {line: mapping.originalLine, column: mapping.originalColumn} : null;
     let newMappings = [{
       original,
       source: mapping.source,
