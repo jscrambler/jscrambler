@@ -19,6 +19,7 @@ module.exports = async function generateSourceMaps(payload) {
   const {
     jscrambler,
     config,
+    shouldAddSourceContent,
     protectionId,
     metroUserFilesOnly,
     fileNames,
@@ -51,7 +52,7 @@ module.exports = async function generateSourceMaps(payload) {
   metroSourceMapConsumer.sources.forEach(function (sourceFile) {
     finalSourceMapGenerator._sources.add(sourceFile)
     var sourceContent = metroSourceMapConsumer.sourceContentFor(sourceFile);
-    if (sourceContent != null) {
+    if (shouldAddSourceContent && sourceContent != null) {
       finalSourceMapGenerator.setSourceContent(sourceFile, sourceContent)
     }
   });

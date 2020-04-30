@@ -11,6 +11,7 @@ const {
   JSCRAMBLER_PROTECTION_ID_FILE,
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_END_ANNOTATION,
+  BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   JSCRAMBLER_EXTS
 } = require('./constants');
 const {
@@ -69,6 +70,8 @@ async function obfuscateBundle(
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
+  // if omit, we automatically activate sourceMaps generation (no sourceContent) when '--sourcemap-output' arg is set
+  config.sourceMaps = config.sourceMaps === undefined ? !!bundleSourceMapPath : config.sourceMaps;
 
   const jscramblerOp = !!config.instrument
     ? jscrambler.instrumentAndDownload
@@ -101,15 +104,22 @@ async function obfuscateBundle(
 
   await writeFile(bundlePath, stripJscramblerTags(finalBundle));
   if(!config.sourceMaps || !bundleSourceMapPath) {
+    if (bundleSourceMapPath) {
+      console.log(`warning: Jscrambler source-maps are DISABLED. Check how to activate them in https://docs.jscrambler.com/code-integrity/documentation/source-maps/api`);
+    } else if (config.sourceMaps) {
+      console.log(`warning: Jscrambler source-maps were not generated. Missing metro source-maps (${BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG} is required)`);
+    }
     // nothing more to do
     return;
   }
 
   // process Jscrambler SourceMaps
-  console.log('info Jscrambler Source Maps');
+  const shouldAddSourceContent = typeof config.sourceMaps === 'object' ? config.sourceMaps.sourceContent : false;
+  console.log(`info Jscrambler Source Maps (${shouldAddSourceContent ? "with" : "no"} source content)`);
   const finalSourceMap = await generateSourceMaps({
     jscrambler,
     config,
+    shouldAddSourceContent,
     protectionId,
     metroUserFilesOnly,
     fileNames,
