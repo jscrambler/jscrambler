@@ -26,6 +26,14 @@ const {
 
 const debug = !!process.env.DEBUG;
 
+function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
+  if (hasMetroSourceMaps) {
+    console.log(`warning: Jscrambler source-maps are DISABLED. Check how to activate them in https://docs.jscrambler.com/code-integrity/documentation/source-maps/api`);
+  } else if (hasJscramblerSourceMaps) {
+    console.log(`warning: Jscrambler source-maps were not generated. Missing metro source-maps (${BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG} is required)`);
+  }
+}
+
 async function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
   fileNames,
@@ -72,6 +80,8 @@ async function obfuscateBundle(
   config.clientId = JSCRAMBLER_CLIENT_ID;
   // if omit, we automatically activate sourceMaps generation (no sourceContent) when '--sourcemap-output' arg is set
   config.sourceMaps = config.sourceMaps === undefined ? !!bundleSourceMapPath : config.sourceMaps;
+  // must have metro and jscrambler source-maps
+  const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
 
   const jscramblerOp = !!config.instrument
     ? jscrambler.instrumentAndDownload
@@ -103,12 +113,8 @@ async function obfuscateBundle(
   }, '');
 
   await writeFile(bundlePath, stripJscramblerTags(finalBundle));
-  if(!config.sourceMaps || !bundleSourceMapPath) {
-    if (bundleSourceMapPath) {
-      console.log(`warning: Jscrambler source-maps are DISABLED. Check how to activate them in https://docs.jscrambler.com/code-integrity/documentation/source-maps/api`);
-    } else if (config.sourceMaps) {
-      console.log(`warning: Jscrambler source-maps were not generated. Missing metro source-maps (${BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG} is required)`);
-    }
+  if(!shouldGenerateSourceMaps) {
+    logSourceMapsWarning(bundleSourceMapPath, config.sourceMaps);
     // nothing more to do
     return;
   }
