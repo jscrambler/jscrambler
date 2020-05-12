@@ -3,6 +3,7 @@ import 'babel-polyfill';
 
 import glob from 'glob';
 import path from 'path';
+import fs from 'fs';
 import request from 'axios';
 import defaults from 'lodash.defaults';
 
@@ -11,7 +12,7 @@ import generateSignedParams from './generate-signed-params';
 import JscramblerClient from './client';
 import * as mutations from './mutations';
 import * as queries from './queries';
-import {zip, zipSources, unzip} from './zip';
+import {zip, zipSources, unzip, outputFileSync} from './zip';
 import * as introspection from './introspection';
 
 import getProtectionDefaultFragments from './get-protection-default-fragments';
@@ -658,6 +659,64 @@ export default {
     }
     unzip(download, filesDest || destCallback, stream);
   },
+  async downloadSymbolTable(configs, destCallback) {
+    const {
+      keys,
+      host,
+      port,
+      protocol,
+      cafile,
+      stream = true,
+      filesDest,
+      filesSrc,
+      protectionId,
+      proxy
+    } = configs;
+
+    const {accessKey, secretKey} = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      protocol,
+      cafile,
+      proxy
+    });
+
+    if (!filesDest && !destCallback) {
+      throw new Error('Required *filesDest* not provided');
+    }
+
+    if (!protectionId) {
+      throw new Error('Required *protectionId* not provided');
+    }
+
+    if (filesSrc) {
+      console.warn(
+        '[Warning] Ignoring sources supplied. Downloading source maps of given protection'
+      );
+    }
+    let download;
+    try {
+      download = await this.downloadSymbolTableRequest(client, protectionId);
+    } catch (e) {
+      errorHandler(e);
+    }
+
+    let outputPath = filesDest;
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
+      outputPath = path.join(filesDest, `${protectionId}_symbolTable.json`);
+    }
+
+    if (typeof destCallback === 'function') {
+      destCallback(download, outputPath);
+    } else {
+      outputFileSync(outputPath, download);
+    }
+  },
   /**
    * Polls a instrumentation every 500ms until the state be equal to
    * FINISHED_INSTRUMENTATION, FAILED_INSTRUMENTATION or DELETED
@@ -947,6 +1006,9 @@ export default {
   //
   async downloadSourceMapsRequest(client, protectionId) {
     return client.get(`/application/sourceMaps/${protectionId}`, null, false);
+  },
+  async downloadSymbolTableRequest(client, protectionId) {
+    return client.get(`/application/symbolTable/${protectionId}`, null, false);
   },
   //
   async downloadApplicationProtection(client, protectionId) {

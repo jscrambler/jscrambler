@@ -10,6 +10,8 @@ import {inspect} from 'util';
 
 const debug = !!process.env.DEBUG;
 
+export {outputFileSync};
+
 export function zip(files, cwd) {
   debug && console.log('Zipping files', inspect(files));
   const deferred = defer();
