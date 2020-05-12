@@ -100,6 +100,10 @@ commander
     '(version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)',
     validateBool('--use-app-classification')
   )
+  .option(
+    '--input-symbol-table <file>',
+    '(version 6.3 and above) Protection should use symbol table when protecting. (default: no file)'
+  )
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
@@ -138,6 +142,7 @@ config.tolerateMinification = commander.tolerateMinification
 config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
+config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
 config.debugMode = commander.debugMode || config.debugMode;
 
 // handle codeHardening = 0
@@ -261,7 +266,8 @@ const {
   useProfilingData,
   profilingDataMode,
   browsers,
-  useAppClassification
+  useAppClassification,
+  inputSymbolTable
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -369,7 +375,8 @@ if (commander.sourceMaps) {
       useProfilingData,
       profilingDataMode,
       browsers,
-      useAppClassification
+      useAppClassification,
+      inputSymbolTable
     };
     try {
       if (typeof werror !== 'undefined') {
