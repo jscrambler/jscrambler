@@ -61,7 +61,7 @@ commander
   .option('-C, --cwd <dir>', 'Current Working Directory')
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
-  .option('-t, --symbol-table <id>', '(version 6.3 and above) Download symbol table (json)')
+  .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
   .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
@@ -307,7 +307,7 @@ if (commander.sourceMaps) {
       process.exit(1);
     }
   })();
-} else if (commander.symbolTable) {
+} else if (commander.outputSymbolTable) {
   // Go, go, go download
   (async () => {
     try {
@@ -315,7 +315,7 @@ if (commander.sourceMaps) {
         ...clientSettings,
         filesDest,
         filesSrc,
-        protectionId: commander.symbolTable
+        protectionId: commander.outputSymbolTable
       });
     } catch (error) {
       console.error(debug ? error : error.message || error);

@@ -91,7 +91,7 @@ Options:
   -C, --cwd <dir>                         Current Working Directory
   -s, --secret-key <secretKey>            Secret key
   -m, --source-maps <id>                  Download source maps
-  -t, --symbol-table <id>                 (version 6.3 and above) Download symbol table (json)
+  --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
   -R, --randomization-seed <seed>         Set randomization seed
   --instrument                            Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
   --start-profiling                       Starts profiling (assumes an already instrumented application)
