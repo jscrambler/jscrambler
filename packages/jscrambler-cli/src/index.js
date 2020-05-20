@@ -695,7 +695,7 @@ export default {
 
     if (filesSrc) {
       console.warn(
-        '[Warning] Ignoring sources supplied. Downloading source maps of given protection'
+        '[Warning] Ignoring sources supplied. Downloading symbol table of given protection'
       );
     }
     let download;
