@@ -3,7 +3,6 @@ import 'babel-polyfill';
 
 import glob from 'glob';
 import path from 'path';
-import fs from 'fs';
 import request from 'axios';
 import defaults from 'lodash.defaults';
 
@@ -705,16 +704,13 @@ export default {
       errorHandler(e);
     }
 
-    let outputPath = filesDest;
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    if (fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory()) {
-      outputPath = path.join(filesDest, `${protectionId}_symbolTable.json`);
-    }
-
     if (typeof destCallback === 'function') {
-      destCallback(download, outputPath);
+      destCallback(download, filesDest);
     } else {
-      outputFileSync(outputPath, download);
+      outputFileSync(
+        path.join(filesDest, `${protectionId}_symbolTable.json`),
+        download
+      );
     }
   },
   /**
