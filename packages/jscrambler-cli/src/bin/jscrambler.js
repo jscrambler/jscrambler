@@ -61,6 +61,7 @@ commander
   .option('-C, --cwd <dir>', 'Current Working Directory')
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
+  .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
   .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
@@ -159,7 +160,7 @@ if (commander.profilingDataMode) {
 } else {
   config.profilingDataMode = config.profilingDataMode ?
   validateProfilingDataMode(config.profilingDataMode) :
-  undefined;  
+  undefined;
 }
 
 if (commander.useProfilingData) {
@@ -183,7 +184,7 @@ if (config.codeHardeningThreshold){
   config.codeHardeningThreshold = validateCodeHardeningThreshold(config.codeHardeningThreshold);
 }
 
-if (config.profilingDataMode) { 
+if (config.profilingDataMode) {
   config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
 }
 
@@ -306,6 +307,21 @@ if (commander.sourceMaps) {
         filesDest,
         filesSrc,
         protectionId: commander.sourceMaps
+      });
+    } catch (error) {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    }
+  })();
+} else if (commander.outputSymbolTable) {
+  // Go, go, go download
+  (async () => {
+    try {
+      await jscrambler.downloadSymbolTable({
+        ...clientSettings,
+        filesDest,
+        filesSrc,
+        protectionId: commander.outputSymbolTable
       });
     } catch (error) {
       console.error(debug ? error : error.message || error);

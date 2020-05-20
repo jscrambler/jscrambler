@@ -10,6 +10,9 @@ import {inspect} from 'util';
 
 const debug = !!process.env.DEBUG;
 
+// ./zip.js module is excluded from browser-like environments. We take advantage of that here.
+export {outputFileSync};
+
 export function zip(files, cwd) {
   debug && console.log('Zipping files', inspect(files));
   const deferred = defer();
