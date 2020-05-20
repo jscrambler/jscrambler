@@ -5,7 +5,7 @@ import glob from 'glob';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
-import {promises as fs} from 'fs';
+import fs from 'fs';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';
@@ -356,7 +356,10 @@ export default {
     const protectionOptions = {bail, randomizationSeed, tolerateMinification, source, inputSymbolTable, ...updateData};
 
     if (finalConfig.inputSymbolTable) {
-      const inputSymbolTableContents = await fs.readFile(finalConfig.inputSymbolTable, 'utf-8');
+      // Note: we can not use the fs.promises API because some users may not have node 10.
+      // Once node 10 is old enough to be safe to assume that all users will have it, this
+      // should be safe to replace with `await fs.promises.readFile`.
+      const inputSymbolTableContents = fs.readFileSync(finalConfig.inputSymbolTable, 'utf-8');
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
     }
 
