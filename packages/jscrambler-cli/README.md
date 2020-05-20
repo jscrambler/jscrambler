@@ -102,6 +102,7 @@ Options:
   --use-profiling-data <bool>             (version 6.2 only) Protection should use the existing profiling data (default: true)
   --profiling-data-mode <mode>            (version 6.3 and above) Select profiling mode (default: automatic)
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
+  --input-symbol-table <file>             (version 6.3 and above) Protection should use symbol table when protecting. (default: no file)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
   -h, --help                              output usage information
@@ -301,6 +302,31 @@ Instrument is used when you want to [Profile](https://docs.jscrambler.com/code-i
 **NOTE**: When you run this command, the existing profiling information will be **deleted** (if any). 
 
 **WARNING:** DO NOT SEND THIS CODE TO PRODUCTION AS IT IS NOT PROTECTED
+
+## Symbol Table
+
+Jscrambler can import symbol tables to ensure certain global variables and object properties have specific names.
+These symbol tables can be passed using the `--input-symbol-table <file>` option, or with the `inputSymbolTable`
+option in the configuration file.
+
+These files follow the schema used by `uglifyjs@^3`:
+
+```json
+{
+  "vars": {
+    "props": {
+      "$globalName": "transformedName"
+    }
+  },
+  "props": {
+    "props": {
+      "$propertyName": "transformedName"
+    }
+  }
+}
+```
+
+**NOTE**: It only makes sense to use input symbol tables on protections that use the identifiers renaming parameter.
 
 ## API
 ```bash

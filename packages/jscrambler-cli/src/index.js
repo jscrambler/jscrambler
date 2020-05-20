@@ -5,6 +5,7 @@ import glob from 'glob';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
+import fs from 'fs';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';
@@ -231,7 +232,8 @@ export default {
       useProfilingData,
       browsers,
       useAppClassification,
-      profilingDataMode
+      profilingDataMode,
+      inputSymbolTable
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -351,10 +353,20 @@ export default {
     }
 
     delete updateData._id;
+    const protectionOptions = {bail, randomizationSeed, tolerateMinification, source, inputSymbolTable, ...updateData};
+
+    if (finalConfig.inputSymbolTable) {
+      // Note: we can not use the fs.promises API because some users may not have node 10.
+      // Once node 10 is old enough to be safe to assume that all users will have it, this
+      // should be safe to replace with `await fs.promises.readFile`.
+      const inputSymbolTableContents = fs.readFileSync(finalConfig.inputSymbolTable, 'utf-8');
+      protectionOptions.inputSymbolTable = inputSymbolTableContents;
+    }
+
     const createApplicationProtectionRes = await this.createApplicationProtection(
       client,
       applicationId,
-      {bail, randomizationSeed, tolerateMinification, source, ...updateData}
+      protectionOptions
     );
     errorHandler(createApplicationProtectionRes);
 
