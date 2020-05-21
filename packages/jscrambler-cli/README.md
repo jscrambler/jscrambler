@@ -91,7 +91,6 @@ Options:
   -C, --cwd <dir>                         Current Working Directory
   -s, --secret-key <secretKey>            Secret key
   -m, --source-maps <id>                  Download source maps
-  --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
   -R, --randomization-seed <seed>         Set randomization seed
   --instrument                            Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted
   --start-profiling                       Starts profiling (assumes an already instrumented application)
@@ -104,6 +103,7 @@ Options:
   --profiling-data-mode <mode>            (version 6.3 and above) Select profiling mode (default: automatic)
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
   --input-symbol-table <file>             (version 6.3 and above) Protection should use symbol table when protecting. (default: no file)
+  --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
   -h, --help                              output usage information
@@ -327,7 +327,9 @@ These files follow the schema used by `uglifyjs@^3`:
 }
 ```
 
-**NOTE**: It only makes sense to use input symbol tables on protections that use the identifiers renaming parameter.
+Similarly, the resulting symbol table can be obtained using the `--output-symbol-table <protectionId>` option.
+
+**NOTE**: It only makes sense to use symbol tables on protections that use the identifiers renaming parameter.
 
 ## API
 ```bash

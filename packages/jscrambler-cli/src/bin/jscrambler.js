@@ -61,7 +61,6 @@ commander
   .option('-C, --cwd <dir>', 'Current Working Directory')
   .option('-s, --secret-key <secretKey>', 'Secret key')
   .option('-m, --source-maps <id>', 'Download source maps')
-  .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('-R, --randomization-seed <seed>', 'Set randomization seed')
   .option('--instrument', 'Instrument file(s) before start profiling. ATTENTION: previous profiling information will be deleted')
   .option('--start-profiling', 'Starts profiling (assumes an already instrumented application)')
@@ -105,6 +104,7 @@ commander
     '--input-symbol-table <file>',
     '(version 6.3 and above) Protection should use symbol table when protecting. (default: no file)'
   )
+  .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .parse(process.argv);
