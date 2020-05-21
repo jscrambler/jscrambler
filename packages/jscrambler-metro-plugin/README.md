@@ -1,8 +1,6 @@
 # Jscrambler Metro Plugin
 
-This metro plugin protects your React Native bundle using Jscrambler.
-
-> Note: Only protects source code triggered by `bundle` react-native command.
+This metro plugin protects your **React Native** bundle using Jscrambler.
 
 # Usage
 
