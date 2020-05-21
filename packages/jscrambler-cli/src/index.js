@@ -683,6 +683,7 @@ export default {
       filesDest,
       filesSrc,
       protectionId,
+      jscramblerVersion,
       proxy
     } = configs;
 
@@ -695,6 +696,7 @@ export default {
       port,
       protocol,
       cafile,
+      jscramblerVersion,
       proxy
     });
 
