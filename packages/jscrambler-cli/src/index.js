@@ -86,16 +86,32 @@ export default {
    * @param {{
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
-   *  cwd: string
+   *  cwd: string,
+   *  exitOnReadyProfilingData: boolean
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd}
+    {sources, filesSrc, cwd, exitOnReadyProfilingData = false}
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
+      if (exitOnReadyProfilingData) {
+        const profiling = await this.getApplicationProfiling(
+          client,
+          applicationId
+        ).catch(e => {
+          if (e.statusCode !== 404) throw e;
+        });
+
+        if (profiling.data.state === 'READY') {
+          throw new Error(
+            'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-source* to continue.'
+          );
+        }
+      }
+
       const removeSourceRes = await this.removeSourceFromApplication(
         client,
         '',
@@ -272,7 +288,8 @@ export default {
     const source = await this.updateApplicationSources(client, applicationId, {
       sources,
       filesSrc,
-      cwd
+      cwd,
+      exitOnReadyProfilingData: true
     });
 
     const updateData = {
@@ -951,6 +968,9 @@ export default {
     const mutation = await mutations.updateTemplate(template, fragments);
     return client.post('/application', mutation);
   },
+  async getApplicationProfiling(client, applicationId) {
+    return client.get('/profiling-run', {applicationId});
+  },
   /**
    * Starts a new instrumentation process.
    * Previous instrumentation must be deleted, before starting a new one.
@@ -959,11 +979,12 @@ export default {
    * @returns {Promise<*>}
    */
   async startInstrumentation(client, applicationId) {
-    const instrumentation = await client
-      .get('/profiling-run', {applicationId})
-      .catch(e => {
-        if (e.statusCode !== 404) throw e;
-      });
+    const instrumentation = await this.getApplicationProfiling(
+      client,
+      applicationId
+    ).catch(e => {
+      if (e.statusCode !== 404) throw e;
+    });
 
     if (instrumentation) {
       await client.patch(`/profiling-run/${instrumentation.data.id}`, {
