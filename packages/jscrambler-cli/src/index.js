@@ -87,29 +87,21 @@ export default {
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
    *  cwd: string,
-   *  exitOnReadyProfilingData: boolean
+   *  appProfiling: ?object
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd, exitOnReadyProfilingData = false}
+    {sources, filesSrc, cwd, appProfiling}
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
-      if (exitOnReadyProfilingData) {
-        const profiling = await this.getApplicationProfiling(
-          client,
-          applicationId
-        ).catch(e => {
-          if (e.statusCode !== 404) throw e;
-        });
-
-        if (profiling.data.state === 'READY') {
-          throw new Error(
-            'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-source* to continue.'
-          );
-        }
+      // prevent removing sources if profiling state is READY
+      if (appProfiling && appProfiling.data.state === 'READY') {
+        throw new Error(
+          'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-source* to continue.'
+        );
       }
 
       const removeSourceRes = await this.removeSourceFromApplication(
@@ -249,6 +241,7 @@ export default {
       browsers,
       useAppClassification,
       profilingDataMode,
+      removeProfilingData,
       inputSymbolTable
     } = finalConfig;
 
@@ -285,11 +278,23 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
+    const appProfiling = await this.getApplicationProfiling(
+      client,
+      applicationId
+    ).catch(e => {
+      if (e.statusCode !== 404) throw e;
+    });
+
+    if (appProfiling && removeProfilingData) {
+      await this.deleteProfiling(client, appProfiling.data.id);
+      appProfiling.data.state = 'DELETED';
+    }
+
     const source = await this.updateApplicationSources(client, applicationId, {
       sources,
       filesSrc,
       cwd,
-      exitOnReadyProfilingData: true
+      appProfiling
     });
 
     const updateData = {
@@ -971,6 +976,11 @@ export default {
   async getApplicationProfiling(client, applicationId) {
     return client.get('/profiling-run', {applicationId});
   },
+  async deleteProfiling(client, profilingId) {
+    return client.patch(`/profiling-run/${profilingId}`, {
+      state: 'DELETED'
+    });
+  },
   /**
    * Starts a new instrumentation process.
    * Previous instrumentation must be deleted, before starting a new one.
@@ -987,9 +997,7 @@ export default {
     });
 
     if (instrumentation) {
-      await client.patch(`/profiling-run/${instrumentation.data.id}`, {
-        state: 'DELETED'
-      });
+      await this.deleteProfiling(client, instrumentation.data.id);
     }
     return client.post('/profiling-run', {applicationId});
   },

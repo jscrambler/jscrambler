@@ -96,6 +96,10 @@ commander
     validateProfilingDataMode
   )
   .option(
+    '--remove-profiling-data',
+    `Removes the current application profiling information`
+  )
+  .option(
     '--use-app-classification <bool>',
     '(version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)',
     validateBool('--use-app-classification')
@@ -144,6 +148,7 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
+config.removeProfilingData = commander.removeProfilingData;
 config.debugMode = commander.debugMode || config.debugMode;
 
 // handle codeHardening = 0
@@ -268,6 +273,7 @@ const {
   profilingDataMode,
   browsers,
   useAppClassification,
+  removeProfilingData,
   inputSymbolTable
 } = config;
 
@@ -392,6 +398,7 @@ if (commander.sourceMaps) {
       profilingDataMode,
       browsers,
       useAppClassification,
+      removeProfilingData,
       inputSymbolTable
     };
     try {
