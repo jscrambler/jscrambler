@@ -111,6 +111,7 @@ commander
   .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
+  .option('--skip-sources', 'Prevent source files from being updated')
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -149,6 +150,7 @@ config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
 config.removeProfilingData = commander.removeProfilingData;
+config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 
 // handle codeHardening = 0
@@ -274,6 +276,7 @@ const {
   browsers,
   useAppClassification,
   removeProfilingData,
+  skipSources,
   inputSymbolTable
 } = config;
 
@@ -341,6 +344,7 @@ if (commander.sourceMaps) {
       applicationId,
       filesSrc,
       filesDest,
+      skipSources,
       cwd
     })
     .catch(error => {
@@ -398,6 +402,7 @@ if (commander.sourceMaps) {
       profilingDataMode,
       browsers,
       useAppClassification,
+      skipSources,
       removeProfilingData,
       inputSymbolTable
     };

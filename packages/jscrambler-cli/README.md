@@ -108,6 +108,7 @@ Options:
   --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
+  --skip-sources                          Prevent source files from being updated
   -h, --help                              output usage information
 ```
 

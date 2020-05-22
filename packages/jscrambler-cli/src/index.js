@@ -242,6 +242,7 @@ export default {
       useAppClassification,
       profilingDataMode,
       removeProfilingData,
+      skipSources,
       inputSymbolTable
     } = finalConfig;
 
@@ -278,24 +279,29 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    const appProfiling = await this.getApplicationProfiling(
-      client,
-      applicationId
-    ).catch(e => {
-      if (e.statusCode !== 404) throw e;
-    });
+    let source;
+    if (!skipSources) {
+      const appProfiling = await this.getApplicationProfiling(
+        client,
+        applicationId
+      ).catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
 
-    if (appProfiling && removeProfilingData) {
-      await this.deleteProfiling(client, appProfiling.data.id);
-      appProfiling.data.state = 'DELETED';
+      if (appProfiling && removeProfilingData) {
+        await this.deleteProfiling(client, appProfiling.data.id);
+        appProfiling.data.state = 'DELETED';
+      }
+
+      source = await this.updateApplicationSources(client, applicationId, {
+        sources,
+        filesSrc,
+        cwd,
+        appProfiling
+      });
+    } else {
+      console.log('Update source files SKIPPED');
     }
-
-    const source = await this.updateApplicationSources(client, applicationId, {
-      sources,
-      filesSrc,
-      cwd,
-      appProfiling
-    });
 
     const updateData = {
       _id: applicationId,
@@ -498,6 +504,7 @@ export default {
       cwd,
       jscramblerVersion,
       proxy,
+      skipSources,
       clientId
     } = finalConfig;
 
@@ -533,11 +540,15 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    await this.updateApplicationSources(client, applicationId, {
-      sources,
-      filesSrc,
-      cwd
-    });
+    if (!skipSources) {
+      await this.updateApplicationSources(client, applicationId, {
+        sources,
+        filesSrc,
+        cwd
+      });
+    } else {
+      console.log('Update source files SKIPPED');
+    }
 
     let instrumentation = await this.startInstrumentation(
       client,
