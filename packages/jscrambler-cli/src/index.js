@@ -587,7 +587,7 @@ export default {
     `);
 
     console.log(
-      `Application ${applicationId} was instrumented. Bootstrap your application, go to ${APP_URL} and start profiling!`
+      `Application ${applicationId} was instrumented. Run *--start-profiling* command and Bootstrap your instrumented application!`
     );
 
 
@@ -599,9 +599,10 @@ export default {
    * @param configPathOrObject
    * @param state
    * @param label
+   * @param {string} nextStepMessage
    * @returns {Promise<string>} The previous state
    */
-  async setProfilingState(configPathOrObject, state, label) {
+  async setProfilingState(configPathOrObject, state, label, nextStepMessage) {
     const finalConfig = buildFinalConfig(configPathOrObject);
 
     const {
@@ -644,7 +645,7 @@ export default {
     const previousState = instrumentation.data.state;
     if (previousState === state) {
       console.log(
-        `Profiling was already ${label} for application ${applicationId}.`
+        `Profiling was already ${label} for application ${applicationId}. ${nextStepMessage}`
       );
       return;
     }
@@ -653,7 +654,7 @@ export default {
       state
     });
 
-    console.log(`Profiling was ${label} for application ${applicationId}.`);
+    console.log(`Profiling was ${label} for application ${applicationId}. ${nextStepMessage}`);
   },
 
   async downloadSourceMaps(configs, destCallback) {

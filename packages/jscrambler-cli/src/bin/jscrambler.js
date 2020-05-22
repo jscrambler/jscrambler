@@ -359,7 +359,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'RUNNING',
-      'STARTED'
+      'STARTED',
+      'Exercise your application and then, RUN *--stop-profiling* command'
     )
     .catch(error => {
       console.error(debug ? error : error.message || error);
@@ -373,7 +374,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'READY',
-      'STOPPED'
+      'STOPPED',
+      'Protect your application with 2 extra arguments: *--profiling-data-mode automatic* and *--skip-sources*'
     )
     .catch(error => {
       console.error(debug ? error : error.message || error);
