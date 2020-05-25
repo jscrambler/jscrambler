@@ -96,6 +96,10 @@ commander
     validateProfilingDataMode
   )
   .option(
+    '--remove-profiling-data',
+    `Removes the current application profiling information`
+  )
+  .option(
     '--use-app-classification <bool>',
     '(version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)',
     validateBool('--use-app-classification')
@@ -107,6 +111,7 @@ commander
   .option('--output-symbol-table <id>', '(version 6.3 and above) Download output symbol table (json)')
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
+  .option('--skip-sources', 'Prevent source files from being updated')
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -144,6 +149,8 @@ config.werror = commander.werror ? commander.werror !== 'false' : config.werror;
 config.jscramblerVersion =
   commander.jscramblerVersion || config.jscramblerVersion;
 config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
+config.removeProfilingData = commander.removeProfilingData;
+config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 
 // handle codeHardening = 0
@@ -268,6 +275,8 @@ const {
   profilingDataMode,
   browsers,
   useAppClassification,
+  removeProfilingData,
+  skipSources,
   inputSymbolTable
 } = config;
 
@@ -335,6 +344,7 @@ if (commander.sourceMaps) {
       applicationId,
       filesSrc,
       filesDest,
+      skipSources,
       cwd
     })
     .catch(error => {
@@ -349,7 +359,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'RUNNING',
-      'STARTED'
+      'STARTED',
+      "Exercise your application and when you're finished run *--stop-profiling* command"
     )
     .catch(error => {
       console.error(debug ? error : error.message || error);
@@ -363,7 +374,8 @@ if (commander.sourceMaps) {
         applicationId
       },
       'READY',
-      'STOPPED'
+      'STOPPED',
+      'Protect your application with 2 extra arguments: *--profiling-data-mode automatic* and *--skip-sources*'
     )
     .catch(error => {
       console.error(debug ? error : error.message || error);
@@ -392,6 +404,8 @@ if (commander.sourceMaps) {
       profilingDataMode,
       browsers,
       useAppClassification,
+      skipSources,
+      removeProfilingData,
       inputSymbolTable
     };
     try {

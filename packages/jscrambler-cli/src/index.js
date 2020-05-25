@@ -86,16 +86,24 @@ export default {
    * @param {{
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
-   *  cwd: string
+   *  cwd: string,
+   *  appProfiling: ?object
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd}
+    {sources, filesSrc, cwd, appProfiling}
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
+      // prevent removing sources if profiling state is READY
+      if (appProfiling && appProfiling.data.state === 'READY') {
+        throw new Error(
+          'You have a finished Profiling for this application so you are NOT ALLOWED to update sources. To override this behavior use *--remove-profiling-data* or *--skip-sources*.'
+        );
+      }
+
       const removeSourceRes = await this.removeSourceFromApplication(
         client,
         '',
@@ -233,6 +241,8 @@ export default {
       browsers,
       useAppClassification,
       profilingDataMode,
+      removeProfilingData,
+      skipSources,
       inputSymbolTable
     } = finalConfig;
 
@@ -269,11 +279,29 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    const source = await this.updateApplicationSources(client, applicationId, {
-      sources,
-      filesSrc,
-      cwd
-    });
+    let source;
+    if (!skipSources) {
+      const appProfiling = await this.getApplicationProfiling(
+        client,
+        applicationId
+      ).catch(e => {
+        if (e.statusCode !== 404) throw e;
+      });
+
+      if (appProfiling && removeProfilingData) {
+        await this.deleteProfiling(client, appProfiling.data.id);
+        appProfiling.data.state = 'DELETED';
+      }
+
+      source = await this.updateApplicationSources(client, applicationId, {
+        sources,
+        filesSrc,
+        cwd,
+        appProfiling
+      });
+    } else {
+      console.log('Update source files SKIPPED');
+    }
 
     const updateData = {
       _id: applicationId,
@@ -476,6 +504,7 @@ export default {
       cwd,
       jscramblerVersion,
       proxy,
+      skipSources,
       clientId
     } = finalConfig;
 
@@ -511,11 +540,15 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    await this.updateApplicationSources(client, applicationId, {
-      sources,
-      filesSrc,
-      cwd
-    });
+    if (!skipSources) {
+      await this.updateApplicationSources(client, applicationId, {
+        sources,
+        filesSrc,
+        cwd
+      });
+    } else {
+      console.log('Update source files SKIPPED');
+    }
 
     let instrumentation = await this.startInstrumentation(
       client,
@@ -554,7 +587,7 @@ export default {
     `);
 
     console.log(
-      `Application ${applicationId} was instrumented. Bootstrap your application, go to ${APP_URL} and start profiling!`
+      `Application ${applicationId} was instrumented. Bootstrap your instrumented application and run *--start-profiling* command.`
     );
 
 
@@ -566,9 +599,10 @@ export default {
    * @param configPathOrObject
    * @param state
    * @param label
+   * @param {string} nextStepMessage
    * @returns {Promise<string>} The previous state
    */
-  async setProfilingState(configPathOrObject, state, label) {
+  async setProfilingState(configPathOrObject, state, label, nextStepMessage) {
     const finalConfig = buildFinalConfig(configPathOrObject);
 
     const {
@@ -611,7 +645,7 @@ export default {
     const previousState = instrumentation.data.state;
     if (previousState === state) {
       console.log(
-        `Profiling was already ${label} for application ${applicationId}.`
+        `Profiling was already ${label} for application ${applicationId}. ${nextStepMessage}`
       );
       return;
     }
@@ -620,7 +654,7 @@ export default {
       state
     });
 
-    console.log(`Profiling was ${label} for application ${applicationId}.`);
+    console.log(`Profiling was ${label} for application ${applicationId}. ${nextStepMessage}`);
   },
 
   async downloadSourceMaps(configs, destCallback) {
@@ -951,6 +985,14 @@ export default {
     const mutation = await mutations.updateTemplate(template, fragments);
     return client.post('/application', mutation);
   },
+  async getApplicationProfiling(client, applicationId) {
+    return client.get('/profiling-run', {applicationId});
+  },
+  async deleteProfiling(client, profilingId) {
+    return client.patch(`/profiling-run/${profilingId}`, {
+      state: 'DELETED'
+    });
+  },
   /**
    * Starts a new instrumentation process.
    * Previous instrumentation must be deleted, before starting a new one.
@@ -959,16 +1001,15 @@ export default {
    * @returns {Promise<*>}
    */
   async startInstrumentation(client, applicationId) {
-    const instrumentation = await client
-      .get('/profiling-run', {applicationId})
-      .catch(e => {
-        if (e.statusCode !== 404) throw e;
-      });
+    const instrumentation = await this.getApplicationProfiling(
+      client,
+      applicationId
+    ).catch(e => {
+      if (e.statusCode !== 404) throw e;
+    });
 
     if (instrumentation) {
-      await client.patch(`/profiling-run/${instrumentation.data.id}`, {
-        state: 'DELETED'
-      });
+      await this.deleteProfiling(client, instrumentation.data.id);
     }
     return client.post('/profiling-run', {applicationId});
   },

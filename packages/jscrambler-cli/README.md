@@ -102,11 +102,13 @@ Options:
   --tolerate-minification <bool>          Don't detect minification as malicious tampering (default: true)
   --use-profiling-data <bool>             (version 6.2 only) Protection should use the existing profiling data (default: true)
   --profiling-data-mode <mode>            (version 6.3 and above) Select profiling mode (default: automatic)
+  --remove-profiling-data                 Removes the current application profiling information
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
   --input-symbol-table <file>             (version 6.3 and above) Protection should use symbol table when protecting. (default: no file)
   --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
+  --skip-sources                          Prevent source files from being updated
   -h, --help                              output usage information
 ```
 
