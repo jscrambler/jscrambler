@@ -360,7 +360,7 @@ if (commander.sourceMaps) {
       },
       'RUNNING',
       'STARTED',
-      'Exercise your application and then, RUN *--stop-profiling* command'
+      "Exercise your application and when you're finished run *--stop-profiling* command"
     )
     .catch(error => {
       console.error(debug ? error : error.message || error);

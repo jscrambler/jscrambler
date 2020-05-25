@@ -100,7 +100,7 @@ export default {
       // prevent removing sources if profiling state is READY
       if (appProfiling && appProfiling.data.state === 'READY') {
         throw new Error(
-          'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-sources* to continue.'
+          'You have a finished Profiling for this application so you are NOT ALLOWED to update sources To override this behavior use *--remove-profiling-data* or *--skip-sources*.'
         );
       }
 
@@ -587,7 +587,7 @@ export default {
     `);
 
     console.log(
-      `Application ${applicationId} was instrumented. Run *--start-profiling* command and Bootstrap your instrumented application!`
+      `Application ${applicationId} was instrumented. Bootstrap your instrumented application and run *--start-profiling* command.`
     );
 
 
