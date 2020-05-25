@@ -100,7 +100,7 @@ export default {
       // prevent removing sources if profiling state is READY
       if (appProfiling && appProfiling.data.state === 'READY') {
         throw new Error(
-          'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-source* to continue.'
+          'Ready profiling data PREVENTS source files from being UPDATED! Please add option *--remove-profiling-data* or *--skip-sources* to continue.'
         );
       }
 
