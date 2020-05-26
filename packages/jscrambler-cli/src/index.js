@@ -285,7 +285,7 @@ export default {
         client,
         applicationId
       ).catch(e => {
-        if (e.statusCode !== 404) throw e;
+        if (![404, 403].includes(e.statusCode)) throw e;
       });
 
       if (appProfiling && removeProfilingData) {
