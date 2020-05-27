@@ -24,7 +24,7 @@ class ClientError extends Error {
  * @param {String} options.secretKey
  * @param {String} [options.host=api.jscrambler.com]
  * @param {String} [options.port=443]
- * @param {String} [options.basePath=/]
+ * @param {String} [options.basePath]
  * @param {String} [options.clientId=0]
  * @author José Magalhães (magalhas@gmail.com)
  * @license MIT <http://opensource.org/licenses/MIT>
