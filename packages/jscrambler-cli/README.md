@@ -87,6 +87,7 @@ Options:
   -i, --application-id <id>               Application ID
   -o, --output-dir <dir>                  Output directory
   -p, --port <port>                       Port
+  --basePath <path>                       Base Path
   --protocol <protocol>                   Protocol (http or https)
   --cafile <path>                         Internal certificate authority
   -C, --cwd <dir>                         Current Working Directory
