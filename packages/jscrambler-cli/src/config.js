@@ -7,6 +7,7 @@ const config = rc(
   {
     keys: {},
     host: 'api4.jscrambler.com',
+    basePath: '',
     jscramblerVersion: 'stable',
     werror: true,
     clientId: 0

@@ -56,6 +56,7 @@ commander
   .option('-i, --application-id <id>', 'Application ID')
   .option('-o, --output-dir <dir>', 'Output directory')
   .option('-p, --port <port>', 'Port')
+  .option('--base-path <path>', 'Base Path')
   .option('--protocol <protocol>', 'Protocol (http or https)')
   .option('--cafile <path>', 'Internal certificate authority')
   .option('-C, --cwd <dir>', 'Current Working Directory')
@@ -131,6 +132,7 @@ config.secretKey =
   commander.secretKey || (config.keys ? config.keys.secretKey : undefined);
 config.host = commander.host || config.host;
 config.port = commander.port || config.port;
+config.basePath = commander.basePath || config.basePath;
 config.port = config.port && parseInt(config.port);
 config.protocol = commander.protocol || config.protocol;
 config.cafile = commander.cafile || config.cafile;
@@ -256,6 +258,7 @@ const {
   filesDest,
   host,
   port,
+  basePath,
   protocol,
   cafile,
   applicationTypes,
@@ -301,6 +304,7 @@ const clientSettings = {
   },
   host,
   port,
+  basePath,
   protocol,
   cafile,
   proxy,
