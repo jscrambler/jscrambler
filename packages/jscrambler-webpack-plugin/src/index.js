@@ -1,5 +1,6 @@
 const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
+const fs = require('fs');
 
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
@@ -44,6 +45,18 @@ class JscramblerPlugin {
         }
 
         chunk.files.forEach(filename => {
+          try {
+            const ignoreFilename = '.jscramblerignore';
+            const ignorePatterns = fs.readFileSync(ignoreFilename, { encoding: 'utf8' });
+            
+            sources.push({ 
+              content: ignorePatterns, 
+              filename: ignoreFilename,
+            });
+          } catch (error) {
+            // .jscramblerignore file does not exist
+          }
+          
           if (/\.(js|html|htm)$/.test(filename)) {
             const content = compilation.assets[filename].source();
 
