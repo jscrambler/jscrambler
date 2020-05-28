@@ -36,6 +36,19 @@ class JscramblerPlugin {
 
     compiler.plugin('emit', (compilation, callback) => {
       const sources = [];
+      
+      try {
+        const ignoreFilename = '.jscramblerignore';
+        const ignorePatterns = fs.readFileSync(ignoreFilename, { encoding: 'utf8' });
+
+        sources.push({ 
+          content: ignorePatterns, 
+          filename: ignoreFilename,
+        });
+      } catch (error) {
+        // .jscramblerignore file does not exist
+      }
+      
       compilation.chunks.forEach(chunk => {
         if (
           Array.isArray(this.options.chunks) &&
@@ -45,18 +58,6 @@ class JscramblerPlugin {
         }
 
         chunk.files.forEach(filename => {
-          try {
-            const ignoreFilename = '.jscramblerignore';
-            const ignorePatterns = fs.readFileSync(ignoreFilename, { encoding: 'utf8' });
-            
-            sources.push({ 
-              content: ignorePatterns, 
-              filename: ignoreFilename,
-            });
-          } catch (error) {
-            // .jscramblerignore file does not exist
-          }
-          
           if (/\.(js|html|htm)$/.test(filename)) {
             const content = compilation.assets[filename].source();
 
