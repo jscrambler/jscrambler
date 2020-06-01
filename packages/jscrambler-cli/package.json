@@ -30,12 +30,13 @@
     "node": ">= 6.10.0"
   },
   "dependencies": {
-    "axios": "^0.19.1",
+    "axios": "^0.19.2",
     "babel-polyfill": "^6.9.1",
     "commander": "^2.8.1",
     "filesize-parser": "1.5.0",
     "fs-extra": "^0.30.0",
     "glob": "^7.0.3",
+    "http-proxy-agent": "^4.0.1",
     "jszip": "^2.6.0",
     "lodash.clone": "^4.0.3",
     "lodash.clonedeep": "^4.5.0",

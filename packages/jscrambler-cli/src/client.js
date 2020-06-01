@@ -4,6 +4,7 @@ import keys from 'lodash.keys';
 import axios from 'axios';
 import url from 'url';
 import https from 'https';
+import HttpProxyAgent from 'http-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -152,28 +153,45 @@ JScramblerClient.prototype.request = function(
       port,
       pathname: this.options.basePath + path,
       protocol
-    });
+    })
 
   let data;
   const settings = {};
 
-  if (proxy) {
-    settings.proxy = proxy;
+  // Internal CA
+  let agentOptions = null;
+  if (this.options.cafile) {
+    agentOptions = {
+      ca: fs.readFileSync(this.options.cafile)
+    }
+  }
+
+  if (proxy || typeof proxy === 'object') {
+    const {host, port=8080, auth} = proxy;
+
+    if(!host) {
+      throw new Error('Required *proxy.host* not provided');
+    }
+
+    let urlAuth = '';
+    if(auth) {
+      const {username, password} = auth;
+
+      if(!username || !password) {
+        throw new Error('Required *proxy.auth* username or/and password not provided');
+      }
+
+      urlAuth = `${username}:${password}@`
+    }
+
+    settings.agent = new HttpProxyAgent(`http://127.0.0.1:3128`, agentOptions);
+  } else if(agentOptions) {
+    settings.httpsAgent = new https.Agent(agentOptions);
   }
 
   if (!isJSON) {
     settings.responseType = 'arraybuffer';
   }
-
-  // Internal CA
-  if (this.options.cafile) {
-    const agent = new https.Agent({
-      ca: fs.readFileSync(this.options.cafile)
-    });
-    settings.httpsAgent = agent;
-  }
-
-
 
   let promise;
 
