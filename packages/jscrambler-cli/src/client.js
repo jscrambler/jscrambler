@@ -147,7 +147,7 @@ JScramblerClient.prototype.request = function(
     protocol = port === 443 ? 'https' : 'http';
   }
 
-  const formatedUrl =
+  const formattedUrl =
     url.format({
       hostname: this.options.host,
       port,
@@ -173,28 +173,29 @@ JScramblerClient.prototype.request = function(
       throw new Error('Required *proxy.host* not provided');
     }
 
-    if(auth) {
+    let formattedAuth = undefined;
+    if (auth) {
       const {username, password} = auth;
 
       if(!username || !password) {
         throw new Error('Required *proxy.auth* username or/and password not provided');
       }
 
-      proxy.auth = `${username}:${password}`
+      formattedAuth = `${username}:${password}`;
     }
 
-    /**
-     * Monkey-patch to inject a custom Cert CA into TLS.connect
-     * options.
-     */
-    if (agentOptions.ca) {
-      const oriCallback = HttpsProxyAgent.prototype.callback;
-      HttpsProxyAgent.prototype.callback = function(req, opts) {
-        return oriCallback.call(this, req, {...opts, ...agentOptions})
+      /**
+       * Monkey-patch to inject a custom Cert CA into TLS.connect
+       * options.
+       */
+      if (agentOptions.ca) {
+        const oriCallback = HttpsProxyAgent.prototype.callback;
+        HttpsProxyAgent.prototype.callback = function(req, opts) {
+          return oriCallback.call(this, req, {...opts, ...agentOptions})
+        }
       }
-    }
 
-    settings.httpsAgent = new HttpsProxyAgent({...proxy, ...agentOptions});
+    settings.httpsAgent = new HttpsProxyAgent({host, port, auth: formattedAuth, ...agentOptions});
   } else if(agentOptions) {
     settings.httpsAgent = new https.Agent(agentOptions);
   }
@@ -207,10 +208,10 @@ JScramblerClient.prototype.request = function(
 
   if (method === 'GET' || method === 'DELETE') {
     settings.params = signedData;
-    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formattedUrl, settings);
   } else {
     data = signedData;
-    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, data, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formattedUrl, data, settings);
   }
 
   return promise.then(res => {
