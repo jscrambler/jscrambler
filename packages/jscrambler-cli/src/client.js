@@ -4,7 +4,7 @@ import keys from 'lodash.keys';
 import axios from 'axios';
 import url from 'url';
 import https from 'https';
-import HttpProxyAgent from 'http-proxy-agent';
+import HttpsProxyAgent from 'https-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -159,7 +159,7 @@ JScramblerClient.prototype.request = function(
   const settings = {};
 
   // Internal CA
-  let agentOptions = null;
+  let agentOptions = {};
   if (this.options.cafile) {
     agentOptions = {
       ca: fs.readFileSync(this.options.cafile)
@@ -167,13 +167,12 @@ JScramblerClient.prototype.request = function(
   }
 
   if (proxy || typeof proxy === 'object') {
-    const {host, port=8080, auth} = proxy;
+    const {host, auth} = proxy;
 
     if(!host) {
       throw new Error('Required *proxy.host* not provided');
     }
 
-    let urlAuth = '';
     if(auth) {
       const {username, password} = auth;
 
@@ -181,10 +180,21 @@ JScramblerClient.prototype.request = function(
         throw new Error('Required *proxy.auth* username or/and password not provided');
       }
 
-      urlAuth = `${username}:${password}@`
+      proxy.auth = `${username}:${password}`
     }
 
-    settings.agent = new HttpProxyAgent(`http://127.0.0.1:3128`, agentOptions);
+    /**
+     * Monkey-patch to inject a custom Cert CA into TLS.connect
+     * options.
+     */
+    if (agentOptions.ca) {
+      const oriCallback = HttpsProxyAgent.prototype.callback;
+      HttpsProxyAgent.prototype.callback = function(req, opts) {
+        return oriCallback.call(this, req, {...opts, ...agentOptions})
+      }
+    }
+
+    settings.httpsAgent = new HttpsProxyAgent({...proxy, ...agentOptions});
   } else if(agentOptions) {
     settings.httpsAgent = new https.Agent(agentOptions);
   }
