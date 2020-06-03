@@ -167,7 +167,7 @@ JScramblerClient.prototype.request = function(
   }
 
   if (proxy || typeof proxy === 'object') {
-    const {host, auth} = proxy;
+    const {host, port = 8080, auth} = proxy;
 
     if(!host) {
       throw new Error('Required *proxy.host* not provided');
@@ -195,6 +195,7 @@ JScramblerClient.prototype.request = function(
         }
       }
 
+    settings.proxy = false;
     settings.httpsAgent = new HttpsProxyAgent({host, port, auth: formattedAuth, ...agentOptions});
   } else if(agentOptions) {
     settings.httpsAgent = new https.Agent(agentOptions);
