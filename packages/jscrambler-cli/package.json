@@ -36,7 +36,7 @@
     "filesize-parser": "1.5.0",
     "fs-extra": "^0.30.0",
     "glob": "^7.0.3",
-    "https-proxy-agent": "5.0.0",
+    "https-proxy-agent": "https://github.com/jscrambler/node-https-proxy-agent/tarball/fix-error-not-handling",
     "jszip": "^2.6.0",
     "lodash.clone": "^4.0.3",
     "lodash.clonedeep": "^4.5.0",
