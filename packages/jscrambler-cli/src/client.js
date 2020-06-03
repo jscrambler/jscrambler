@@ -153,7 +153,7 @@ JScramblerClient.prototype.request = function(
       port,
       pathname: this.options.basePath + path,
       protocol
-    })
+    });
 
   let data;
   const settings = {};
