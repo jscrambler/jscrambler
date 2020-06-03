@@ -4,6 +4,7 @@ import keys from 'lodash.keys';
 import axios from 'axios';
 import url from 'url';
 import https from 'https';
+import HttpsProxyAgent from 'https-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -146,7 +147,7 @@ JScramblerClient.prototype.request = function(
     protocol = port === 443 ? 'https' : 'http';
   }
 
-  const formatedUrl =
+  const formattedUrl =
     url.format({
       hostname: this.options.host,
       port,
@@ -157,32 +158,61 @@ JScramblerClient.prototype.request = function(
   let data;
   const settings = {};
 
-  if (proxy) {
-    settings.proxy = proxy;
+  // Internal CA
+  let agentOptions = {};
+  if (this.options.cafile) {
+    agentOptions = {
+      ca: fs.readFileSync(this.options.cafile)
+    }
+  }
+
+  if (proxy || typeof proxy === 'object') {
+    const {host, port = 8080, auth} = proxy;
+
+    if(!host) {
+      throw new Error('Required *proxy.host* not provided');
+    }
+
+    let formattedAuth = undefined;
+    if (auth) {
+      const {username, password} = auth;
+
+      if(!username || !password) {
+        throw new Error('Required *proxy.auth* username or/and password not provided');
+      }
+
+      formattedAuth = `${username}:${password}`;
+    }
+
+      /**
+       * Monkey-patch to inject a custom Cert CA into TLS.connect
+       * options.
+       */
+      if (agentOptions.ca) {
+        const oriCallback = HttpsProxyAgent.prototype.callback;
+        HttpsProxyAgent.prototype.callback = function(req, opts) {
+          return oriCallback.call(this, req, {...opts, ...agentOptions})
+        }
+      }
+
+    settings.proxy = false;
+    settings.httpsAgent = new HttpsProxyAgent({host, port, auth: formattedAuth, ...agentOptions});
+  } else if(agentOptions) {
+    settings.httpsAgent = new https.Agent(agentOptions);
   }
 
   if (!isJSON) {
     settings.responseType = 'arraybuffer';
   }
 
-  // Internal CA
-  if (this.options.cafile) {
-    const agent = new https.Agent({
-      ca: fs.readFileSync(this.options.cafile)
-    });
-    settings.httpsAgent = agent;
-  }
-
-
-
   let promise;
 
   if (method === 'GET' || method === 'DELETE') {
     settings.params = signedData;
-    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formattedUrl, settings);
   } else {
     data = signedData;
-    promise = this.axiosInstance[method.toLowerCase()](formatedUrl, data, settings);
+    promise = this.axiosInstance[method.toLowerCase()](formattedUrl, data, settings);
   }
 
   return promise.then(res => {
