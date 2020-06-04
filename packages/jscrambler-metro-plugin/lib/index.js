@@ -78,9 +78,18 @@ async function obfuscateBundle(
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
-  // if omit, we automatically activate sourceMaps generation (no sourceContent) when '--sourcemap-output' arg is set
-  config.sourceMaps = config.sourceMaps === undefined ? !!bundleSourceMapPath : config.sourceMaps;
-  // must have metro and jscrambler source-maps
+    
+  if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
+    console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
+  If this is not a problem, you can either:
+    1) Disable source maps in metro bundler
+    2) Explicitly disable Jscrambler source maps by adding 'sourceMaps: false' in the Jscrambler config file
+
+  If you want valid source maps, make sure you have access to the feature and enable it in Jscrambler config file by adding 'sourceMaps: true'`
+    );
+    process.exit(-1);
+  }
+  
   const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
 
   const jscramblerOp = !!config.instrument
