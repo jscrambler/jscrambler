@@ -24,7 +24,12 @@ module.exports = function (grunt) {
             {
               name: 'stringSplitting',
               options: {
-                chunk: 1
+                max: -1,
+                freq: 0.5,
+                chunks: [
+                  2,
+                  4
+                ]
               }
             },
             {
