@@ -98,7 +98,7 @@ export default {
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
-      if (appProfiling && appProfiling.data.state === 'READY') {
+      if (appProfiling && appProfiling.data && appProfiling.data.state === 'READY') {
         throw new Error(
           'You have a finished Profiling for this application so you are NOT ALLOWED to update sources. To override this behavior use *--remove-profiling-data* or *--skip-sources*.'
         );
