@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const generateSourceMaps = require('./sourceMaps');
 const {
+  INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_TEMP_FOLDER,
   JSCRAMBLER_DIST_TEMP_FOLDER,
@@ -148,6 +149,32 @@ async function obfuscateBundle(
   await writeFile(bundleSourceMapPath, finalSourceMap);
 }
 
+function fileExists(modulePath) {
+  return fs.existsSync(modulePath);
+}
+
+function isValidExtension(modulePath) {
+  return path.extname(modulePath).match(JSCRAMBLER_EXTS);
+}
+
+function validateModule(modulePath) {
+  const instrument = !!config.instrument;
+
+  if (
+    !fileExists(modulePath) ||
+    !isValidExtension(modulePath) ||
+    typeof modulePath !== "string"
+  ) {
+    return false;
+  } else if (modulePath.includes(INIT_CORE_MODULE) && !instrument) {
+    return true;
+  } else if (modulePath.includes("node_modules")) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 /**
  * Add serialize.processModuleFilter option to metro and attach listener to beforeExit event.
  * *config.fileSrc* and *config.filesDest* will be ignored.
@@ -199,16 +226,14 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        * @returns {boolean}
        */
       processModuleFilter(_module) {
-        if (
-          _module.path.indexOf('node_modules') !== -1 ||
-          typeof _module.path !== 'string' ||
-          !fs.existsSync(_module.path) ||
-          !path.extname(_module.path).match(JSCRAMBLER_EXTS)
-        ) {
+        const modulePath = _module.path;    
+        const shouldSkipModule = !validateModule(modulePath);
+
+        if (shouldSkipModule) {
           return true;
         }
-
-        const normalizePath = buildNormalizePath(_module.path, projectRoot);
+        
+        const normalizePath = buildNormalizePath(modulePath, projectRoot);
         fileNames.add(normalizePath);
         _module.output.forEach(({data}) => {
           if (instrument && Array.isArray(data.map)) {

@@ -245,7 +245,8 @@ export default {
       profilingDataMode,
       removeProfilingData,
       skipSources,
-      inputSymbolTable
+      inputSymbolTable,
+      entryPoint
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -318,38 +319,25 @@ export default {
       updateData.areSubscribersOrdered = Array.isArray(params);
     }
 
-    if (typeof areSubscribersOrdered !== 'undefined') {
-      updateData.areSubscribersOrdered = areSubscribersOrdered;
-    }
-
-    if (applicationTypes) {
-      updateData.applicationTypes = applicationTypes;
-    }
-
-    if (typeof useRecommendedOrder !== 'undefined') {
-      updateData.useRecommendedOrder = useRecommendedOrder;
-    }
-
-    if (languageSpecifications) {
-      updateData.languageSpecifications = languageSpecifications;
-    }
-
-    if (typeof sourceMaps !== 'undefined') {
-      updateData.sourceMaps = sourceMaps;
-    }
-
-    if (useProfilingData !== undefined) {
-      updateData.useProfilingData = useProfilingData;
-    }
-    if (profilingDataMode !== undefined) {
-      updateData.profilingDataMode = profilingDataMode;
-    }
-    if (useAppClassification !== undefined) {
-      updateData.useAppClassification = useAppClassification;
-    }
-
-    if (browsers) {
-      updateData.browsers = browsers;
+    
+    const dataToValidate = {
+      applicationTypes,
+      areSubscribersOrdered,
+      browsers,
+      languageSpecifications,
+      profilingDataMode,
+      sourceMaps,
+      useAppClassification,
+      useProfilingData,
+      useProfilingData,
+      useRecommendedOrder
+    };
+    
+    for(const prop in dataToValidate) {
+      const value = dataToValidate[prop];
+      if (typeof value !== 'undefined') {
+        updateData[prop] = value;
+      }
     }
 
     if (
@@ -384,7 +372,15 @@ export default {
     }
 
     delete updateData._id;
-    const protectionOptions = {bail, randomizationSeed, tolerateMinification, source, inputSymbolTable, ...updateData};
+    const protectionOptions = {
+      ...updateData,
+      bail,
+      entryPoint,
+      inputSymbolTable,
+      randomizationSeed,
+      source,
+      tolerateMinification
+    };
 
     if (finalConfig.inputSymbolTable) {
       // Note: we can not use the fs.promises API because some users may not have node 10.
