@@ -1,7 +1,7 @@
 {
   "name": "jscrambler",
   "description": "Jscrambler API client.",
-  "version": "5.5.10",
+  "version": "5.5.11",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": {
     "name": "magalhas",
@@ -59,7 +59,10 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0"
   },
-  "files": ["dist", "LICENSE-MIT"],
+  "files": [
+    "dist",
+    "LICENSE-MIT"
+  ],
   "main": "dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
