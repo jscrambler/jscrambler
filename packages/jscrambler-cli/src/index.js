@@ -333,7 +333,7 @@ export default {
       useRecommendedOrder
     };
     
-    for(const prop in dataToValidate) {
+    for (const prop in dataToValidate) {
       const value = dataToValidate[prop];
       if (typeof value !== 'undefined') {
         updateData[prop] = value;
