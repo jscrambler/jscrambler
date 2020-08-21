@@ -79,7 +79,8 @@ async function obfuscateBundle(
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
-    
+  config.entryPoint = INIT_CORE_MODULE;
+
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
     console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
   If this is not a problem, you can either:
@@ -157,7 +158,7 @@ function isValidExtension(modulePath) {
   return path.extname(modulePath).match(JSCRAMBLER_EXTS);
 }
 
-function validateModule(modulePath) {
+function validateModule(modulePath, config) {
   const instrument = !!config.instrument;
 
   if (
@@ -227,12 +228,12 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        */
       processModuleFilter(_module) {
         const modulePath = _module.path;    
-        const shouldSkipModule = !validateModule(modulePath);
+        const shouldSkipModule = !validateModule(modulePath, config);
 
         if (shouldSkipModule) {
           return true;
         }
-        
+
         const normalizePath = buildNormalizePath(modulePath, projectRoot);
         fileNames.add(normalizePath);
         _module.output.forEach(({data}) => {
