@@ -59,6 +59,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0"
   },
+  "files": ["dist", "LICENSE-MIT"],
   "main": "dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
