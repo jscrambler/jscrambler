@@ -319,7 +319,7 @@ export default {
       updateData.areSubscribersOrdered = Array.isArray(params);
     }
 
-    
+
     const dataToValidate = {
       applicationTypes,
       areSubscribersOrdered,
@@ -332,7 +332,7 @@ export default {
       useProfilingData,
       useRecommendedOrder
     };
-    
+
     for(const prop in dataToValidate) {
       const value = dataToValidate[prop];
       if (typeof value !== 'undefined') {
@@ -1085,6 +1085,36 @@ export default {
       null,
       false
     );
+  },
+  /**
+   * Introspect method to check if a certain field is supported.
+   * @param {Object} config jscrambler client config
+   * @param {String} queryOrMutation a string in ['query, 'mutation']
+   * @param {String} methodName query or mutation name
+   * @param {String} field args field to introspect
+   * @returns {Boolean} true if the field is supported, false otherwise
+   */
+  async introspectFieldOnMethod(config, queryOrMutation, methodName, field) {
+    const instrospectionType = queryOrMutation.toLowerCase() === 'mutation' ? introspection.mutation : introspection.query;
+
+    const client = new this.Client({
+      ...config
+    });
+
+    const result = await instrospectionType(
+      client,
+      methodName
+    );
+
+    if (!result || !result.args) {
+      console.log('Method not found.')
+      return false;
+    }
+
+    const dataArg = result.args.find(arg => arg.name === 'data');
+    const isFieldSupported = dataArg && dataArg.type.inputFields.some(e => e.name === field);
+
+    return isFieldSupported;
   }
 };
 
