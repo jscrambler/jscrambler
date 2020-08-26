@@ -132,17 +132,19 @@ function shiftStartIndexOnNewLine(startIndex, code) {
 }
 
 /**
- * Wrap user code with Jscrambler TAGS {JSCRAMBLER_BEG_ANNOTATION and JSCRAMBLER_END_ANNOTATION}
- * @param {{code: string}} data
+ * Wrap code with Jscrambler TAGS {JSCRAMBLER_BEG_ANNOTATION and JSCRAMBLER_END_ANNOTATION}
+ * @param {string} code
  */
-function wrapCodeWithTags(data) {
-  let startIndex = data.code.indexOf('{');
-  const endIndex = data.code.lastIndexOf('}');
-  startIndex = shiftStartIndexOnNewLine(startIndex, data.code);
-  const init = data.code.substring(0, startIndex + 1);
-  const clientCode = data.code.substring(startIndex + 1, endIndex);
-  const end = data.code.substr(endIndex, data.code.length);
-  data.code = init + JSCRAMBLER_BEG_ANNOTATION + clientCode + JSCRAMBLER_END_ANNOTATION + end;
+function wrapCodeWithTags(code) {
+  let startIndex = code.indexOf('{');
+  const endIndex = code.lastIndexOf('}');
+  startIndex = shiftStartIndexOnNewLine(startIndex, code);
+  const init = code.substring(0, startIndex + 1);
+  const clientCode = code.substring(startIndex + 1, endIndex);
+  const end = code.substr(endIndex, code.length);
+  const codeWithTags = init + JSCRAMBLER_BEG_ANNOTATION + clientCode + JSCRAMBLER_END_ANNOTATION + end;
+
+  return codeWithTags;
 }
 
 /**
@@ -181,12 +183,27 @@ function buildNormalizePath(path, projectRoot) {
   return relativePath.replace(JSCRAMBLER_EXTS, '.js').substring(1 /* remove '/' */);
 }
 
-module.exports = {
-  skipObfuscation,
-  getBundlePath,
-  extractLocs,
-  stripJscramblerTags,
-  wrapCodeWithTags,
-  buildModuleSourceMap,
-  buildNormalizePath
+function getCodeBody(code) {
+  const bodyBegIndex = code.indexOf("{");
+  const bodyEndIndex = code.lastIndexOf("}");
+  // +1 to include last '}'
+  return code.substring(bodyBegIndex, bodyEndIndex + 1);
 }
+
+function stripEntryPointTags(metroBundle, entryPointMinified) {
+  const entryPointBody = getCodeBody(entryPointMinified);
+  const entryPointBodyWithTags = wrapCodeWithTags(entryPointBody);
+  const processedBundle = metroBundle.replace(entryPointBodyWithTags, entryPointBody);
+  return processedBundle;
+}
+
+module.exports = {
+  buildModuleSourceMap,
+  buildNormalizePath,
+  extractLocs,
+  getBundlePath,
+  stripEntryPointTags,
+  skipObfuscation,
+  stripJscramblerTags,
+  wrapCodeWithTags
+};
