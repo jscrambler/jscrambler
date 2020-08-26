@@ -1,0 +1,6 @@
+export const HTTP_STATUS_CODES = Object.freeze({
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  SERVICE_UNAVAILABLE: 503,
+  GATEWAY_TIMEOUT: 504
+});

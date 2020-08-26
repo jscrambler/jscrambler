@@ -12,6 +12,7 @@ import generateSignedParams from './generate-signed-params';
 import JscramblerClient from './client';
 import * as mutations from './mutations';
 import * as queries from './queries';
+import {HTTP_STATUS_CODES} from './constants';
 import {zip, zipSources, unzip, outputFileSync} from './zip';
 import * as introspection from './introspection';
 
@@ -288,7 +289,11 @@ export default {
         client,
         applicationId
       ).catch(e => {
-        if (![404, 403, 503].includes(e.statusCode)) throw e;
+        if (![
+          HTTP_STATUS_CODES.NOT_FOUND,
+          HTTP_STATUS_CODES.FORBIDDEN,
+          HTTP_STATUS_CODES.SERVICE_UNAVAILABLE
+        ].includes(e.statusCode)) throw e;
       });
 
       if (appProfiling && removeProfilingData) {
@@ -807,13 +812,38 @@ export default {
     };
     return poll();
   },
+  async withRetries(action) {
+    let retriesLeft = config.maxRetries;
+    for (;;) {
+      try {
+        return await action();
+      } catch (e) {
+        if (retriesLeft <= 0) {
+          throw e;
+        }
+        if (
+          e.statusCode !== HTTP_STATUS_CODES.SERVICE_UNAVAILABLE &&
+          e.statusCode !== HTTP_STATUS_CODES.GATEWAY_TIMEOUT
+        ) {
+          throw e;
+        }
+        // Retry
+        if (debug) {
+          console.log('Retrying request');
+        }
+        retriesLeft--;
+      }
+    }
+  },
   async pollProtection(client, applicationId, protectionId, fragments) {
     const poll = async () => {
-      const applicationProtection = await this.getApplicationProtection(
-        client,
-        applicationId,
-        protectionId,
-        fragments
+      const applicationProtection = await this.withRetries(
+        () => this.getApplicationProtection(
+          client,
+          applicationId,
+          protectionId,
+          fragments
+        )
       );
       if (applicationProtection.errors) {
         console.log('Error polling protection', applicationProtection.errors);
@@ -947,7 +977,9 @@ export default {
       applicationSource,
       fragments
     );
-    return client.post('/application', mutation);
+    return this.withRetries(
+      () => client.post('/application', mutation)
+    );
   },
   //
   async addApplicationSourceFromURL(client, applicationId, url, fragments) {
@@ -980,7 +1012,9 @@ export default {
       applicationId,
       fragments
     );
-    return client.post('/application', mutation);
+    return this.withRetries(
+      () => client.post('/application', mutation)
+    );
   },
   //
   async applyTemplate(client, templateId, appId, fragments) {

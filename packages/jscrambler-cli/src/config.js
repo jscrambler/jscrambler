@@ -10,7 +10,8 @@ const config = rc(
     basePath: '',
     jscramblerVersion: 'stable',
     werror: true,
-    clientId: 0
+    clientId: 0,
+    maxRetries: 5
   },
   []
 );
