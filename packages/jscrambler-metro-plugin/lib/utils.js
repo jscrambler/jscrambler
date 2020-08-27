@@ -193,8 +193,10 @@ function getCodeBody(code) {
 function stripEntryPointTags(metroBundle, entryPointMinified) {
   const entryPointBody = getCodeBody(entryPointMinified);
   const entryPointBodyWithTags = wrapCodeWithTags(entryPointBody);
-  const processedBundle = metroBundle.replace(entryPointBodyWithTags, entryPointBody);
-  return processedBundle;
+  const metroChunksByEntrypoint = metroBundle.split(entryPointBodyWithTags);
+  // restore entrypoint original code
+  metroChunksByEntrypoint.splice(1, 0, entryPointBody);
+  return metroChunksByEntrypoint.join('');
 }
 
 module.exports = {

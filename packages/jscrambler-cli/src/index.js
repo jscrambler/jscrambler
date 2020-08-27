@@ -329,10 +329,9 @@ export default {
       sourceMaps,
       useAppClassification,
       useProfilingData,
-      useProfilingData,
       useRecommendedOrder
     };
-    
+
     for (const prop in dataToValidate) {
       const value = dataToValidate[prop];
       if (typeof value !== 'undefined') {
@@ -1107,7 +1106,7 @@ export default {
     );
 
     if (!result || !result.args) {
-      console.log('Method not found.')
+      debug && console.log(`Method *${methodName}* not found.`)
       return false;
     }
 

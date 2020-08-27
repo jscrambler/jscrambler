@@ -28,8 +28,6 @@ const {
 
 const debug = !!process.env.DEBUG;
 
-let entryPointMinifedData = [];
-
 function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
   if (hasMetroSourceMaps) {
     console.log(`warning: Jscrambler source-maps are DISABLED. Check how to activate them in https://docs.jscrambler.com/code-integrity/documentation/source-maps/api`);
@@ -40,7 +38,7 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
 
 async function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
-  fileNames,
+  {fileNames, entryPointCode},
   sourceMapFiles,
   config,
   projectRoot
@@ -61,14 +59,15 @@ async function obfuscateBundle(
   );
 
   // ignore entrypoint obfuscation if its not supported
-  if (!supportsEntryPoint && entryPointMinifedData.length > 0) {
+  if (!supportsEntryPoint && typeof entryPointCode === 'string' && entryPointCode.length > 0) {
+    debug && console.log('debug Jscrambler entrypoint option not supported');
     try {
       filteredFileNames = fileNames.filter(
         name => !name.includes(INIT_CORE_MODULE)
       );
       processedMetroBundle = stripEntryPointTags(
         metroBundle,
-        entryPointMinifedData[0]
+        entryPointCode
       );
     } catch (err) {
       console.log("Error processing entry point.");
@@ -228,6 +227,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   const sourceMapFiles = [];
   const config = Object.assign({}, jscrambler.config, _config);
   const instrument = !!config.instrument;
+  let entryPointCode;
 
   if (config.filesDest || config.filesSrc) {
     console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using input/output values of the metro bundler.')
@@ -241,7 +241,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
           : 'info Jscrambler Obfuscating Code'
       );
       // start obfuscation
-      await obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config, projectRoot);
+      await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);
     } catch(err) {
       console.error(err);
       process.exit(1);
@@ -282,7 +282,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
             });
           }
           if (modulePath.includes(INIT_CORE_MODULE)){
-            entryPointMinifedData.push(data.code);
+            entryPointCode = data.code;
           }
           data.code = wrapCodeWithTags(data.code);
         });
