@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const generateSourceMaps = require('./sourceMaps');
 const {
+  INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_TEMP_FOLDER,
   JSCRAMBLER_DIST_TEMP_FOLDER,
@@ -17,11 +18,12 @@ const {
 const {
   buildModuleSourceMap,
   buildNormalizePath,
-  wrapCodeWithTags,
   extractLocs,
   getBundlePath,
   skipObfuscation,
-  stripJscramblerTags
+  stripEntryPointTags,
+  stripJscramblerTags,
+  wrapCodeWithTags
 } = require('./utils');
 
 const debug = !!process.env.DEBUG;
@@ -36,7 +38,7 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
 
 async function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
-  fileNames,
+  {fileNames, entryPointCode},
   sourceMapFiles,
   config,
   projectRoot
@@ -45,7 +47,35 @@ async function obfuscateBundle(
 
   const metroBundle = await readFile(bundlePath, 'utf8');
   const metroBundleLocs = await extractLocs(metroBundle);
-  const metroBundleChunks = metroBundle.split(JSCRAMBLER_BEG_ANNOTATION);
+  let processedMetroBundle = metroBundle;
+  let filteredFileNames = fileNames;
+
+  const supportsEntryPoint = await jscrambler.introspectFieldOnMethod.call(
+    jscrambler,
+    config,
+    "mutation",
+    "createApplicationProtection",
+    "entryPoint"
+  );
+
+  // ignore entrypoint obfuscation if its not supported
+  if (!supportsEntryPoint && typeof entryPointCode === 'string' && entryPointCode.length > 0) {
+    debug && console.log('debug Jscrambler entrypoint option not supported');
+    try {
+      filteredFileNames = fileNames.filter(
+        name => !name.includes(INIT_CORE_MODULE)
+      );
+      processedMetroBundle = stripEntryPointTags(
+        metroBundle,
+        entryPointCode
+      );
+    } catch (err) {
+      console.log("Error processing entry point.");
+      process.exit(-1);
+    }
+  }
+
+  const metroBundleChunks = processedMetroBundle.split(JSCRAMBLER_BEG_ANNOTATION);
   const metroUserFilesOnly = metroBundleChunks
     .filter((c, i) => i > 0)
     .map((c, i) => {
@@ -54,7 +84,7 @@ async function obfuscateBundle(
 
   // build tmp src folders structure
   await Promise.all(
-    fileNames.map(n =>
+    filteredFileNames.map(n =>
       mkdirp(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${path.dirname(n)}`)
     )
   );
@@ -62,7 +92,7 @@ async function obfuscateBundle(
   // write user files to tmp folder
   await Promise.all(
     metroUserFilesOnly.map((c, i) =>
-      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${fileNames[i]}`, c)
+      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filteredFileNames[i]}`, c)
     )
   )
 
@@ -78,7 +108,11 @@ async function obfuscateBundle(
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
-    
+
+  if (supportsEntryPoint) {
+    config.entryPoint = INIT_CORE_MODULE;
+  }
+
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
     console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
   If this is not a problem, you can either:
@@ -89,7 +123,7 @@ async function obfuscateBundle(
     );
     process.exit(-1);
   }
-  
+
   const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
 
   const jscramblerOp = !!config.instrument
@@ -104,7 +138,7 @@ async function obfuscateBundle(
 
   // read obfuscated user files
   const obfusctedUserFiles = await Promise.all(metroUserFilesOnly.map((c, i) =>
-    readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}/${fileNames[i]}`, 'utf8')
+    readFile(`${JSCRAMBLER_DIST_TEMP_FOLDER}/${filteredFileNames[i]}`, 'utf8')
   ));
 
   // build final bundle (with JSCRAMBLER TAGS still)
@@ -137,7 +171,7 @@ async function obfuscateBundle(
     shouldAddSourceContent,
     protectionId,
     metroUserFilesOnly,
-    fileNames,
+    fileNames: filteredFileNames,
     bundlePath,
     bundleSourceMapPath,
     finalBundle,
@@ -146,6 +180,32 @@ async function obfuscateBundle(
     metroBundleLocs
   });
   await writeFile(bundleSourceMapPath, finalSourceMap);
+}
+
+function fileExists(modulePath) {
+  return fs.existsSync(modulePath);
+}
+
+function isValidExtension(modulePath) {
+  return path.extname(modulePath).match(JSCRAMBLER_EXTS);
+}
+
+function validateModule(modulePath, config) {
+  const instrument = !!config.instrument;
+
+  if (
+    !fileExists(modulePath) ||
+    !isValidExtension(modulePath) ||
+    typeof modulePath !== "string"
+  ) {
+    return false;
+  } else if (modulePath.includes(INIT_CORE_MODULE) && !instrument) {
+    return true;
+  } else if (modulePath.includes("node_modules")) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 /**
@@ -167,8 +227,9 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   const sourceMapFiles = [];
   const config = Object.assign({}, jscrambler.config, _config);
   const instrument = !!config.instrument;
+  let entryPointCode;
 
-  if(config.filesDest || config.filesSrc) {
+  if (config.filesDest || config.filesSrc) {
     console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using input/output values of the metro bundler.')
   }
 
@@ -180,7 +241,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
           : 'info Jscrambler Obfuscating Code'
       );
       // start obfuscation
-      await obfuscateBundle(bundlePath, Array.from(fileNames), sourceMapFiles, config, projectRoot);
+      await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);
     } catch(err) {
       console.error(err);
       process.exit(1);
@@ -199,17 +260,16 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        * @returns {boolean}
        */
       processModuleFilter(_module) {
-        if (
-          _module.path.indexOf('node_modules') !== -1 ||
-          typeof _module.path !== 'string' ||
-          !fs.existsSync(_module.path) ||
-          !path.extname(_module.path).match(JSCRAMBLER_EXTS)
-        ) {
+        const modulePath = _module.path;
+        const shouldSkipModule = !validateModule(modulePath, config);
+
+        if (shouldSkipModule) {
           return true;
         }
 
-        const normalizePath = buildNormalizePath(_module.path, projectRoot);
+        const normalizePath = buildNormalizePath(modulePath, projectRoot);
         fileNames.add(normalizePath);
+
         _module.output.forEach(({data}) => {
           if (instrument && Array.isArray(data.map)) {
             sourceMapFiles.push({
@@ -221,7 +281,10 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
               )
             });
           }
-          wrapCodeWithTags(data);
+          if (modulePath.includes(INIT_CORE_MODULE)){
+            entryPointCode = data.code;
+          }
+          data.code = wrapCodeWithTags(data.code);
         });
         return true;
       }

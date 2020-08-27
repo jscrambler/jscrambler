@@ -2,6 +2,7 @@ const BUNDLE_CMD = 'bundle';
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';
+const INIT_CORE_MODULE = 'node_modules/react-native/Libraries/Core/InitializeCore.js';
 const JSCRAMBLER_CLIENT_ID = 6;
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
 const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist`;
@@ -17,6 +18,7 @@ module.exports = {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
+  INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_TEMP_FOLDER,
   JSCRAMBLER_DIST_TEMP_FOLDER,

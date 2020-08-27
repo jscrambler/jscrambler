@@ -102,6 +102,14 @@ export async function mutation(client, name) {
   return mutationType;
 }
 
+export async function query(client, name) {
+  const rootQuery = await type(client, 'RootQuery');
+
+  const queryType = rootQuery.fields.find(f => f.name === name );
+
+  return queryType;
+}
+
 export async function intoObjectType(client, obj, name) {
   const fields = (await type(client, name)).fields;
 

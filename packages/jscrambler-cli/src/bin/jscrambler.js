@@ -280,7 +280,8 @@ const {
   useAppClassification,
   removeProfilingData,
   skipSources,
-  inputSymbolTable
+  inputSymbolTable,
+  entryPoint
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -410,7 +411,8 @@ if (commander.sourceMaps) {
       useAppClassification,
       skipSources,
       removeProfilingData,
-      inputSymbolTable
+      inputSymbolTable,
+      entryPoint
     };
     try {
       if (typeof werror !== 'undefined') {

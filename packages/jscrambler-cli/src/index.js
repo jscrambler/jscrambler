@@ -99,7 +99,7 @@ export default {
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
-      if (appProfiling && appProfiling.data.state === 'READY') {
+      if (appProfiling && appProfiling.data && appProfiling.data.state === 'READY') {
         throw new Error(
           'You have a finished Profiling for this application so you are NOT ALLOWED to update sources. To override this behavior use *--remove-profiling-data* or *--skip-sources*.'
         );
@@ -246,7 +246,8 @@ export default {
       profilingDataMode,
       removeProfilingData,
       skipSources,
-      inputSymbolTable
+      inputSymbolTable,
+      entryPoint
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -323,38 +324,24 @@ export default {
       updateData.areSubscribersOrdered = Array.isArray(params);
     }
 
-    if (typeof areSubscribersOrdered !== 'undefined') {
-      updateData.areSubscribersOrdered = areSubscribersOrdered;
-    }
 
-    if (applicationTypes) {
-      updateData.applicationTypes = applicationTypes;
-    }
+    const dataToValidate = {
+      applicationTypes,
+      areSubscribersOrdered,
+      browsers,
+      languageSpecifications,
+      profilingDataMode,
+      sourceMaps,
+      useAppClassification,
+      useProfilingData,
+      useRecommendedOrder
+    };
 
-    if (typeof useRecommendedOrder !== 'undefined') {
-      updateData.useRecommendedOrder = useRecommendedOrder;
-    }
-
-    if (languageSpecifications) {
-      updateData.languageSpecifications = languageSpecifications;
-    }
-
-    if (typeof sourceMaps !== 'undefined') {
-      updateData.sourceMaps = sourceMaps;
-    }
-
-    if (useProfilingData !== undefined) {
-      updateData.useProfilingData = useProfilingData;
-    }
-    if (profilingDataMode !== undefined) {
-      updateData.profilingDataMode = profilingDataMode;
-    }
-    if (useAppClassification !== undefined) {
-      updateData.useAppClassification = useAppClassification;
-    }
-
-    if (browsers) {
-      updateData.browsers = browsers;
+    for (const prop in dataToValidate) {
+      const value = dataToValidate[prop];
+      if (typeof value !== 'undefined') {
+        updateData[prop] = value;
+      }
     }
 
     if (
@@ -389,7 +376,15 @@ export default {
     }
 
     delete updateData._id;
-    const protectionOptions = {bail, randomizationSeed, tolerateMinification, source, inputSymbolTable, ...updateData};
+    const protectionOptions = {
+      ...updateData,
+      bail,
+      entryPoint,
+      inputSymbolTable,
+      randomizationSeed,
+      source,
+      tolerateMinification
+    };
 
     if (finalConfig.inputSymbolTable) {
       // Note: we can not use the fs.promises API because some users may not have node 10.
@@ -1123,6 +1118,36 @@ export default {
       null,
       false
     );
+  },
+  /**
+   * Introspect method to check if a certain field is supported.
+   * @param {Object} config jscrambler client config
+   * @param {String} queryOrMutation a string in ['query, 'mutation']
+   * @param {String} methodName query or mutation name
+   * @param {String} field args field to introspect
+   * @returns {Boolean} true if the field is supported, false otherwise
+   */
+  async introspectFieldOnMethod(config, queryOrMutation, methodName, field) {
+    const instrospectionType = queryOrMutation.toLowerCase() === 'mutation' ? introspection.mutation : introspection.query;
+
+    const client = new this.Client({
+      ...config
+    });
+
+    const result = await instrospectionType(
+      client,
+      methodName
+    );
+
+    if (!result || !result.args) {
+      debug && console.log(`Method *${methodName}* not found.`)
+      return false;
+    }
+
+    const dataArg = result.args.find(arg => arg.name === 'data');
+    const isFieldSupported = dataArg && dataArg.type.inputFields.some(e => e.name === field);
+
+    return isFieldSupported;
   }
 };
 
