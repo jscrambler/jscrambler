@@ -82,6 +82,11 @@ commander
     validateBool('werror')
   )
   .option(
+    '--utc <bool>',
+    'Set UTC as the request time zone. Otherwise it uses the local time zone (default: true)',
+    validateBool('utc')
+  )
+  .option(
     '--tolerate-minification <bool>',
     `Don't detect minification as malicious tampering (default: true)`,
     validateBool('tolerate-minification')
@@ -170,6 +175,10 @@ if (commander.profilingDataMode) {
   config.profilingDataMode = config.profilingDataMode ?
   validateProfilingDataMode(config.profilingDataMode) :
   undefined;
+}
+
+if (commander.utc) {
+  config.utc = commander.utc !== 'false';
 }
 
 if (commander.useProfilingData) {
@@ -281,6 +290,7 @@ const {
   removeProfilingData,
   skipSources,
   inputSymbolTable,
+  utc,
   entryPoint
 } = config;
 
@@ -309,6 +319,7 @@ const clientSettings = {
   protocol,
   cafile,
   proxy,
+  utc,
   jscramblerVersion
 };
 

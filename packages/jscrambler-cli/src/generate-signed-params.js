@@ -5,10 +5,10 @@ import keys from 'lodash.keys';
 
 const debug = !!process.env.DEBUG;
 
-export default function signedParams(method, path, host, keys, params = {}) {
+export default function signedParams(method, path, host, keys, params = {}, utc = true) {
   params = defaults(clone(params), {
     access_key: keys.accessKey,
-    timestamp: new Date().toISOString()
+    timestamp: utc.toString() !== 'false' ? new Date().toISOString() : new Date().toLocaleString()
   });
   params.signature = generateHmacSignature(method, path, host, keys, params);
   return params;

@@ -11,6 +11,7 @@ const config = rc(
     jscramblerVersion: 'stable',
     werror: true,
     clientId: 0,
+    utc: true,
     maxRetries: 5
   },
   []

@@ -237,6 +237,7 @@ export default {
       jscramblerVersion,
       debugMode,
       proxy,
+      utc,
       clientId,
       tolerateMinification,
       codeHardeningThreshold,
@@ -262,6 +263,7 @@ export default {
       cafile,
       jscramblerVersion,
       proxy,
+      utc,
       clientId
     });
 
@@ -508,6 +510,7 @@ export default {
       cwd,
       jscramblerVersion,
       proxy,
+      utc,
       skipSources,
       clientId
     } = finalConfig;
@@ -524,6 +527,7 @@ export default {
       cafile,
       jscramblerVersion,
       proxy,
+      utc,
       clientId
     });
 
@@ -619,6 +623,7 @@ export default {
       cafile,
       applicationId,
       proxy,
+      utc,
       jscramblerVersion,
       clientId
     } = finalConfig;
@@ -634,6 +639,7 @@ export default {
       protocol,
       cafile,
       proxy,
+      utc,
       jscramblerVersion,
       clientId
     });
@@ -677,6 +683,7 @@ export default {
       filesSrc,
       protectionId,
       jscramblerVersion,
+      utc,
       proxy
     } = configs;
 
@@ -691,6 +698,7 @@ export default {
       protocol,
       cafile,
       jscramblerVersion,
+      utc,
       proxy
     });
 
@@ -728,6 +736,7 @@ export default {
       filesSrc,
       protectionId,
       jscramblerVersion,
+      utc,
       proxy
     } = configs;
 
@@ -742,6 +751,7 @@ export default {
       protocol,
       cafile,
       jscramblerVersion,
+      utc,
       proxy
     });
 
