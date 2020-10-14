@@ -126,7 +126,8 @@ JScramblerClient.prototype.request = function(
       path,
       this.options.host,
       this.options.keys,
-      params
+      params,
+      this.options.utc
     );
   } else {
     signedData = params;
