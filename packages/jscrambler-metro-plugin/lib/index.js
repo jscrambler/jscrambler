@@ -3,6 +3,8 @@ const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
 const generateSourceMaps = require('./sourceMaps');
+const globalThisPolyfill = require('./polyfills/globalThis');
+
 const {
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
@@ -145,7 +147,6 @@ async function obfuscateBundle(
   const finalBundle = metroBundleChunks.reduce((acc, c, i) => {
     if (i === 0) {
       const chunks = c.split('\n');
-      const globalThisPolyfill = "!(function(o){o.globalThis=o})('undefined'!=typeof globalThis?globalThis:'undefined'!=typeof global?global:'undefined'!=typeof window?window:this);";
       return [`${chunks[0]}${globalThisPolyfill}`, ...chunks.slice(1)].join('\n');
     }
 
