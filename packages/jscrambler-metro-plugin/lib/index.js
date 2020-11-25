@@ -144,7 +144,9 @@ async function obfuscateBundle(
   // build final bundle (with JSCRAMBLER TAGS still)
   const finalBundle = metroBundleChunks.reduce((acc, c, i) => {
     if (i === 0) {
-      return c;
+      const chunks = c.split('\n');
+      const globalThisPolyfill = "!(function(o){o.globalThis=o})('undefined'!=typeof globalThis?globalThis:'undefined'!=typeof global?global:'undefined'!=typeof window?window:this);";
+      return [`${chunks[0]}${globalThisPolyfill}`, ...chunks.slice(1)].join('\n');
     }
 
     const obfuscatedCode = obfusctedUserFiles[i - 1];
