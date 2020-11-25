@@ -3,6 +3,8 @@ const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
 const generateSourceMaps = require('./sourceMaps');
+const globalThisPolyfill = require('./polyfills/globalThis');
+
 const {
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
@@ -144,7 +146,8 @@ async function obfuscateBundle(
   // build final bundle (with JSCRAMBLER TAGS still)
   const finalBundle = metroBundleChunks.reduce((acc, c, i) => {
     if (i === 0) {
-      return c;
+      const chunks = c.split('\n');
+      return [`${chunks[0]}${globalThisPolyfill}`, ...chunks.slice(1)].join('\n');
     }
 
     const obfuscatedCode = obfusctedUserFiles[i - 1];
