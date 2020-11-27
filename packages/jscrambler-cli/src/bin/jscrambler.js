@@ -48,7 +48,7 @@ const validateProfilingDataMode = mode => {
 };
 
 const validateForceAppEnvironment = env => {
-  const availableEnvironments = ['node', 'browser', 'isomorphic'];
+  const availableEnvironments = ['none', 'node', 'browser', 'isomorphic'];
 
   const normalizeEnvironment = env.toLowerCase();
 

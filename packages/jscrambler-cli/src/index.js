@@ -319,7 +319,8 @@ export default {
       _id: applicationId,
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold
+      codeHardeningThreshold,
+      forceAppEnvironment: 'none'
     };
 
     if (params && Object.keys(params).length) {
