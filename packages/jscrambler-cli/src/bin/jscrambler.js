@@ -229,7 +229,7 @@ if (commander.forceAppEnvironment) {
 } else {
   config.forceAppEnvironment =
     config.forceAppEnvironment ?
-    validateforceAppEnvironment(config.forceAppEnvironment) :
+    validateForceAppEnvironment(config.forceAppEnvironment) :
     undefined;
 }
 

@@ -248,7 +248,8 @@ export default {
       removeProfilingData,
       skipSources,
       inputSymbolTable,
-      entryPoint
+      entryPoint,
+      forceAppEnvironment
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -336,7 +337,8 @@ export default {
       sourceMaps,
       useAppClassification,
       useProfilingData,
-      useRecommendedOrder
+      useRecommendedOrder,
+      forceAppEnvironment
     };
 
     for (const prop in dataToValidate) {
@@ -351,6 +353,7 @@ export default {
       updateData.applicationTypes ||
       updateData.languageSpecifications ||
       updateData.browsers ||
+      updateData.forceAppEnvironment||
       typeof updateData.areSubscribersOrdered !== 'undefined'
     ) {
       if (debug) {
