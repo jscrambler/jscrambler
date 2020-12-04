@@ -319,8 +319,7 @@ export default {
       _id: applicationId,
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold,
-      forceAppEnvironment: 'automatic'
+      codeHardeningThreshold
     };
 
     if (params && Object.keys(params).length) {
@@ -338,8 +337,7 @@ export default {
       sourceMaps,
       useAppClassification,
       useProfilingData,
-      useRecommendedOrder,
-      forceAppEnvironment
+      useRecommendedOrder
     };
 
     for (const prop in dataToValidate) {
@@ -354,7 +352,6 @@ export default {
       updateData.applicationTypes ||
       updateData.languageSpecifications ||
       updateData.browsers ||
-      updateData.forceAppEnvironment||
       typeof updateData.areSubscribersOrdered !== 'undefined'
     ) {
       if (debug) {
@@ -389,7 +386,8 @@ export default {
       inputSymbolTable,
       randomizationSeed,
       source,
-      tolerateMinification
+      tolerateMinification,
+      forceAppEnvironment
     };
 
     if (finalConfig.inputSymbolTable) {
