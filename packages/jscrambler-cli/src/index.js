@@ -320,7 +320,7 @@ export default {
       debugMode: !!debugMode,
       tolerateMinification,
       codeHardeningThreshold,
-      forceAppEnvironment: 'none'
+      forceAppEnvironment: 'automatic'
     };
 
     if (params && Object.keys(params).length) {
