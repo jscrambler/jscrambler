@@ -1,6 +1,9 @@
+const {basename} = require('path');
+const {readFileSync} = require('fs');
 const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
 
+const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
 
@@ -23,6 +26,17 @@ class JscramblerPlugin {
       : client.protectAndDownload;
     this.processResult = this.processResult.bind(this);
     this.processSourceMaps = this.processSourceMaps.bind(this);
+
+    if (client.config.filesSrc || client.config.filesDest || options.filesSrc || options.filesDest) {
+      console.warn('(JscramblerPlugin) Options *filesSrc* and *filesDest* were ignored. Webpack entry and output fields will be used instead!')
+    }
+
+    if (typeof this.options.ignoreFile === 'string') {
+      if (basename(this.options.ignoreFile) !== JSCRAMBLER_IGNORE) {
+        throw new Error('(JscramblerPlugin) *ignoreFile* option must point to .jscramblerignore file');
+      }
+      this.ignoreFileSource = {content: readFileSync(this.options.ignoreFile, { encoding: 'utf-8'}), filename: JSCRAMBLER_IGNORE};
+    }
   }
 
   apply(compiler) {
@@ -63,6 +77,9 @@ class JscramblerPlugin {
       });
 
       if (sources.length > 0) {
+        if (this.ignoreFileSource) {
+          sources.push(this.ignoreFileSource);
+        }
         Promise.resolve(
           this.jscramblerOp.call(
             client,
@@ -122,6 +139,9 @@ class JscramblerPlugin {
     const results = this.protectionResult;
 
     for (const result of results) {
+      if (result.filename === JSCRAMBLER_IGNORE) {
+        continue;
+      }
       compilation.assets[result.filename] = {
         source() {
           return result.content;
