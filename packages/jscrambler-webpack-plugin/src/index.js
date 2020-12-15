@@ -1,6 +1,7 @@
 const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
 
+const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
 
@@ -23,6 +24,9 @@ class JscramblerPlugin {
       : client.protectAndDownload;
     this.processResult = this.processResult.bind(this);
     this.processSourceMaps = this.processSourceMaps.bind(this);
+    if (Array.isArray(this.options.ignore) && this.options.ignore.every(reg => typeof reg === 'string')) {
+      this.ignore = this.options.ignore;
+    }
   }
 
   apply(compiler) {
@@ -63,6 +67,9 @@ class JscramblerPlugin {
       });
 
       if (sources.length > 0) {
+        if (this.ignore.length > 0) {
+          sources.push({ content: this.ignore.join('\n'), filename: JSCRAMBLER_IGNORE })
+        }
         Promise.resolve(
           this.jscramblerOp.call(
             client,
@@ -122,6 +129,9 @@ class JscramblerPlugin {
     const results = this.protectionResult;
 
     for (const result of results) {
+      if (result.filename === JSCRAMBLER_IGNORE) {
+        continue;
+      }
       compilation.assets[result.filename] = {
         source() {
           return result.content;
