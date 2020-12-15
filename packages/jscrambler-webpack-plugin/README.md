@@ -9,6 +9,7 @@ Simply add the plugin to your configuration. We recommend placing it after every
 Example `webpack.config.js`:
 
 ```js
+const {resolve} = require('path');
 const JscramblerWebpack = require('jscrambler-webpack-plugin');
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
     new JscramblerWebpack({
       enable: true, // optional, defaults to true
       chunks: ['protected'], // optional, defaults to all chunks
-      ignoreFile: '.jscramblerignore', // optional, defaults to no ignore file
+      ignoreFile: resolve(__dirname, '.jscramblerignore'), // optional, defaults to no ignore file
       params: [], 
       applicationTypes: {}
       // and other jscrambler configurations
