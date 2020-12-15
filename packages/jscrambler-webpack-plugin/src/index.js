@@ -28,7 +28,7 @@ class JscramblerPlugin {
     this.processSourceMaps = this.processSourceMaps.bind(this);
 
     if (client.config.filesSrc || client.config.filesDest || options.filesSrc || options.filesDest) {
-      console.warn('(JscramblerPlugin) Options *filesSrc* and *filesDest* are ignore. Webpack entry points will be used instead!')
+      console.warn('(JscramblerPlugin) Options *filesSrc* and *filesDest* were ignored. Webpack entry and output fields will be used instead!')
     }
 
     if (typeof this.options.ignoreFile === 'string') {
