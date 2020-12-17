@@ -248,7 +248,8 @@ export default {
       removeProfilingData,
       skipSources,
       inputSymbolTable,
-      entryPoint
+      entryPoint,
+      forceAppEnvironment
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -385,7 +386,8 @@ export default {
       inputSymbolTable,
       randomizationSeed,
       source,
-      tolerateMinification
+      tolerateMinification,
+      forceAppEnvironment
     };
 
     if (finalConfig.inputSymbolTable) {

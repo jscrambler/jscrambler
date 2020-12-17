@@ -47,6 +47,20 @@ const validateProfilingDataMode = mode => {
   return normalizedMode;
 };
 
+const availableEnvironments = ['node', 'browser', 'isomorphic', 'automatic'];
+const validateForceAppEnvironment = env => {
+  const normalizeEnvironment = env.toLowerCase();
+
+  if (!availableEnvironments.includes(normalizeEnvironment)) {
+    console.error(
+      `*force-app-environment* requires one of the following values: {${availableEnvironments.toString()}}. Example: --force-app-environment ${availableEnvironments[0]}`
+    );
+    process.exit(1);
+  }
+
+  return normalizeEnvironment;
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -118,6 +132,11 @@ commander
   .option('--jscramblerVersion <version>', 'Use a specific Jscrambler version')
   .option('--debugMode', 'Protect in debug mode')
   .option('--skip-sources', 'Prevent source files from being updated')
+  .option(
+    '--force-app-environment <environment>',
+    `(version 7.1 and above) Override application\'s environment detected automatically. Possible values: ${availableEnvironments.toString()}`,
+    validateForceAppEnvironment
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -194,6 +213,15 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
     'The Jscrambler version must be in the form of $major.$minor or the words stable and latest. (e.g. 5.2, stable, latest)'
   );
   process.exit(1);
+}
+
+if (commander.forceAppEnvironment) {
+  config.forceAppEnvironment = commander.forceAppEnvironment;
+} else {
+  config.forceAppEnvironment =
+    config.forceAppEnvironment ?
+    validateForceAppEnvironment(config.forceAppEnvironment) :
+    undefined;
 }
 
 config = defaults(config, _config);
@@ -291,7 +319,8 @@ const {
   skipSources,
   inputSymbolTable,
   utc,
-  entryPoint
+  entryPoint,
+  forceAppEnvironment
 } = config;
 
 const params = mergeAndParseParams(commander, config.params);
@@ -423,7 +452,8 @@ if (commander.sourceMaps) {
       skipSources,
       removeProfilingData,
       inputSymbolTable,
-      entryPoint
+      entryPoint,
+      forceAppEnvironment
     };
     try {
       if (typeof werror !== 'undefined') {
