@@ -111,6 +111,7 @@ Options:
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
   --skip-sources                          Prevent source files from being updated
+  --force-app-environment <environment>   (version 7.1 and above) Override application's environment detected automatically. Possible values: node,browser,isomorphic,automatic
   -h, --help                              output usage information
 ```
 
