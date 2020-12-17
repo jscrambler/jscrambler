@@ -47,9 +47,8 @@ const validateProfilingDataMode = mode => {
   return normalizedMode;
 };
 
+const availableEnvironments = ['node', 'browser', 'isomorphic', 'automatic'];
 const validateForceAppEnvironment = env => {
-  const availableEnvironments = ['automatic', 'node', 'browser', 'isomorphic'];
-
   const normalizeEnvironment = env.toLowerCase();
 
   if (!availableEnvironments.includes(normalizeEnvironment)) {
@@ -135,7 +134,7 @@ commander
   .option('--skip-sources', 'Prevent source files from being updated')
   .option(
     '--force-app-environment <environment>',
-    'Override application\'s environment detected automatically',
+    `(version 7.1 and above) Override application\'s environment detected automatically. Possible values: ${availableEnvironments.toString()}`,
     validateForceAppEnvironment
   )
   .parse(process.argv);
@@ -214,14 +213,6 @@ if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(conf
     'The Jscrambler version must be in the form of $major.$minor or the words stable and latest. (e.g. 5.2, stable, latest)'
   );
   process.exit(1);
-}
-
-if (commander.profilingDataMode) {
-  config.profilingDataMode = commander.profilingDataMode;
-} else {
-  config.profilingDataMode = config.profilingDataMode ?
-  validateProfilingDataMode(config.profilingDataMode) :
-  undefined;
 }
 
 if (commander.forceAppEnvironment) {
