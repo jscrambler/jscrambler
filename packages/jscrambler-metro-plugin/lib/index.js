@@ -219,7 +219,7 @@ function validateModule(modulePath, config) {
  * @returns {{serializer: {processModuleFilter(*): boolean}}}
  */
 module.exports = function (_config = {}, projectRoot = process.cwd()) {
-  const skipReason = skipObfuscation();
+  const skipReason = skipObfuscation(_config);
   if (skipReason) {
     console.log(`warning: Jscrambler Obfuscation SKIPPED [${skipReason}]`);
     return {};

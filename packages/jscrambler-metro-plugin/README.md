@@ -10,6 +10,7 @@ Include the plugin in your `metro.config.js` and add the following code:
 const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
   /* optional */
   {
+    enable: true,
     params: [
       {
         name: 'selfDefending',

@@ -17,7 +17,15 @@ const {
  * Development bundles will be ignored (--dev true). Use JSCRAMBLER_METRO_DEV to override this behaviour.
  * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
-function skipObfuscation() {
+function skipObfuscation(config) {
+  if (
+    typeof config === 'object' &&
+    config !== null &&
+    config.enable === false
+  ) {
+    return 'Explicitly Disabled';
+  }
+
   let isBundleCmd = false;
   const command = new Command();
   command
