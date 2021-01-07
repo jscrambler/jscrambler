@@ -1,7 +1,7 @@
 *.log
 .jscramblerrc
 jscrambler_keys.json
-jsrambler.json
+jscrambler.json
 config.json
 results
 src
