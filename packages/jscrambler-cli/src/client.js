@@ -4,7 +4,9 @@ import keys from 'lodash.keys';
 import axios from 'axios';
 import url from 'url';
 import https from 'https';
+import http from 'http';
 import HttpsProxyAgent from 'https-proxy-agent';
+import HttpProxyAgent from 'http-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -197,9 +199,12 @@ JScramblerClient.prototype.request = function(
       }
 
     settings.proxy = false;
-    settings.httpsAgent = new HttpsProxyAgent({host, port, auth: formattedAuth, ...agentOptions});
+    const proxyConfig = {host, port, auth: formattedAuth, ...agentOptions};
+    settings.httpsAgent = new HttpsProxyAgent(proxyConfig);
+    settings.httpAgent = new HttpProxyAgent(proxyConfig);
   } else if(agentOptions) {
     settings.httpsAgent = new https.Agent(agentOptions);
+    settings.httpAgent = new http.Agent(agentOptions);
   }
 
   if (!isJSON) {
