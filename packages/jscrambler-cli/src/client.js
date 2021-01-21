@@ -55,7 +55,7 @@ function JScramblerClient(options) {
       jscramblerVersion,
       clientId
     },
-    maxContentLength: 100 * 1000 * 1000 // 100 MB
+    maxBodyLength: 100 * 1000 * 1000 // 100 MB
   });
 }
 /**
