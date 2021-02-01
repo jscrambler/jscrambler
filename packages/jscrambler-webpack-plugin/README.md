@@ -13,6 +13,7 @@ const {resolve} = require('path');
 const JscramblerWebpack = require('jscrambler-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     protected: './app/index.js',
     unprotected: './app/index.js'
@@ -22,7 +23,7 @@ module.exports = {
   },
   devtool: 'source-map',
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
