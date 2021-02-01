@@ -47,7 +47,11 @@ class JscramblerPlugin {
       return;
     }
 
-    compiler.hooks.emit.tapAsync('JscramblerPlugin', (compilation, callback) => {
+    const emitFn = compiler.hooks
+      ? (arg) => compiler.hooks.emit.tapAsync("JscramblerPlugin", arg)
+      : (arg) => compiler.plugin("emit", arg); // compatibility with webpack <=3
+
+    emitFn((compilation, callback) => {
       const sources = [];
       compilation.chunks.forEach(chunk => {
         if (
