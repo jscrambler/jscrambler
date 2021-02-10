@@ -5,7 +5,7 @@ import axios from 'axios';
 import url from 'url';
 import https from 'https';
 import http from 'http';
-import HttpsProxyAgent from 'https-proxy-agent';
+import HttpsProxyAgent from '@jscrambler/https-proxy-agent';
 import HttpProxyAgent from 'http-proxy-agent';
 
 import cfg from './config';
