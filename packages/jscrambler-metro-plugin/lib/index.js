@@ -61,19 +61,22 @@ async function obfuscateBundle(
   );
 
   // ignore entrypoint obfuscation if its not supported
-  if (!supportsEntryPoint && typeof entryPointCode === 'string' && entryPointCode.length > 0) {
-    debug && console.log('debug Jscrambler entrypoint option not supported');
-    try {
-      filteredFileNames = fileNames.filter(
-        name => !name.includes(INIT_CORE_MODULE)
-      );
-      processedMetroBundle = stripEntryPointTags(
-        metroBundle,
-        entryPointCode
-      );
-    } catch (err) {
-      console.log("Error processing entry point.");
-      process.exit(-1);
+  if (!supportsEntryPoint) {
+    delete config.entryPoint;
+    if (typeof entryPointCode === 'string' && entryPointCode.length > 0) {
+      debug && console.log('debug Jscrambler entrypoint option not supported');
+      try {
+        filteredFileNames = fileNames.filter(
+          name => !name.includes(INIT_CORE_MODULE)
+        );
+        processedMetroBundle = stripEntryPointTags(
+          metroBundle,
+          entryPointCode
+        );
+      } catch (err) {
+        console.log("Error processing entry point.");
+        process.exit(-1);
+      }
     }
   }
 
@@ -111,9 +114,6 @@ async function obfuscateBundle(
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
 
-  if (supportsEntryPoint) {
-    config.entryPoint = INIT_CORE_MODULE;
-  }
 
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
     console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
@@ -193,7 +193,7 @@ function isValidExtension(modulePath) {
   return path.extname(modulePath).match(JSCRAMBLER_EXTS);
 }
 
-function validateModule(modulePath, config) {
+function validateModule(modulePath, config, projectRoot) {
   const instrument = !!config.instrument;
 
   if (
@@ -203,6 +203,8 @@ function validateModule(modulePath, config) {
   ) {
     return false;
   } else if (modulePath.includes(INIT_CORE_MODULE) && !instrument) {
+    // This is the entrypoint file
+    config.entryPoint = buildNormalizePath(modulePath, projectRoot);
     return true;
   } else if (modulePath.includes("node_modules")) {
     return false;
@@ -264,7 +266,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        */
       processModuleFilter(_module) {
         const modulePath = _module.path;
-        const shouldSkipModule = !validateModule(modulePath, config);
+        const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
 
         if (shouldSkipModule) {
           return true;
