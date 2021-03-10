@@ -41,14 +41,17 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
 }
 
 const extractBundleWrapFnArguments = (chunk) => {
-  const regex = /\(([0-9a-zA-Z,]+)\){$/gm;
-
+  const regex = /\(([0-9a-zA-Z_,]+)\){$/gm;
   const m = regex.exec(chunk);
   if (Array.isArray(m) && m.length > 1) {
     for (const arg of m[1].split(",")) {
       bundleWrapFnArguments.add(arg);
     }
+    return;
   }
+
+  console.error("Unable to extract the bundle wrap function arguments");
+  process.exit(1);
 };
 
 async function obfuscateBundle(
@@ -96,9 +99,12 @@ async function obfuscateBundle(
   if (metroBundleChunks[0]) {
     extractBundleWrapFnArguments(metroBundleChunks[0]);
   }
-  const metroUserFilesOnly = metroBundleChunks.slice(1).map((c) => {
+  const metroUserFilesOnly = metroBundleChunks.slice(1).map((c, i) => {
     const s = c.split(JSCRAMBLER_END_ANNOTATION);
-    extractBundleWrapFnArguments(s[1]);
+    // We don't want to extract args from last chunk
+    if (i < metroBundleChunks.length - 2) {
+      extractBundleWrapFnArguments(s[1]);
+    }
     return s[0];
   });
 
