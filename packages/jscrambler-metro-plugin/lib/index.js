@@ -30,6 +30,8 @@ const {
 
 const debug = !!process.env.DEBUG;
 
+const bundleWrapFnArguments = new Set();
+
 function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
   if (hasMetroSourceMaps) {
     console.log(`warning: Jscrambler source-maps are DISABLED. Check how to activate them in https://docs.jscrambler.com/code-integrity/documentation/source-maps/api`);
@@ -37,6 +39,17 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
     console.log(`warning: Jscrambler source-maps were not generated. Missing metro source-maps (${BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG} is required)`);
   }
 }
+
+const extractBundleWrapFnArguments = (chunk) => {
+  const regex = /\(([0-9a-zA-Z,]+)\){$/gm;
+
+  const m = regex.exec(chunk);
+  if (Array.isArray(m) && m.length > 1) {
+    for (const arg of m[1].split(",")) {
+      bundleWrapFnArguments.add(arg);
+    }
+  }
+};
 
 async function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
@@ -77,12 +90,32 @@ async function obfuscateBundle(
     }
   }
 
-  const metroBundleChunks = processedMetroBundle.split(JSCRAMBLER_BEG_ANNOTATION);
-  const metroUserFilesOnly = metroBundleChunks
-    .filter((c, i) => i > 0)
-    .map((c, i) => {
-      return c.split(JSCRAMBLER_END_ANNOTATION)[0];
-    });
+  const metroBundleChunks = processedMetroBundle.split(
+    JSCRAMBLER_BEG_ANNOTATION
+  );
+  if (metroBundleChunks[0]) {
+    extractBundleWrapFnArguments(metroBundleChunks[0]);
+  }
+  const metroUserFilesOnly = metroBundleChunks.slice(1).map((c) => {
+    const s = c.split(JSCRAMBLER_END_ANNOTATION);
+    extractBundleWrapFnArguments(s[1]);
+    return s[0];
+  });
+
+  // If globalVariableIndirection is used, appends the bundleWrapFnArguments
+  // to the excludeList
+  for (const param of config.params) {
+    if (param.name === "globalVariableIndirection") {
+      if (!param.options) {
+        param.options = {
+          excludeList: [],
+        };
+      }
+
+      param.options.excludeList.push(...Array.from(bundleWrapFnArguments));
+      break;
+    }
+  }
 
   // build tmp src folders structure
   await Promise.all(
