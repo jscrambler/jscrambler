@@ -15,13 +15,12 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('jscrambler', 'Obfuscate your source files', function () {
     var done = this.async();
     var files = this.files;
+    var callback = grunt.config('jscrambler.main.callback');
     var options = this.options({
       keys: {},
       clientId: 4
     });
-
     options.filesSrc = this.filesSrc;
-
     const instrument = !!options.instrument;
     const jscramblerOp = instrument
       ? jscrambler.instrumentAndDownload
@@ -43,6 +42,11 @@ module.exports = function (grunt) {
 
     jscramblerOp
       .call(jscrambler, options, writeFile)
+      .then(protectionId => {
+        if(protectionId && callback) {
+          callback(protectionId)
+        }
+      })
       .then(done)
       .catch(function (err) {
         grunt.fail.fatal(util.inspect(err));
