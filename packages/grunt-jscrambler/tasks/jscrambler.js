@@ -43,7 +43,7 @@ module.exports = function (grunt) {
     jscramblerOp
       .call(jscrambler, options, writeFile)
       .then(protectionId => {
-        if(protectionId && successCallback) {
+        if(protectionId && typeof successCallback === 'function') {
           successCallback(protectionId)
         }
       })
