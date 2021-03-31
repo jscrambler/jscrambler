@@ -45,7 +45,11 @@ grunt.initConfig({
       },
       files: [
         {expand: true, src: ['foo.js', 'bar.js'], dest: 'dist/'},
-      ]
+      ],
+      // (Optional) Retrieve the protection Id
+      successCallback(protectionId) {
+        // console.log('Protection Id: ', protectionId);
+      }
     }
   },
 });
@@ -83,7 +87,11 @@ grunt.initConfig({
           src: ['foo.js', 'bar.js'],
           dest: '/otherdestination/'
         }
-      ]
+      ],
+      // (Optional) Retrieve the protection Id
+      successCallback(protectionId) {
+        // console.log('Protection Id: ', protectionId);
+      }
     }
   },
 });

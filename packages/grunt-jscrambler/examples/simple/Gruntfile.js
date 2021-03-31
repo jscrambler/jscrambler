@@ -52,7 +52,10 @@ module.exports = function (grunt) {
         },
         files: [
           {expand:true, src: ['index.js', 'module.js'], dest: 'dist/'}
-        ]
+        ],
+        successCallback(protectionId) {
+          console.log('Protection Id: ', protectionId);
+        }
       }
     }
   });

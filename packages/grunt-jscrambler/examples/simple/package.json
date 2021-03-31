@@ -19,6 +19,6 @@
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
-    "grunt-jscrambler": "^5.0.0"
+    "grunt-jscrambler": "file://../../"
   }
 }
