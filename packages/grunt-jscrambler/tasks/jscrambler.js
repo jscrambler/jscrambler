@@ -46,6 +46,7 @@ module.exports = function (grunt) {
         if(protectionId && typeof successCallback === 'function') {
           successCallback(protectionId)
         }
+        return protectionId;
       })
       .then(done)
       .catch(function (err) {
