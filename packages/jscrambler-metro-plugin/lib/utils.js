@@ -189,7 +189,11 @@ function buildNormalizePath(path, projectRoot) {
     return;
   }
   const relativePath = path.replace(projectRoot, '');
-  return relativePath.replace(JSCRAMBLER_EXTS, '.js').substring(1 /* remove '/' */);
+  const relativePathWithLeadingSlash = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+  if (process.platform === 'win32') {
+    return relativePathWithLeadingSlash;
+  }
+  return relativePathWithLeadingSlash.substring(1 /* remove '/' */);
 }
 
 function getCodeBody(code) {
