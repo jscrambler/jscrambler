@@ -22,7 +22,7 @@ Jscrambler has a **Polymorphic Behavior**, so each new code deployment generates
 
 ### JavaScript Threat Monitoring
 
-Jscrambler displays [real-time notifications](https://jscrambler.com/products/javascript-threat-monitoring?utm_source=github.com&utm_medium=referral) whenever there is a threat to the protected code. Any attempt to modify or debug protected code will display a detailed alert on the Live Feed dashboard.
+Jscrambler displays [real-time notifications](https://jscrambler.com/products/javascript-threat-monitoring?utm_source=github.com&utm_medium=referral) whenever there is a threat to the protected code. Any code lock violation or attempt to modify/debug protected code will display a detailed alert on the Live Feed dashboard.
 
 ### Profiling
 
