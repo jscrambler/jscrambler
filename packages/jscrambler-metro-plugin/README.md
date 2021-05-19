@@ -7,6 +7,7 @@ This metro plugin protects your **React Native** bundle using Jscrambler.
 Include the plugin in your `metro.config.js` and add the following code:
 
 ```js
+const {resolve} = require('path');
 const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
   /* optional */
   {
