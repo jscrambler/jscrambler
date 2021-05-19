@@ -7,6 +7,7 @@ const BUNDLE_DEV_CLI_ARG = '--dev';
 // path.join so it supports both linux and windows fs
 const INIT_CORE_MODULE = path.join(process.platform === 'win32' ? '/' : '', 'node_modules', 'react-native', 'Libraries', 'Core', 'InitializeCore.js');
 const JSCRAMBLER_CLIENT_ID = 6;
+const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const JSCRAMBLER_TEMP_FOLDER = '.jscrambler';
 const JSCRAMBLER_DIST_TEMP_FOLDER = `${JSCRAMBLER_TEMP_FOLDER}/dist`;
 const JSCRAMBLER_SOURCE_MAPS_TEMP_FOLDER = `${JSCRAMBLER_DIST_TEMP_FOLDER}/jscramblerSourceMaps`;
@@ -23,6 +24,7 @@ module.exports = {
   BUNDLE_DEV_CLI_ARG,
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
+  JSCRAMBLER_IGNORE,
   JSCRAMBLER_TEMP_FOLDER,
   JSCRAMBLER_DIST_TEMP_FOLDER,
   JSCRAMBLER_SOURCE_MAPS_TEMP_FOLDER,

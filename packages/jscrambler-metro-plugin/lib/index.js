@@ -1,4 +1,4 @@
-const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
+const {copy, emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +9,7 @@ const {
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_TEMP_FOLDER,
+  JSCRAMBLER_IGNORE,
   JSCRAMBLER_DIST_TEMP_FOLDER,
   JSCRAMBLER_SRC_TEMP_FOLDER,
   JSCRAMBLER_PROTECTION_ID_FILE,
@@ -91,6 +92,21 @@ async function obfuscateBundle(
     )
   );
 
+  // .jscramblerignore
+  let hasJscramblerIgnore = false;
+  if(typeof config.ignoreFile === 'string') {
+    if (path.basename(config.ignoreFile) !== JSCRAMBLER_IGNORE) {
+      console.error(`*ignoreFile* option must point to ${JSCRAMBLER_IGNORE} file`);
+      process.exit(-1);
+    }
+
+    await copy(config.ignoreFile, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
+    hasJscramblerIgnore = true;
+  } else if (fs.accessSync(JSCRAMBLER_IGNORE, fs.constants.R_OK)) {
+    await copy(JSCRAMBLER_IGNORE, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
+    hasJscramblerIgnore = true;
+  }
+
   // write user files to tmp folder
   await Promise.all(
     metroUserFilesOnly.map((c, i) =>
@@ -107,6 +123,7 @@ async function obfuscateBundle(
 
   // adapt configs for react-native
   config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
+  if (hasJscramblerIgnore) config.filesSrc.push(JSCRAMBLER_IGNORE);
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
