@@ -23,6 +23,7 @@ const {
   buildNormalizePath,
   extractLocs,
   getBundlePath,
+  isFileReadable,
   skipObfuscation,
   stripEntryPointTags,
   stripJscramblerTags,
@@ -94,6 +95,7 @@ async function obfuscateBundle(
 
   // .jscramblerignore
   let hasJscramblerIgnore = false;
+  const defaultJscramblerIgnorePath = path.join(projectRoot, JSCRAMBLER_IGNORE);
   if(typeof config.ignoreFile === 'string') {
     if (path.basename(config.ignoreFile) !== JSCRAMBLER_IGNORE) {
       console.error(`*ignoreFile* option must point to ${JSCRAMBLER_IGNORE} file`);
@@ -102,8 +104,8 @@ async function obfuscateBundle(
 
     await copy(config.ignoreFile, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
     hasJscramblerIgnore = true;
-  } else if (fs.accessSync(JSCRAMBLER_IGNORE, fs.constants.R_OK)) {
-    await copy(JSCRAMBLER_IGNORE, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
+  }  else if (await isFileReadable(defaultJscramblerIgnorePath)) {
+    await copy(defaultJscramblerIgnorePath, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
     hasJscramblerIgnore = true;
   }
 

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const readline = require('readline');
 const {Command} = require('commander');
 const {Readable} = require('stream');
@@ -207,13 +208,23 @@ function stripEntryPointTags(metroBundle, entryPointMinified) {
   return metroChunksByEntrypoint.join('');
 }
 
+/**
+ * Check if some file is readable
+ * @param {string} filename the filename to be tested
+ * @returns {Promise} true if readable, otherwise false
+ */
+const isFileReadable = (filename) => new Promise((resolve) => {
+  fs.access(filename, fs.constants.F_OK | fs.constants.R_OK, error => resolve(!error))
+})
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
   extractLocs,
   getBundlePath,
-  stripEntryPointTags,
+  isFileReadable,
   skipObfuscation,
+  stripEntryPointTags,
   stripJscramblerTags,
   wrapCodeWithTags
 };
