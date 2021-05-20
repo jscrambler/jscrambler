@@ -1,4 +1,4 @@
-const {emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
+const {copy, emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
@@ -9,8 +9,8 @@ const {
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_TEMP_FOLDER,
+  JSCRAMBLER_IGNORE,
   JSCRAMBLER_DIST_TEMP_FOLDER,
-  JSCRAMBLER_SRC_TEMP_FOLDER,
   JSCRAMBLER_PROTECTION_ID_FILE,
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_END_ANNOTATION,
@@ -22,6 +22,7 @@ const {
   buildNormalizePath,
   extractLocs,
   getBundlePath,
+  isFileReadable,
   skipObfuscation,
   stripEntryPointTags,
   stripJscramblerTags,
@@ -96,31 +97,37 @@ async function obfuscateBundle(
     return s[0];
   });
 
-  // build tmp src folders structure
-  await Promise.all(
-    filteredFileNames.map(n =>
-      mkdirp(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${path.dirname(n)}`)
-    )
-  );
+  const sources = [];
+  // .jscramblerignore
+  const defaultJscramblerIgnorePath = path.join(projectRoot, JSCRAMBLER_IGNORE);
 
-  // write user files to tmp folder
-  await Promise.all(
-    metroUserFilesOnly.map((c, i) =>
-      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filteredFileNames[i]}`, c)
-    )
-  )
+  if (typeof config.ignoreFile === 'string') {
+    if (!await isFileReadable(config.ignoreFile)) {
+      console.error(`The *ignoreFile* "${config.ignoreFile}" was not found or is not readable!`);
+      process.exit(-1);
+    }
+    sources.push({ filename: JSCRAMBLER_IGNORE, content: await readFile(config.ignoreFile) })
+  } else if (await isFileReadable(defaultJscramblerIgnorePath)) {
+    sources.push({ filename: JSCRAMBLER_IGNORE, content: await readFile(defaultJscramblerIgnorePath) })
+  }
 
-  // write source map files to tmp folder (only for Instrumentation process)
-  await Promise.all(
-    sourceMapFiles.map(({filename, content}) =>
-      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filename}`, content)
-    )
-  )
+  // push user files to sources array
+  for (let i = 0; i < metroUserFilesOnly.length; i += 1) {
+    sources.push({
+      filename: filteredFileNames[i], content: metroUserFilesOnly[i]
+    })
+  }
+
+  // Source map files (only for Instrumentation process)
+  for (const { filename, content } of sourceMapFiles) {
+    sources.push({
+      filename, content
+    })
+  }
 
   // adapt configs for react-native
-  config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
+  config.sources = sources;
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
-  config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
 
 

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const readline = require('readline');
 const {Command} = require('commander');
 const {Readable} = require('stream');
@@ -212,6 +213,15 @@ function stripEntryPointTags(metroBundle, entryPointMinified) {
   return metroChunksByEntrypoint.join('');
 }
 
+/**
+ * Check if some file is readable
+ * @param {string} path filename path to be tested
+ * @returns {Promise<boolean>} true if readable, otherwise false
+ */
+const isFileReadable = (path) => new Promise((resolve) => {
+  fs.access(path, fs.constants.F_OK | fs.constants.R_OK, error => resolve(!error))
+})
+
 const addBundleArgsToExcludeList = (chunk, excludeListOptions = []) => {
   if (excludeListOptions.length === 0) {
     return;
@@ -262,13 +272,15 @@ const getExcludeListOptions = config => {
   return excludeListOptions;
 }
 
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
   extractLocs,
   getBundlePath,
-  stripEntryPointTags,
+  isFileReadable,
   skipObfuscation,
+  stripEntryPointTags,
   stripJscramblerTags,
   addBundleArgsToExcludeList,
   getExcludeListOptions,
