@@ -26,6 +26,8 @@ const {
   skipObfuscation,
   stripEntryPointTags,
   stripJscramblerTags,
+  addBundleArgsToExcludeList,
+  getExcludeListOptions,
   wrapCodeWithTags
 } = require('./utils');
 
@@ -52,6 +54,7 @@ async function obfuscateBundle(
   const metroBundleLocs = await extractLocs(metroBundle);
   let processedMetroBundle = metroBundle;
   let filteredFileNames = fileNames;
+  const excludeListOptions = getExcludeListOptions(config);
 
   const supportsEntryPoint = await jscrambler.introspectFieldOnMethod.call(
     jscrambler,
@@ -62,28 +65,37 @@ async function obfuscateBundle(
   );
 
   // ignore entrypoint obfuscation if its not supported
-  if (!supportsEntryPoint && typeof entryPointCode === 'string' && entryPointCode.length > 0) {
-    debug && console.log('debug Jscrambler entrypoint option not supported');
-    try {
-      filteredFileNames = fileNames.filter(
-        name => !name.includes(INIT_CORE_MODULE)
-      );
-      processedMetroBundle = stripEntryPointTags(
-        metroBundle,
-        entryPointCode
-      );
-    } catch (err) {
-      console.log("Error processing entry point.");
-      process.exit(-1);
+  if (!supportsEntryPoint) {
+    delete config.entryPoint;
+    if (typeof entryPointCode === 'string' && entryPointCode.length > 0) {
+      debug && console.log('debug Jscrambler entrypoint option not supported');
+      try {
+        filteredFileNames = fileNames.filter(
+          name => !name.includes(INIT_CORE_MODULE)
+        );
+        processedMetroBundle = stripEntryPointTags(
+          metroBundle,
+          entryPointCode
+        );
+      } catch (err) {
+        console.log("Error processing entry point.");
+        process.exit(-1);
+      }
     }
   }
 
-  const metroBundleChunks = processedMetroBundle.split(JSCRAMBLER_BEG_ANNOTATION);
-  const metroUserFilesOnly = metroBundleChunks
-    .filter((c, i) => i > 0)
-    .map((c, i) => {
-      return c.split(JSCRAMBLER_END_ANNOTATION)[0];
-    });
+  const metroBundleChunks = processedMetroBundle.split(
+    JSCRAMBLER_BEG_ANNOTATION
+  );
+  addBundleArgsToExcludeList(metroBundleChunks[0], excludeListOptions);
+  const metroUserFilesOnly = metroBundleChunks.slice(1).map((c, i) => {
+    const s = c.split(JSCRAMBLER_END_ANNOTATION);
+    // We don't want to extract args from last chunk
+    if (i < metroBundleChunks.length - 2) {
+      addBundleArgsToExcludeList(s[1], excludeListOptions);
+    }
+    return s[0];
+  });
 
   const sources = [];
   // .jscramblerignore
@@ -118,9 +130,6 @@ async function obfuscateBundle(
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
 
-  if (supportsEntryPoint) {
-    config.entryPoint = INIT_CORE_MODULE;
-  }
 
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
     console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
@@ -200,7 +209,7 @@ function isValidExtension(modulePath) {
   return path.extname(modulePath).match(JSCRAMBLER_EXTS);
 }
 
-function validateModule(modulePath, config) {
+function validateModule(modulePath, config, projectRoot) {
   const instrument = !!config.instrument;
 
   if (
@@ -210,6 +219,8 @@ function validateModule(modulePath, config) {
   ) {
     return false;
   } else if (modulePath.includes(INIT_CORE_MODULE) && !instrument) {
+    // This is the entrypoint file
+    config.entryPoint = buildNormalizePath(modulePath, projectRoot);
     return true;
   } else if (modulePath.includes("node_modules")) {
     return false;
@@ -243,6 +254,10 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     console.warn('warning: Jscrambler fields filesDest and fileSrc were ignored. Using input/output values of the metro bundler.')
   }
 
+  if (!Array.isArray(config.params) || config.params.length === 0) {
+    console.warn('warning: Jscrambler recommends you to declare your transformations list on the configuration file.')
+  }
+
   process.on('beforeExit', async function (exitCode) {
     try{
       console.log(
@@ -271,7 +286,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        */
       processModuleFilter(_module) {
         const modulePath = _module.path;
-        const shouldSkipModule = !validateModule(modulePath, config);
+        const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
 
         if (shouldSkipModule) {
           return true;
