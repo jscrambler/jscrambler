@@ -11,7 +11,6 @@ const {
   JSCRAMBLER_TEMP_FOLDER,
   JSCRAMBLER_IGNORE,
   JSCRAMBLER_DIST_TEMP_FOLDER,
-  JSCRAMBLER_SRC_TEMP_FOLDER,
   JSCRAMBLER_PROTECTION_ID_FILE,
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_END_ANNOTATION,
@@ -86,48 +85,37 @@ async function obfuscateBundle(
       return c.split(JSCRAMBLER_END_ANNOTATION)[0];
     });
 
-  // build tmp src folders structure
-  await Promise.all(
-    filteredFileNames.map(n =>
-      mkdirp(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${path.dirname(n)}`)
-    )
-  );
-
+  const sources = [];
   // .jscramblerignore
-  let hasJscramblerIgnore = false;
   const defaultJscramblerIgnorePath = path.join(projectRoot, JSCRAMBLER_IGNORE);
-  if(typeof config.ignoreFile === 'string') {
-    if (path.basename(config.ignoreFile) !== JSCRAMBLER_IGNORE) {
-      console.error(`*ignoreFile* option must point to ${JSCRAMBLER_IGNORE} file`);
+
+  if (typeof config.ignoreFile === 'string') {
+    if (!await isFileReadable(config.ignoreFile)) {
+      console.error(`The *ignoreFile* "${config.ignoreFile}" was not found or is not readable!`);
       process.exit(-1);
     }
-
-    await copy(config.ignoreFile, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
-    hasJscramblerIgnore = true;
-  }  else if (await isFileReadable(defaultJscramblerIgnorePath)) {
-    await copy(defaultJscramblerIgnorePath, `${JSCRAMBLER_SRC_TEMP_FOLDER}/${JSCRAMBLER_IGNORE}`);
-    hasJscramblerIgnore = true;
+    sources.push({ filename: JSCRAMBLER_IGNORE, content: await readFile(config.ignoreFile) })
+  } else if (await isFileReadable(defaultJscramblerIgnorePath)) {
+    sources.push({ filename: JSCRAMBLER_IGNORE, content: await readFile(defaultJscramblerIgnorePath) })
   }
 
-  // write user files to tmp folder
-  await Promise.all(
-    metroUserFilesOnly.map((c, i) =>
-      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filteredFileNames[i]}`, c)
-    )
-  )
+  // push user files to sources array
+  for (let i = 0; i < metroUserFilesOnly.length; i += 1) {
+    sources.push({
+      filename: filteredFileNames[i], content: metroUserFilesOnly[i]
+    })
+  }
 
-  // write source map files to tmp folder (only for Instrumentation process)
-  await Promise.all(
-    sourceMapFiles.map(({filename, content}) =>
-      writeFile(`${JSCRAMBLER_SRC_TEMP_FOLDER}/${filename}`, content)
-    )
-  )
+  // Source map files (only for Instrumentation process)
+  for (const { filename, content } of sourceMapFiles) {
+    sources.push({
+      filename, content
+    })
+  }
 
   // adapt configs for react-native
-  config.filesSrc = [`${JSCRAMBLER_SRC_TEMP_FOLDER}/**/*.js?(.map)`];
-  if (hasJscramblerIgnore) config.filesSrc.push(JSCRAMBLER_IGNORE);
+  config.sources = sources;
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
-  config.cwd = JSCRAMBLER_SRC_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
 
   if (supportsEntryPoint) {

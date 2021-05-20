@@ -210,11 +210,11 @@ function stripEntryPointTags(metroBundle, entryPointMinified) {
 
 /**
  * Check if some file is readable
- * @param {string} filename the filename to be tested
- * @returns {Promise} true if readable, otherwise false
+ * @param {string} path filename path to be tested
+ * @returns {Promise<boolean>} true if readable, otherwise false
  */
-const isFileReadable = (filename) => new Promise((resolve) => {
-  fs.access(filename, fs.constants.F_OK | fs.constants.R_OK, error => resolve(!error))
+const isFileReadable = (path) => new Promise((resolve) => {
+  fs.access(path, fs.constants.F_OK | fs.constants.R_OK, error => resolve(!error))
 })
 
 module.exports = {
