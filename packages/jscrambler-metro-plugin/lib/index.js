@@ -27,7 +27,6 @@ const {
   stripEntryPointTags,
   stripJscramblerTags,
   addBundleArgsToExcludeList,
-  getExcludeListOptions,
   wrapCodeWithTags
 } = require('./utils');
 
@@ -54,7 +53,7 @@ async function obfuscateBundle(
   const metroBundleLocs = await extractLocs(metroBundle);
   let processedMetroBundle = metroBundle;
   let filteredFileNames = fileNames;
-  const excludeListOptions = getExcludeListOptions(config);
+  const excludeList = [];
 
   const supportsEntryPoint = await jscrambler.introspectFieldOnMethod.call(
     jscrambler,
@@ -87,12 +86,12 @@ async function obfuscateBundle(
   const metroBundleChunks = processedMetroBundle.split(
     JSCRAMBLER_BEG_ANNOTATION
   );
-  addBundleArgsToExcludeList(metroBundleChunks[0], excludeListOptions);
+  addBundleArgsToExcludeList(metroBundleChunks[0], excludeList);
   const metroUserFilesOnly = metroBundleChunks.slice(1).map((c, i) => {
     const s = c.split(JSCRAMBLER_END_ANNOTATION);
     // We don't want to extract args from last chunk
     if (i < metroBundleChunks.length - 2) {
-      addBundleArgsToExcludeList(s[1], excludeListOptions);
+      addBundleArgsToExcludeList(s[1], excludeList);
     }
     return s[0];
   });
@@ -129,6 +128,7 @@ async function obfuscateBundle(
   config.sources = sources;
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
+  config.excludeList = excludeList;
 
 
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
