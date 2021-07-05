@@ -596,7 +596,7 @@ export default {
     );
     errorHandler(instrumentation);
 
-    function onExitCancelInstrumentation() {
+    const onExitCancelInstrumentation = () => {
       this.deleteProfiling(client, instrumentation.data.id)
         .then(() => console.log('\n** Instrumentation %s WAS CANCELLED **', instrumentation.data.id))
         .catch(() => debug && console.error(e))
