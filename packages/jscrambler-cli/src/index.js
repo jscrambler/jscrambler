@@ -28,7 +28,7 @@ const INCREASE_POLL_INTERVAL_EVERY = 30000;
 
 /**
  * Calculate polling interval for protection and instrumentation.
- * Upper limit of {INCREASE_POLL_INTERVAL_EVERY}.
+ * Upper limit of {POLLING_MAX_INTERVAL}.
  * @param start
  * @returns {number|number}
  */
