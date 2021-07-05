@@ -34,7 +34,6 @@ const INCREASE_POLL_INTERVAL_EVERY = 30000;
  */
 function getPollingInterval(start) {
   const pollingInterval = POLLING_MIN_INTERVAL * Math.ceil((Date.now() - start) / INCREASE_POLL_INTERVAL_EVERY);
-  console.log(pollingInterval);
   return pollingInterval >= POLLING_MAX_INTERVAL ? POLLING_MAX_INTERVAL : pollingInterval;
 }
 
