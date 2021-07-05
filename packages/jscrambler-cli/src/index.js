@@ -602,8 +602,8 @@ export default {
         .finally(() => process.exit(0));
     }
 
-    process.once('SIGINT', onExitCancelInstrumentation.bind(this))
-      .once('SIGTERM', onExitCancelInstrumentation.bind(this));
+    process.once('SIGINT', onExitCancelInstrumentation)
+      .once('SIGTERM', onExitCancelInstrumentation);
 
     instrumentation = await this.pollInstrumentation(
       client,
