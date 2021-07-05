@@ -10,7 +10,6 @@ const {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
-  JSCRAMBLER_EXCLUDE_LIST_TRANSFORMATIONS,
   BUNDLE_CMD
 } = require('./constants');
 
@@ -222,56 +221,21 @@ const isFileReadable = (path) => new Promise((resolve) => {
   fs.access(path, fs.constants.F_OK | fs.constants.R_OK, error => resolve(!error))
 })
 
-const addBundleArgsToExcludeList = (chunk, excludeListOptions = []) => {
-  if (excludeListOptions.length === 0) {
-    return;
-  }
-
+const addBundleArgsToExcludeList = (chunk, excludeList) => {
   const regex = /\(([0-9a-zA-Z_,]+)\){$/gm;
   const m = regex.exec(chunk);
   if (Array.isArray(m) && m.length > 1) {
     for (const arg of m[1].split(",")) {
-      for (const excludeList of excludeListOptions) {
-        if (!excludeList.includes(arg)) {
-          excludeList.push(arg);
-        }
+      if (!excludeList.includes(arg)) {
+        excludeList.push(arg);
       }
     }
     return;
   }
 
-  console.error(`Unable to add global variables to the exclude list. If you want to proceed, please remove the transformations: *${JSCRAMBLER_EXCLUDE_LIST_TRANSFORMATIONS}*`);
+  console.error(`Unable to add global variables to the exclude list.`);
   process.exit(1);
 };
-
-const getExcludeListOptions = config => {
-  const excludeListOptions = [];
-
-  if (!Array.isArray(config.params)) {
-    return excludeListOptions;
-  }
-
-  for (const param of config.params) {
-    if (param.status !== 0 && JSCRAMBLER_EXCLUDE_LIST_TRANSFORMATIONS.includes(param.name)) {
-      if (!param.options) {
-        param.options = {
-          excludeList: [],
-        };
-      } else if (!Array.isArray(param.options.excludeList)) {
-        if (typeof param.options.excludeList !== "undefined") {
-          console.error(`Exclude list option in ${param.name} must be an array.`);
-          process.exit(1);
-        }
-
-        param.options.excludeList = [];
-      }
-
-      excludeListOptions.push(param.options.excludeList);
-    }
-  }
-  return excludeListOptions;
-}
-
 
 module.exports = {
   buildModuleSourceMap,
@@ -283,6 +247,5 @@ module.exports = {
   stripEntryPointTags,
   stripJscramblerTags,
   addBundleArgsToExcludeList,
-  getExcludeListOptions,
   wrapCodeWithTags
 };

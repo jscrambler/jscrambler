@@ -249,6 +249,7 @@ export default {
       skipSources,
       inputSymbolTable,
       entryPoint,
+      excludeList,
       forceAppEnvironment
     } = finalConfig;
 
@@ -383,6 +384,7 @@ export default {
       ...updateData,
       bail,
       entryPoint,
+      excludeList,
       inputSymbolTable,
       randomizationSeed,
       source,

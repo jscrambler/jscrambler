@@ -320,6 +320,7 @@ const {
   inputSymbolTable,
   utc,
   entryPoint,
+  excludeList,
   forceAppEnvironment
 } = config;
 
@@ -453,6 +454,7 @@ if (commander.sourceMaps) {
       removeProfilingData,
       inputSymbolTable,
       entryPoint,
+      excludeList,
       forceAppEnvironment
     };
     try {
