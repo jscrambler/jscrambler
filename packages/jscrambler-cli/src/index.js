@@ -23,8 +23,20 @@ const {intoObjectType} = introspection;
 const debug = !!process.env.DEBUG;
 const APP_URL = 'https://app.jscrambler.com';
 const POLLING_MIN_INTERVAL = 1000;
-// in seconds
-const INCREASE_POLL_INTERVAL_EVERY = 60000
+const POLLING_MAX_INTERVAL = 10000;
+const INCREASE_POLL_INTERVAL_EVERY = 30000;
+
+/**
+ * Calculate polling interval for protection and instrumentation.
+ * Upper limit of {INCREASE_POLL_INTERVAL_EVERY}.
+ * @param start
+ * @returns {number|number}
+ */
+function getPollingInterval(start) {
+  const pollingInterval = POLLING_MIN_INTERVAL * Math.ceil((Date.now() - start) / INCREASE_POLL_INTERVAL_EVERY);
+  console.log(pollingInterval);
+  return pollingInterval >= POLLING_MAX_INTERVAL ? POLLING_MAX_INTERVAL : pollingInterval;
+}
 
 function errorHandler(res) {
   if (res.errors && res.errors.length) {
@@ -411,15 +423,15 @@ export default {
     const protectionId =
       createApplicationProtectionRes.data.createApplicationProtection._id;
 
-    function onExitCancelProtection() {
+    const onExitCancelProtection = () => {
       this.cancelProtection(client, protectionId, applicationId)
         .then(() => console.log('\n** Protection %s WAS CANCELLED **', protectionId))
         .catch(() => debug && console.error(e))
         .finally(() => process.exit(0));
     }
 
-    process.once('SIGINT', onExitCancelProtection.bind(this))
-      .once('SIGTERM', onExitCancelProtection.bind(this));
+    process.once('SIGINT', onExitCancelProtection)
+      .once('SIGTERM', onExitCancelProtection);
 
     const protection = await this.pollProtection(
       client,
@@ -844,7 +856,7 @@ export default {
         case 'FINISHED_INSTRUMENTATION':
           return instrumentation;
         default:
-          await new Promise(resolve => setTimeout(resolve, POLLING_MIN_INTERVAL * Math.ceil((Date.now() - start) / INCREASE_POLL_INTERVAL_EVERY)));
+          await new Promise(resolve => setTimeout(resolve, getPollingInterval(start)));
           return poll();
       }
     };
@@ -897,7 +909,7 @@ export default {
           state !== 'errored' &&
           state !== 'canceled'
         ) {
-          await new Promise(resolve => setTimeout(resolve, POLLING_MIN_INTERVAL * Math.ceil((Date.now() - start) / INCREASE_POLL_INTERVAL_EVERY)));
+          await new Promise(resolve => setTimeout(resolve, getPollingInterval(start)));
           return poll();
         } else if (state === 'canceled') {
           throw new Error('Protection canceled by user');
