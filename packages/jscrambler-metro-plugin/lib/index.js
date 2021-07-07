@@ -128,8 +128,32 @@ async function obfuscateBundle(
   config.sources = sources;
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
-  config.excludeList = excludeList;
 
+  const supportsExcludeList = await jscrambler.introspectFieldOnMethod.call(
+    jscrambler,
+    config,
+    "mutation",
+    "createApplicationProtection",
+    "excludeList"
+  );
+
+  if (supportsExcludeList) {
+    config.excludeList = excludeList;
+  } else {
+    // add excludeList to gvi in case the api does not support global excludeList
+    if (config.params && Array.isArray(config.params)) {
+      const gvi = config.params.filter(
+        (param) => param.name === "globalVariableIndirection"
+      )[0];
+      if (gvi) {
+        gvi.options = gvi.options || {};
+        const mixedList = [
+          ...new Set(excludeList.concat(gvi.options.excludeList || [])),
+        ];
+        gvi.options.excludeList = mixedList;
+      }
+    }
+  }
 
   if (bundleSourceMapPath && typeof config.sourceMaps === 'undefined') {
     console.error(`error Metro is generating source maps that won't be useful after Jscrambler protection.
