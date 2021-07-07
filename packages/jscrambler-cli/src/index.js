@@ -441,7 +441,7 @@ export default {
       await getProtectionDefaultFragments(client)
     );
 
-    process.off('SIGINT', onExitCancelProtection).off('SIGTERM', onExitCancelProtection);
+    process.removeListener('SIGINT', onExitCancelProtection).removeListener('SIGTERM', onExitCancelProtection);
 
     if (protection.growthWarning) {
       console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
@@ -612,7 +612,7 @@ export default {
       instrumentation.data.id
     );
 
-    process.off('SIGINT', onExitCancelInstrumentation).off('SIGTERM', onExitCancelInstrumentation);
+    process.removeListener('SIGINT', onExitCancelInstrumentation).removeListener('SIGTERM', onExitCancelInstrumentation);
 
     if (debug) {
       console.log(
