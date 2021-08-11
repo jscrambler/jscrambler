@@ -7,6 +7,9 @@ const {
   JSCRAMBLER_EXTS,
   JSCRAMBLER_END_ANNOTATION,
   JSCRAMBLER_BEG_ANNOTATION,
+  JSCRAMBLER_SELF_DEFENDING,
+  JSCRAMBLER_TOLERATE_BENIGN_POISONING,
+  JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION,
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
@@ -237,6 +240,45 @@ const addBundleArgsToExcludeList = (chunk, excludeList) => {
   process.exit(1);
 };
 
+function handleExcludeList(config, {supportsExcludeList, excludeList}) {
+  if (supportsExcludeList) {
+    config.excludeList = excludeList;
+  } else {
+    // add excludeList to gvi in case the api does not support global excludeList
+    if (Array.isArray(config.params)) {
+      const gvi = config.params.find(
+          (param) => param.name === JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION
+      );
+      if (gvi) {
+        gvi.options = gvi.options || {};
+        const mixedList = [
+          ...new Set(excludeList.concat(gvi.options.excludeList || [])),
+        ];
+        gvi.options.excludeList = mixedList;
+      }
+    }
+  }
+}
+
+function injectTolerateBegninPoisoning(config) {
+  if (Array.isArray(config.params)) {
+    const sd = config.params.find(
+        (param) => param.name === JSCRAMBLER_SELF_DEFENDING
+    );
+    if (sd) {
+      sd.options = sd.options || {};
+      sd.options.options = sd.options.options || [];
+      if (
+          Array.isArray(sd.options.options) &&
+          !sd.options.options.includes(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
+      ) {
+        console.log(`info Jscrambler Tolerate benign poisoning option was automatically added to Self-Defending.`);
+        sd.options.options.push(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
+      }
+    }
+  }
+}
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
@@ -247,5 +289,7 @@ module.exports = {
   stripEntryPointTags,
   stripJscramblerTags,
   addBundleArgsToExcludeList,
+  handleExcludeList,
+  injectTolerateBegninPoisoning,
   wrapCodeWithTags
 };
