@@ -245,10 +245,10 @@ function handleExcludeList(config, {supportsExcludeList, excludeList}) {
     config.excludeList = excludeList;
   } else {
     // add excludeList to gvi in case the api does not support global excludeList
-    if (config.params && Array.isArray(config.params)) {
-      const gvi = config.params.filter(
+    if (Array.isArray(config.params)) {
+      const gvi = config.params.find(
           (param) => param.name === JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION
-      )[0];
+      );
       if (gvi) {
         gvi.options = gvi.options || {};
         const mixedList = [
