@@ -268,7 +268,10 @@ function injectTolerateBegninPoisoning(config) {
     if (sd) {
       sd.options = sd.options || {};
       sd.options.options = sd.options.options || [];
-      if (!sd.options.options.includes(JSCRAMBLER_TOLERATE_BENIGN_POISONING)) {
+      if (
+          Array.isArray(sd.options.options) &&
+          !sd.options.options.includes(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
+      ) {
         console.log(`info Jscrambler Tolerate benign poisoning option was automatically added to Self-Defending.`);
         sd.options.options.push(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
       }
