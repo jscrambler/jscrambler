@@ -13,7 +13,7 @@ const debug = !!process.env.DEBUG;
 // ./zip.js module is excluded from browser-like environments. We take advantage of that here.
 export {outputFileSync};
 
-export function zip(files, cwd) {
+export async function zip(files, cwd) {
   debug && console.log('Zipping files', inspect(files));
   const deferred = defer();
   // Flag to detect if any file was added to the zip archive
@@ -29,7 +29,7 @@ export function zip(files, cwd) {
     let zipFile = readFileSync(files[0]);
 
     outputFileSync(temp.openSync({suffix: '.zip'}).path, zipFile);
-    zipFile = zip.load(zipFile);
+    zipFile = await zip.loadAsync(zipFile);
     deferred.resolve(zipFile);
   } else {
     const zip = new JSZip();
@@ -75,9 +75,7 @@ export function zip(files, cwd) {
     }
     if (hasFiles) {
       const tempFile = temp.openSync({suffix: '.zip'});
-      outputFileSync(tempFile.path, zip.generate({type: 'nodebuffer'}), {
-        encoding: 'base64'
-      });
+      outputFileSync(tempFile.path, await zip.generateAsync({type: 'nodebuffer'}));
       files[0] = tempFile.path;
       files.length = 1;
       deferred.resolve(zip);
@@ -116,15 +114,16 @@ function parseWinAbsolutePath(_path) {
   };
 }
 
-export function unzip(zipFile, dest, stream = true) {
-  const zip = new JSZip(zipFile);
+export async function unzip(zipFile, dest, stream = true) {
+  const zip = new JSZip();
+  await zip.loadAsync(zipFile);
   const _size = size(zip.files);
 
   const results = [];
 
   for (const file in zip.files) {
-    if (!zip.files[file].options.dir) {
-      const buffer = zip.file(file).asNodeBuffer();
+    if (!zip.files[file].dir) {
+      const buffer = await zip.file(file).async('nodebuffer');
 
       if (typeof dest === 'function') {
         if (stream) {

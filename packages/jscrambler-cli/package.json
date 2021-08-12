@@ -38,7 +38,7 @@
     "fs-extra": "^0.30.0",
     "glob": "^7.0.3",
     "http-proxy-agent": "^4.0.1",
-    "jszip": "^2.6.0",
+    "jszip": "^3.7.1",
     "lodash.clone": "^4.0.3",
     "lodash.clonedeep": "^4.5.0",
     "lodash.defaults": "^4.0.1",
