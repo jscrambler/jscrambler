@@ -160,11 +160,10 @@ export default {
     }
 
     if (zipped) {
-      const content = zipped
-        .generate({
-          type: 'nodebuffer'
-        })
-        .toString('base64');
+      const content = await zipped
+        .generateAsync({
+          type: 'base64'
+        });
 
       if (debug) {
         console.log('Adding sources to application');
@@ -510,7 +509,7 @@ export default {
       console.log('Unzipping files');
     }
 
-    unzip(download, filesDest || destCallback, stream);
+    await unzip(download, filesDest || destCallback, stream);
 
     if (debug) {
       console.log('Finished unzipping files');
@@ -630,7 +629,7 @@ export default {
       console.log('Unzipping files');
     }
 
-    unzip(download, filesDest || destCallback, stream);
+    await unzip(download, filesDest || destCallback, stream);
 
     if (debug) {
       console.log('Finished unzipping files');
@@ -766,7 +765,7 @@ export default {
     } catch (e) {
       errorHandler(e);
     }
-    unzip(download, filesDest || destCallback, stream);
+    await unzip(download, filesDest || destCallback, stream);
   },
   async downloadSymbolTable(configs, destCallback) {
     const {
