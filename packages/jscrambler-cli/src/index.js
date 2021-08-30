@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import 'babel-polyfill';
+import 'regenerator-runtime';
+import 'core-js'
 
 import glob from 'glob';
 import path from 'path';
