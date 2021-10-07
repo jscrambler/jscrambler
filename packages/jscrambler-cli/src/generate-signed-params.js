@@ -2,13 +2,9 @@ import clone from 'lodash.clone';
 import crypto from 'crypto';
 import defaults from 'lodash.defaults';
 import keys from 'lodash.keys';
+import {SIGNATURE_VERSIONS} from './constants';
 
 const debug = !!process.env.DEBUG;
-
-const SIGNATURE_VERSIONS = {
-  v1: 'v1',
-  v2: 'v2'
-};
 
 export default function signedParams(
   method,

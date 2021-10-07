@@ -4,3 +4,8 @@ export const HTTP_STATUS_CODES = Object.freeze({
   SERVICE_UNAVAILABLE: 503,
   GATEWAY_TIMEOUT: 504
 });
+
+export const SIGNATURE_VERSIONS = {
+  v1: 'v1',
+  v2: 'v2'
+};

@@ -7,6 +7,7 @@ import https from 'https';
 import http from 'http';
 import HttpsProxyAgent from '@jscrambler/https-proxy-agent';
 import HttpProxyAgent from 'http-proxy-agent';
+import {SIGNATURE_VERSIONS} from './constants';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -52,11 +53,11 @@ function JScramblerClient(options) {
 
   // set *v2* signature on latest or version greater or equal to 7.2
   if (jscramblerVersion === 'latest') {
-    this.options.jscramblerSignatureVersion = 'v2';
+    this.options.jscramblerSignatureVersion = SIGNATURE_VERSIONS.v2;
   } else if (jscramblerVersion !== 'stable') {
     const [major, minor] = jscramblerVersion.split(/[-.]/);
     if (parseInt(major, 10) >= 7 && parseInt(minor, 10) >= 2) {
-      this.options.jscramblerSignatureVersion = 'v2';
+      this.options.jscramblerSignatureVersion = SIGNATURE_VERSIONS.v2;
     }
   }
   if (debug) {
