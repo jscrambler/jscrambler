@@ -31,7 +31,7 @@ function buildSortedQuery(params) {
   let query = '';
   for (let i = 0, l = _keys.length; i < l; i++) {
     query += `${encodeURIComponent(_keys[i])}=${encodeURIComponent(
-      params[_keys[i]]
+      typeof params[_keys[i]] === 'object' ? JSON.stringify(params[_keys[i]]) : params[_keys[i]]
     )}&`;
   }
   query = query
