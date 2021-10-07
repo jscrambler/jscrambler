@@ -50,7 +50,6 @@ function JScramblerClient(options) {
 
   const {jscramblerVersion, clientId} = this.options;
 
-  this.options.jscramblerSignatureVersion = 'v1';
   // set *v2* signature on latest or version greater or equal to 7.2
   if (jscramblerVersion === 'latest') {
     this.options.jscramblerSignatureVersion = 'v2';

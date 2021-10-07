@@ -9,6 +9,7 @@ const config = rc(
     host: 'api4.jscrambler.com',
     basePath: '',
     jscramblerVersion: 'stable',
+    jscramblerSignatureVersion: 'v1',
     werror: true,
     clientId: 0,
     utc: true,
