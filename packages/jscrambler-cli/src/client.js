@@ -50,10 +50,24 @@ function JScramblerClient(options) {
 
   const {jscramblerVersion, clientId} = this.options;
 
+  this.options.jscramblerSignatureVersion = 'v1';
+  // set *v2* signature on latest or version greater or equal to 7.2
+  if (jscramblerVersion === 'latest') {
+    this.options.jscramblerSignatureVersion = 'v2';
+  } else if (jscramblerVersion !== 'stable') {
+    const [major, minor] = jscramblerVersion.split(/[-.]/);
+    if (parseInt(major, 10) >= 7 && parseInt(minor, 10) >= 2) {
+      this.options.jscramblerSignatureVersion = 'v2';
+    }
+  }
+  if (debug) {
+    console.log('Signature Version:', this.options.jscramblerSignatureVersion);
+  }
+
   this.axiosInstance = axios.create({
     headers: {
       jscramblerVersion,
-      jscramblerSignatureVersion: 'v2',
+      jscramblerSignatureVersion: this.options.jscramblerSignatureVersion,
       clientId
     },
     maxBodyLength: 100 * 1000 * 1000 // 100 MB
@@ -130,7 +144,8 @@ JScramblerClient.prototype.request = function(
       this.options.host,
       this.options.keys,
       params,
-      this.options.utc
+      this.options.utc,
+      this.options.jscramblerSignatureVersion
     );
   } else {
     signedData = params;
