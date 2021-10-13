@@ -241,7 +241,9 @@ if (commander.args.length > 0) {
 }
 
 if (globSrc && globSrc.length) {
-  filesSrc = [];
+  // the decode to real file can only be done one time in the updateApplicationSources method
+  filesSrc = globSrc;
+  let nSources = 0;
   // Iterate `globSrc` to build a list of source files into `filesSrc`
   for (let i = 0, l = globSrc.length; i < l; i += 1) {
     // Calling sync `glob` because async is pointless for the CLI use case
@@ -276,9 +278,9 @@ if (globSrc && globSrc.length) {
         });
       }
     }
-    filesSrc = filesSrc.concat(tmpGlob);
+    nSources += tmpGlob.length;
   }
-  if (filesSrc.length === 0) {
+  if (nSources === 0) {
     console.error('No files matched.');
     process.exit(1);
   }
