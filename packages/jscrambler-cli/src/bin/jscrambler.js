@@ -241,7 +241,7 @@ if (commander.args.length > 0) {
 }
 
 if (globSrc && globSrc.length) {
-  // the decode to real file can only be done one time in the updateApplicationSources method
+  // this will be translated to real files in the updateApplicationSources method
   filesSrc = globSrc;
   let nSources = 0;
   // Iterate `globSrc` to build a list of source files into `filesSrc`
