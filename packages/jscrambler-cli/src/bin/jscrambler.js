@@ -2,13 +2,13 @@
 
 import commander from 'commander';
 import defaults from 'lodash.defaults';
-import glob from 'glob';
 import path from 'path';
 import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
 import {mergeAndParseParams} from '../cli';
+import {getMatchedFiles} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -241,7 +241,9 @@ if (commander.args.length > 0) {
 }
 
 if (globSrc && globSrc.length) {
-  filesSrc = [];
+  // this will be translated to real files in the updateApplicationSources method
+  filesSrc = globSrc;
+  let nSources = 0;
   // Iterate `globSrc` to build a list of source files into `filesSrc`
   for (let i = 0, l = globSrc.length; i < l; i += 1) {
     // Calling sync `glob` because async is pointless for the CLI use case
@@ -255,9 +257,7 @@ if (globSrc && globSrc.length) {
       process.exit(1);
     }
 
-    const tmpGlob = glob.sync(globSrc[i], {
-      dot: true
-    });
+    const tmpGlob = getMatchedFiles(globSrc[i]);
 
     if (config.werror && tmpGlob.length === 0) {
       console.error(`Pattern "${globSrc[i]}" doesn't match any files.`);
@@ -276,9 +276,9 @@ if (globSrc && globSrc.length) {
         });
       }
     }
-    filesSrc = filesSrc.concat(tmpGlob);
+    nSources += tmpGlob.length;
   }
-  if (filesSrc.length === 0) {
+  if (nSources === 0) {
     console.error('No files matched.');
     process.exit(1);
   }
