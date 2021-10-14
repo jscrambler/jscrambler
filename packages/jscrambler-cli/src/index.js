@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import 'babel-polyfill';
 
-import glob from 'glob';
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
@@ -15,6 +14,7 @@ import * as queries from './queries';
 import {HTTP_STATUS_CODES} from './constants';
 import {zip, zipSources, unzip, outputFileSync} from './zip';
 import * as introspection from './introspection';
+import {getMatchedFiles} from './utils';
 
 import getProtectionDefaultFragments from './get-protection-default-fragments';
 
@@ -135,12 +135,7 @@ export default {
       let _filesSrc = [];
       for (let i = 0, l = filesSrc.length; i < l; i += 1) {
         if (typeof filesSrc[i] === 'string') {
-          // TODO Replace `glob.sync` with async version
-          _filesSrc = _filesSrc.concat(
-            glob.sync(filesSrc[i], {
-              dot: true
-            })
-          );
+          _filesSrc = _filesSrc.concat(getMatchedFiles(filesSrc[i]));
         } else {
           _filesSrc.push(filesSrc[i]);
         }

@@ -2,13 +2,13 @@
 
 import commander from 'commander';
 import defaults from 'lodash.defaults';
-import glob from 'glob';
 import path from 'path';
 import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
 import {mergeAndParseParams} from '../cli';
+import {getMatchedFiles} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -257,9 +257,7 @@ if (globSrc && globSrc.length) {
       process.exit(1);
     }
 
-    const tmpGlob = glob.sync(globSrc[i], {
-      dot: true
-    });
+    const tmpGlob = getMatchedFiles(globSrc[i]);
 
     if (config.werror && tmpGlob.length === 0) {
       console.error(`Pattern "${globSrc[i]}" doesn't match any files.`);
