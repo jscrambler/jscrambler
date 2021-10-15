@@ -30,9 +30,11 @@ function buildSortedQuery(params) {
   const _keys = keys(params).sort();
   let query = '';
   for (let i = 0, l = _keys.length; i < l; i++) {
-    query += `${encodeURIComponent(_keys[i])}=${encodeURIComponent(
-      params[_keys[i]]
-    )}&`;
+    const value =
+      typeof params[_keys[i]] === 'object'
+        ? JSON.stringify(params[_keys[i]])
+        : params[_keys[i]];
+    query += `${encodeURIComponent(_keys[i])}=${encodeURIComponent(value)}&`;
   }
   query = query
     .replace(/\*/g, '%2A')

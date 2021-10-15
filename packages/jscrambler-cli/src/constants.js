@@ -1,6 +1,11 @@
 export const HTTP_STATUS_CODES = Object.freeze({
+  UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   SERVICE_UNAVAILABLE: 503,
   GATEWAY_TIMEOUT: 504
+});
+
+export const JSCRAMBLER_ERROR_CODES = Object.freeze({
+  INVALID_SIGNATURE: '254'
 });
