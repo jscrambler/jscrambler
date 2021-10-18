@@ -39,6 +39,16 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Ember](packages/ember-cli-jscrambler)
 - [Metro](packages/jscrambler-metro-plugin)
 
+### Version Compatibility
+
+The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the selected integration Client (f.e jscrambler-cli or jscrambler-webpack-plugin).
+Please make sure you install the right version, otherwise the some functionalities might not work properly. 
+
+| _Jscrambler Version_   |      _Client and Integrations_      |
+|:----------:|:-------------:|
+| _<= 7.1_ |  _<= 5.0.0_ |
+| _\>= 7.2_ |   _\>= 6.0.0_ |
+
 ## Jscrambler JavaScript Framework/Library Integrations
 
 - [React](https://blog.jscrambler.com/protecting-your-react-js-source-code-with-jscrambler/?utm_source=github.com&utm_medium=referral)
