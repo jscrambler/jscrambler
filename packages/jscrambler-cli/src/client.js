@@ -10,7 +10,12 @@ import HttpProxyAgent from 'http-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
-import {JSCRAMBLER_ERROR_CODES, HTTP_STATUS_CODES} from './constants';
+import {
+  JSCRAMBLER_ERROR_CODES,
+  HTTP_STATUS_CODES,
+  CLIENT_IDS,
+  CLIENT_PACKAGES
+} from './constants';
 import {version} from '../package.json';
 
 const debug = !!process.env.DEBUG;
@@ -243,7 +248,9 @@ JScramblerClient.prototype.request = function(
       }
 
       if (incompatibleApi) {
-        errorMessage = `Incompatible jscrambler CLI version (${version}). Please downgrade to: \n\t$ npm install jscrambler@5`;
+          errorMessage = `Incompatible jscrambler CLI version (${version}). Please downgrade to: \n\t$ npm install ${
+            CLIENT_PACKAGES[this.options.clientId]
+          }@5`;
       } else if (
         // For when we have API error messages
         err.response.data &&

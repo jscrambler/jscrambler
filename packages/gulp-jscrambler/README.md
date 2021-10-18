@@ -10,11 +10,11 @@ Add obfuscation to your build process with [gulp](https://github.com/wearefracta
 ------------------------------------------------------------------------------
 
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Gulp Client.
-Please make sure you install the right version, otherwise the some functionalities might not work properly.
+Please make sure you install the right version, otherwise some functionalities might not work properly.
 
 | _Jscrambler Version_   |      _Client and Integrations_      |
 |:----------:|:-------------:|
-| _<= 7.1_ |  _<= 5.0.0_ |
+| _<= 7.1_ |  _<= 5.x.x_ |
 | _\>= 7.2_ |   _\>= 6.0.0_ |
 
 ### Install
