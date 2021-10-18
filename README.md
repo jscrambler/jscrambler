@@ -42,7 +42,7 @@ You can integrate Jscrambler into your build process easily with its API client.
 ### Version Compatibility
 
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the selected integration Client (f.e jscrambler-cli or jscrambler-webpack-plugin).
-Please make sure you install the right version, otherwise the some functionalities might not work properly. 
+Please make sure you install the right version, otherwise some functionalities might not work properly. 
 
 | _Jscrambler Version_   |      _Client and Integrations_      |
 |:----------:|:-------------:|
