@@ -2,6 +2,7 @@
 Jscrambler Client for Browser and Node.js
 
 - [Jscrambler](https://jscrambler.com/?utm_source=github.com&utm_medium=referral)
+  - [Version Compatibility](#version-compatibility)
   - [Installation](#installation)
   - [RC configuration](#rc-configuration)
   - [CLI](#cli)
@@ -22,6 +23,16 @@ Jscrambler Client for Browser and Node.js
     - [Quick example](#quick-example)
   - [Jscrambler Parameters](#jscrambler-parameters)
 
+## Version Compatibility
+
+The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Client.
+Please make sure you install the right version, otherwise some functionalities might not work properly.
+
+| _Jscrambler Version_   |      _Client and Integrations_      |
+|:----------:|:-------------:|
+| _<= 7.1_ |  _<= 5.x.x_ |
+| _\>= 7.2_ |   _\>= 6.0.0_ |
+
 ## Installation
 
 On your project:
@@ -34,6 +45,12 @@ Or globally:
 
 ```js
 npm i -g jscrambler
+```
+
+Or a specific version:
+
+```js
+npm i jscrambler@5
 ```
 
 ## RC configuration

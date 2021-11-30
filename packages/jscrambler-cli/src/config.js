@@ -1,4 +1,5 @@
 import rc from 'rc';
+import {CLIENT_IDS} from './constants';
 
 // Load RC configuration if present. Pass `[]` as last argument to avoid
 // getting variables from `argv`.
@@ -10,7 +11,7 @@ const config = rc(
     basePath: '',
     jscramblerVersion: 'stable',
     werror: true,
-    clientId: 0,
+    clientId: CLIENT_IDS.CLI,
     utc: true,
     maxRetries: 5
   },

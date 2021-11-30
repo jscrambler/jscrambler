@@ -7,6 +7,17 @@ Add obfuscation to your build process with [grunt](https://github.com/gruntjs/gr
 ## How to Use
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins.
 
+### Version Compatibility
+------------------------------------------------------------------------------
+
+The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Grunt Client.
+Please make sure you install the right version, otherwise some functionalities might not work properly.
+
+| _Jscrambler Version_   |      _Client and Integrations_      |
+|:----------:|:-------------:|
+| _<= 7.1_ |  _<= 5.x.x_ |
+| _\>= 7.2_ |   _\>= 6.0.0_ |
+
 ### Install
 Once you're familiar with that process, you may install this plugin:
 

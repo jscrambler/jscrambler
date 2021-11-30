@@ -2,6 +2,17 @@
 
 This plugin protects your webpack output using Jscrambler.
 
+# Version Compatibility
+------------------------------------------------------------------------------
+
+The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Webpack Plugin.
+Please make sure you install the right version, otherwise some functionalities might not work properly.
+
+| _Jscrambler Version_   |      _Client and Integrations_      |
+|:----------:|:-------------:|
+| _<= 7.1_ |  _<= 5.x.x_ |
+| _\>= 7.2_ |   _\>= 6.0.0_ |
+
 # Usage
 
 Simply add the plugin to your configuration. We recommend placing it after every other plugin that also modifies your code. It will automatically gather all JavaScript and HTML files and protect them.

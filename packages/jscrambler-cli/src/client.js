@@ -10,6 +10,13 @@ import HttpProxyAgent from 'http-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
+import {
+  JSCRAMBLER_ERROR_CODES,
+  HTTP_STATUS_CODES,
+  CLIENT_IDS,
+  CLIENT_PACKAGES
+} from './constants';
+import {version} from '../package.json';
 
 const debug = !!process.env.DEBUG;
 
@@ -235,8 +242,17 @@ JScramblerClient.prototype.request = function(
       errorMessage += `${err.response.status} ${err.response.statusText}`;
       statusCode = err.response.status;
 
-      // For when we have API error messages
-      if (
+      let incompatibleApi = false;
+      if (statusCode === HTTP_STATUS_CODES.UNAUTHORIZED) {
+        incompatibleApi = err.response.data.errorCode !== JSCRAMBLER_ERROR_CODES.INVALID_SIGNATURE;
+      }
+
+      if (incompatibleApi) {
+          errorMessage = `Incompatible jscrambler CLI version (${version}). Please downgrade to: \n\t$ npm install ${
+            CLIENT_PACKAGES[this.options.clientId]
+          }@5`;
+      } else if (
+        // For when we have API error messages
         err.response.data &&
         err.response.data.error &&
         err.response.data.message
