@@ -1,6 +1,6 @@
 {
   "name": "jscrambler-metro-plugin",
-  "version": "5.5.35",
+  "version": "6.0.0",
   "description": "A plugin to use metro with Jscrambler",
   "main": "lib/index.js",
   "peerDependencies": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
-    "jscrambler": "^5.5.35"
+    "jscrambler": "^6.0.0"
   },
   "keywords": [
     "jscrambler",
