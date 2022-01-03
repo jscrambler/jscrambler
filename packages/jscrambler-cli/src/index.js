@@ -422,7 +422,7 @@ export default {
       this.cancelProtection(client, protectionId, applicationId)
         .then(() => console.log('\n** Protection %s WAS CANCELLED **', protectionId))
         .catch(() => debug && console.error(e))
-        .finally(() => process.exit(0));
+        .finally(() => process.exit(1));
     }
 
     process.once('SIGINT', onExitCancelProtection)
@@ -595,7 +595,7 @@ export default {
       this.deleteProfiling(client, instrumentation.data.id)
         .then(() => console.log('\n** Instrumentation %s WAS CANCELLED **', instrumentation.data.id))
         .catch(() => debug && console.error(e))
-        .finally(() => process.exit(0));
+        .finally(() => process.exit(1));
     }
 
     process.once('SIGINT', onExitCancelInstrumentation)
