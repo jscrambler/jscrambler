@@ -92,7 +92,11 @@ class JscramblerPlugin {
               stream: false
             }),
             res => {
-              this.protectionResult = res;
+              this.protectionResult = res.map(p => {
+                // normalize name. F.e. if the original names starts with "./", the protected version must also be set with "./" prefix
+                p.filename = (sources.find(({filename: oFilename}) => new RegExp(`^(./)*${p.filename}$`).test(oFilename)) ||  p).filename;
+                return p;
+              });
             }
           )
         )
