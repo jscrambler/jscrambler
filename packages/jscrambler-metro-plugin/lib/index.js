@@ -256,6 +256,8 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   }
 
   const bundlePath = getBundlePath();
+  // make sure jscrambler-metro-plugin is properly configure on metro bundler
+  let calledByMetro = false;
   const fileNames = new Set();
   const sourceMapFiles = [];
   const config = Object.assign({}, jscrambler.config, _config);
@@ -272,6 +274,10 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
 
   process.on('beforeExit', async function (exitCode) {
     try{
+      if (!calledByMetro) {
+        throw new Error('*jscrambler-metro-plugin* was not properly configured on metro.config.js file. Please verify our documentation in https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/react-native/integration.');
+      }
+
       console.log(
         instrument
           ? 'info Jscrambler Instrumenting Code'
@@ -297,6 +303,8 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
        * @returns {boolean}
        */
       processModuleFilter(_module) {
+        calledByMetro = true;
+
         const modulePath = _module.path;
         const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
 
