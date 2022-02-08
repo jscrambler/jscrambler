@@ -225,10 +225,10 @@ const isFileReadable = (path) => new Promise((resolve) => {
 })
 
 const addBundleArgsToExcludeList = (chunk, excludeList) => {
-  const regex = /\(([0-9a-zA-Z_,]+)\){$/gm;
+  const regex = /\(([0-9a-zA-Z_,$ ]+)\)[ ]?{$/gm;
   const m = regex.exec(chunk);
   if (Array.isArray(m) && m.length > 1) {
-    for (const arg of m[1].split(",")) {
+    for (const arg of m[m.length - 1].split(",")) {
       if (!excludeList.includes(arg)) {
         excludeList.push(arg);
       }
