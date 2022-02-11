@@ -589,9 +589,9 @@ export default {
 
     if (!skipSources) {
       const {promise: updateApplicationSourcePromise} = await this.updateApplicationSources(client, applicationId, {
-          sources,
-          filesSrc,
-          cwd
+        sources,
+        filesSrc,
+        cwd
       });
       await updateApplicationSourcePromise;
     } else {
