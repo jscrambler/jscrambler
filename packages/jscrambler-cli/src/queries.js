@@ -72,12 +72,13 @@ const getApplicationProtectionsDefaultFragments = `
 export function getApplicationProtections(
   applicationId,
   params,
-  fragments = getApplicationProtectionsDefaultFragments
+  fragments = getApplicationProtectionsDefaultFragments,
+  queryArgs = []
 ) {
   return {
     query: `
-      query getApplicationProtections ($applicationId: String!, $sort: String, $order: String, $limit: Int, $page: Int) {
-        applicationProtections(_id: $applicationId, sort: $sort, order: $order, limit: $limit, page: $page) {
+      query getApplicationProtections ($applicationId: String!, $sort: String, $order: String, $limit: Int, $page: Int${queryArgs.map(v => `,${v}`)}) {
+        applicationProtections(_id: $applicationId, sort: $sort, order: $order, limit: $limit, page: $page${queryArgs.map(v => `, ${v.split(':')[0].replace('$', '')}: ${v.split(':')[0]}`)}) {
           ${fragments}
         }
       }

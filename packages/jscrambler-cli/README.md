@@ -129,6 +129,7 @@ Options:
   --debugMode                             Protect in debug mode
   --skip-sources                          Prevent source files from being updated
   --force-app-environment <environment>   (version 7.1 and above) Override application's environment detected automatically. Possible values: node,browser,isomorphic,automatic
+  -n <number>                             (version 7.2 and above) Create multiple protections at once.
   -h, --help                              output usage information
 ```
 

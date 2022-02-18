@@ -55,6 +55,8 @@ const protectionFields = {
   growthWarning: 1,
   errorMessage: 1,
   size: 1,
+  startedAt: 1,
+  finishedAt: 1,
   transformedSize: 1
 };
 

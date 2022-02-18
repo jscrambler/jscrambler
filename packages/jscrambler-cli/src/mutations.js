@@ -329,7 +329,8 @@ export function createApplicationProtection(
   applicationId,
   _fragments = createProtectionDefaultFragments,
   _options,
-  args
+  args,
+  {mutationName = 'createApplicationProtection', mutationInputType = 'ApplicationProtectionCreate'} = {}
 ) {
   let fragments = _fragments;
   let options = _options;
@@ -341,8 +342,8 @@ export function createApplicationProtection(
 
     return {
       query: `
-      mutation createApplicationProtection ($applicationId: String!, $bail: Boolean, $randomizationSeed: String) {
-        createApplicationProtection (applicationId: $applicationId, bail: $bail, randomizationSeed: $randomizationSeed) {
+      mutation ${mutationName} ($applicationId: String!, $bail: Boolean, $randomizationSeed: String) {
+        ${mutationName} (applicationId: $applicationId, bail: $bail, randomizationSeed: $randomizationSeed) {
           ${fragments}
         }
       }
@@ -359,8 +360,8 @@ export function createApplicationProtection(
   if (args.some(arg => arg.name === 'data')) {
     return {
       query: `
-        mutation createApplicationProtection ($applicationId: String!, $data: ApplicationProtectionCreate) {
-          createApplicationProtection (applicationId: $applicationId, data: $data) {
+        mutation ${mutationName} ($applicationId: String!, $data: ${mutationInputType}) {
+          ${mutationName} (applicationId: $applicationId, data: $data) {
             ${fragments}
           }
         }
@@ -374,8 +375,8 @@ export function createApplicationProtection(
 
   return {
     query: `
-      mutation createApplicationProtection ($applicationId: String!, $options: JSON) {
-        createApplicationProtection (applicationId: $applicationId, options: $options) {
+      mutation ${mutationName} ($applicationId: String!, $options: JSON) {
+        ${mutationName} (applicationId: $applicationId, options: $options) {
           ${fragments}
         }
       }
@@ -385,6 +386,28 @@ export function createApplicationProtection(
       options
     }
   };
+}
+
+const createProtectionsDefaultFragments = `
+  protections {
+   ${createProtectionDefaultFragments}
+  }
+`;
+
+export function createApplicationProtections(
+  applicationId,
+  _fragments = createProtectionsDefaultFragments,
+  _options,
+  args,
+  {mutationName = 'createApplicationProtections', mutationInputType = 'ApplicationProtectionsCreate'} = {}
+) {
+  return createApplicationProtection(
+    applicationId,
+    _fragments,
+    _options,
+    args,
+    {mutationName, mutationInputType}
+  );
 }
 
 const applyTemplateDefaultFragments = `
