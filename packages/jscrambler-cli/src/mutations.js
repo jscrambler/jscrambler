@@ -398,15 +398,14 @@ export function createApplicationProtections(
   applicationId,
   _fragments = createProtectionsDefaultFragments,
   _options,
-  args,
-  {mutationName = 'createApplicationProtections', mutationInputType = 'ApplicationProtectionsCreate'} = {}
+  args
 ) {
   return createApplicationProtection(
     applicationId,
     _fragments,
     _options,
     args,
-    {mutationName, mutationInputType}
+    {mutationName: 'createApplicationProtections', mutationInputType: 'ApplicationProtectionsCreate'}
   );
 }
 

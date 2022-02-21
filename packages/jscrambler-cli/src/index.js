@@ -433,27 +433,25 @@ export default {
 
     const protectionIds = createApplicationProtectionRes.data.protections.map(({_id}) => _id);
 
-    const onExitCancelProtection = () => {
-      protectionIds
-        .reduce(
-          (acc, protectionId) =>
-            acc
-              .then(() =>
-                this.cancelProtection(client, protectionId, applicationId)
-              )
-              .then(() =>
-                console.log('** Protection %s WAS CANCELLED **', protectionId)
-              )
-              .catch(() => debug && console.error(e)),
-          Promise.resolve()
-        )
-        .finally(() => process.exit(1));
+    const onExitCancelProtection = async () => {
+      for(let i = 0; i < protectionIds.length; i++) {
+        const protectionId = protectionIds[i];
+        try {
+          await this.cancelProtection(client, protectionId, applicationId);
+          console.log('** Protection %s WAS CANCELLED **', protectionId)
+        } catch (e) {
+          if(debug) {
+            console.error(e);
+          }
+        }
+      }
+      process.exit(1);
     };
 
     process.once('SIGINT', onExitCancelProtection)
       .once('SIGTERM', onExitCancelProtection);
 
-    const _protections = await this.pollProtections(
+    const processedProtections = await this.pollProtections(
       client,
       applicationId,
       protectionIds,
@@ -543,18 +541,22 @@ export default {
       return protection._id;
     }
 
-    if (_protections.length === 1) {
-      return handleProtection(_protections[0]);
+    if (processedProtections.length === 1) {
+      return handleProtection(processedProtections[0]);
     }
 
     console.log(`Protections stored in ${filesDest}/[protection-id]`)
 
-    await _protections.reduce((acc, protection) =>
-      acc.then(() => handleProtection(protection, {outPrefix: `/${protection._id}/`, printProtectionId: false}))
-         .catch(e => console.error(e)), Promise.resolve()
-    );
+    for(let i = 0; i < processedProtections.length; i++) {
+      const protection = processedProtections[i];
+     try {
+       await handleProtection(protection, {outPrefix: `/${protection._id}/`, printProtectionId: false})
+     } catch(e) {
+       console.error(e);
+     }
+    }
 
-    console.log(`Runtime: ${_protections.length} protections in ${Math.round((Date.now() - start) / 1000)}s`);
+    console.log(`Runtime: ${processedProtections.length} protections in ${Math.round((Date.now() - start) / 1000)}s`);
 
     return protectionIds;
   },
@@ -978,7 +980,7 @@ export default {
           ["$protectionIds: [String]"]
         )
       );
-      //console.log(applicationProtections.data.applicationProtections[0]);
+
       if (applicationProtections.errors) {
         console.log('Error polling protection', applicationProtections.errors);
 
@@ -1239,10 +1241,17 @@ export default {
         delete result.data.createApplicationProtection;
       }
     } else {
-      const {args} = await introspection.mutation(
+      const mutationType = await introspection.mutation(
         client,
         'createApplicationProtections'
       );
+
+      if (!mutationType) {
+        console.error(
+          `"Create multiple protections at once" it's only available on Jscrambler version 7.2 and above.`
+        );
+        process.exit(1);
+      }
 
       const mutation = await mutations.createApplicationProtections(
         applicationId,
