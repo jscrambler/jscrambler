@@ -3,10 +3,7 @@
   "description": "Jscrambler API client.",
   "version": "6.0.4",
   "homepage": "https://github.com/jscrambler/jscrambler",
-  "author": {
-    "name": "magalhas",
-    "email": "magalhas@gmail.com"
-  },
+  "author": "Jscrambler <code@jscrambler.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/jscrambler/jscrambler.git"

@@ -5,7 +5,7 @@ var jScrambler = require('../../');
 var keys = require('../../jscrambler_keys');
 var gulp = require('gulp');
 
-describe('JScrambler Gulp Task', function () {
+describe('Jscrambler Gulp Task', function () {
 
   it('obfuscates a single file', function (done) {
     gulp

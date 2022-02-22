@@ -1,12 +1,12 @@
 {
   "name": "grunt-jscrambler",
-  "description": "Obfuscate your source files using the JScrambler API.",
+  "description": "Obfuscate your source files using the Jscrambler API.",
   "version": "6.0.4",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "scripts": {
     "test": "grunt"
   },
-  "author": "José Magalhães <magalhas@gmail.com> (https://github.com/magalhas)",
+  "author": "Jscrambler <code@jscrambler.com>",
   "contributors": [
     "Michael Nicholls <nicholls.mc@gmail.com> (https://github.com/mcnicholls)"
   ],

@@ -1,6 +1,6 @@
 /**
  * grunt-jscrambler
- * @author José Magalhães (magalhas@gmail.com)
+ * @author Jscrambler
  * @license MIT <http://opensource.org/licenses/MIT>
  */
 'use strict';

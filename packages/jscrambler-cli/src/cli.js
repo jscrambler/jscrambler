@@ -36,7 +36,7 @@ const isBoolFlag = {
   preserveAnnotations: true
 };
 
-// Convert from command line option format to JScrambler API format.
+// Convert from command line option format to Jscrambler API format.
 export function mergeAndParseParams(commander, params) {
   const finalParams = clone(params || {});
 

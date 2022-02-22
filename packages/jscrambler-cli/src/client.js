@@ -36,7 +36,7 @@ class ClientError extends Error {
  * @param {String} [options.port=443]
  * @param {String} [options.basePath]
  * @param {String} [options.clientId=0]
- * @author José Magalhães (magalhas@gmail.com)
+ * @author Jscrambler
  * @license MIT <http://opensource.org/licenses/MIT>
  */
 
