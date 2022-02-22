@@ -1257,7 +1257,7 @@ export default {
         applicationId,
         fragments,
         protectionOptions,
-        args
+        mutationType.args
       );
 
       result = await client.post('/application', mutation);
