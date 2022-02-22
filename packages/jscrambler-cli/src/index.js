@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import 'babel-polyfill';
+import 'regenerator-runtime';
+import 'core-js'
 
 import path from 'path';
 import request from 'axios';

@@ -27,7 +27,8 @@
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.4.0"
+    "@babel/core": "^7.15.0",
+    "@babel/cli": "^7.14.8",
+    "@babel/preset-env": "^7.15.0"
   }
 }
