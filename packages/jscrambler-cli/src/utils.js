@@ -17,3 +17,22 @@ export function getMatchedFiles(pattern) {
   }
   return matchedFiles;
 }
+
+export function validateNProtections(n) {
+  if (n === undefined) {
+    return n;
+  }
+
+  const nProtections = parseInt(n, 10);
+  if (
+    Number.isNaN(nProtections) ||
+    nProtections.toString() !== n.toString() ||
+    nProtections < 1
+  ) {
+    console.error(
+      `*protections* requires an integer greater than 0.`
+    );
+    process.exit(1);
+  }
+  return nProtections;
+}

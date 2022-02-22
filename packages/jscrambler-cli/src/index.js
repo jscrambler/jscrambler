@@ -228,6 +228,8 @@ export default {
   // Jscrambler or if you're provided access to beta features of our product.
   //
   async protectAndDownload(configPathOrObject, destCallback) {
+    const start = Date.now();
+
     const finalConfig = buildFinalConfig(configPathOrObject);
 
     const {
@@ -265,6 +267,7 @@ export default {
       inputSymbolTable,
       entryPoint,
       excludeList,
+      numberOfProtections,
       forceAppEnvironment
     } = finalConfig;
 
@@ -406,6 +409,7 @@ export default {
       randomizationSeed,
       source,
       tolerateMinification,
+      numberOfProtections,
       forceAppEnvironment
     };
 
@@ -418,7 +422,7 @@ export default {
     }
 
     const [createApplicationProtectionRes] = await Promise.all([
-      this.createApplicationProtection(
+      this.createApplicationProtections(
         client,
         applicationId,
         protectionOptions
@@ -427,104 +431,134 @@ export default {
     ]);
     errorHandler(createApplicationProtectionRes);
 
-    const protectionId =
-      createApplicationProtectionRes.data.createApplicationProtection._id;
+    const protectionIds = createApplicationProtectionRes.data.protections.map(({_id}) => _id);
 
-    const onExitCancelProtection = () => {
-      this.cancelProtection(client, protectionId, applicationId)
-        .then(() => console.log('\n** Protection %s WAS CANCELLED **', protectionId))
-        .catch(() => debug && console.error(e))
-        .finally(() => process.exit(1));
-    }
+    const onExitCancelProtection = async () => {
+      for(let i = 0; i < protectionIds.length; i++) {
+        const protectionId = protectionIds[i];
+        try {
+          await this.cancelProtection(client, protectionId, applicationId);
+          console.log('** Protection %s WAS CANCELLED **', protectionId)
+        } catch (e) {
+          if(debug) {
+            console.error(e);
+          }
+        }
+      }
+      process.exit(1);
+    };
 
     process.once('SIGINT', onExitCancelProtection)
       .once('SIGTERM', onExitCancelProtection);
 
-    const protection = await this.pollProtection(
+    const processedProtections = await this.pollProtections(
       client,
       applicationId,
-      protectionId,
+      protectionIds,
       await getProtectionDefaultFragments(client)
     );
 
     process.removeListener('SIGINT', onExitCancelProtection).removeListener('SIGTERM', onExitCancelProtection);
 
-    if (protection.growthWarning) {
-      console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
-    }
-    if (debug) {
-      console.log('Finished protecting');
-    }
+    const handleProtection = async (protection, {outPrefix = '', printProtectionId=true} = {}) => {
+      if (protection.growthWarning) {
+        console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
+      }
+      if (debug) {
+        console.log('Finished protecting');
+      }
 
-    if (protection.deprecations) {
-      protection.deprecations.forEach(deprecation => {
-        if (deprecation.type === 'Transformation') {
-          console.warn(
-            `Warning: ${deprecation.type} ${deprecation.entity} is no longer maintained. Please consider removing it from your configuration.`
-          );
-        } else if (deprecation.type && deprecation.entity) {
-          console.warn(
-            `Warning: ${deprecation.type} ${deprecation.entity} is deprecated.`
+      if (protection.deprecations) {
+        protection.deprecations.forEach(deprecation => {
+          if (deprecation.type === 'Transformation') {
+            console.warn(
+              `Warning: ${deprecation.type} ${deprecation.entity} is no longer maintained. Please consider removing it from your configuration.`
+            );
+          } else if (deprecation.type && deprecation.entity) {
+            console.warn(
+              `Warning: ${deprecation.type} ${deprecation.entity} is deprecated.`
+            );
+          }
+        });
+      }
+
+      const sourcesErrors = [];
+
+      protection.sources.forEach(s => {
+        if (s.errorMessages && s.errorMessages.length > 0) {
+          sourcesErrors.push(
+            ...s.errorMessages.map(e => ({
+              filename: s.filename,
+              ...e
+            }))
           );
         }
       });
-    }
 
-    const sourcesErrors = [];
-
-    protection.sources.forEach(s => {
-      if (s.errorMessages && s.errorMessages.length > 0) {
-        sourcesErrors.push(
-          ...s.errorMessages.map(e => ({
-            filename: s.filename,
-            ...e
-          }))
-        );
+      if (protection.state === 'errored') {
+        console.error('Global protection errors:');
+        console.error(`- ${protection.errorMessage}`);
+        console.error('');
+        if (sourcesErrors.length > 0) {
+          printSourcesErrors(sourcesErrors);
+        }
+        throw new Error(`Protection failed. For more information visit: ${APP_URL}.`);
+      } else if (sourcesErrors.length > 0) {
+        if (protection.bail) {
+          printSourcesErrors(sourcesErrors);
+          throw new Error('Your protection has failed.');
+        } else {
+          sourcesErrors.forEach(e =>
+            console.warn(`Non-fatal error: "${e.message}" in ${e.filename}`)
+          );
+        }
       }
-    });
 
-    if (protection.state === 'errored') {
-      console.error('Global protection errors:');
-      console.error(`- ${protection.errorMessage}`);
-      console.error('');
-      if (sourcesErrors.length > 0) {
-        printSourcesErrors(sourcesErrors);
+      if (debug) {
+        console.log('Downloading protection result');
       }
-      throw new Error(`Protection failed. For more information visit: ${APP_URL}.`);
-    } else if (sourcesErrors.length > 0) {
-      if (protection.bail) {
-        printSourcesErrors(sourcesErrors);
-        throw new Error('Your protection has failed.');
-      } else {
-        sourcesErrors.forEach(e =>
-          console.warn(`Non-fatal error: "${e.message}" in ${e.filename}`)
-        );
+      const download = await this.downloadApplicationProtection(
+        client,
+        protection._id
+      );
+
+      errorHandler(download);
+
+      if (debug) {
+        console.log('Unzipping files');
       }
+
+      await unzip(download, (filesDest ? `${filesDest}${outPrefix}` : filesDest) || destCallback, stream);
+
+      if (debug) {
+        console.log('Finished unzipping files');
+      }
+
+      if (printProtectionId) {
+        console.log(protection._id);
+      }
+
+      return protection._id;
     }
 
-    if (debug) {
-      console.log('Downloading protection result');
-    }
-    const download = await this.downloadApplicationProtection(
-      client,
-      protectionId
-    );
-
-    errorHandler(download);
-
-    if (debug) {
-      console.log('Unzipping files');
+    if (processedProtections.length === 1) {
+      return handleProtection(processedProtections[0]);
     }
 
-    await unzip(download, filesDest || destCallback, stream);
+    console.log(`Protections stored in ${filesDest}/[protection-id]`)
 
-    if (debug) {
-      console.log('Finished unzipping files');
+    for(let i = 0; i < processedProtections.length; i++) {
+      const protection = processedProtections[i];
+     try {
+       await handleProtection(protection, {outPrefix: `/${protection._id}/`, printProtectionId: false})
+     } catch(e) {
+       console.error(e);
+     }
     }
 
-    console.log(protectionId);
+    console.log(`Runtime: ${processedProtections.length} protections in ${Math.round((Date.now() - start) / 1000)}s`);
 
-    return protectionId;
+    return protectionIds;
   },
   /**
    * Instrument and download application sources for profiling purposes
@@ -929,6 +963,51 @@ export default {
 
     return poll();
   },
+  async pollProtections(client, applicationId, protectionIds, fragments) {
+    if (protectionIds.length === 1) {
+      return [await this.pollProtection(client, applicationId, protectionIds[0], fragments)];
+    }
+
+    const start = Date.now();
+    let seen = {};
+    const poll = async () => {
+      const applicationProtections = await this.withRetries(
+        () => this.getApplicationProtections(
+          client,
+          applicationId,
+          {protectionIds},
+          fragments.applicationProtection,
+          ["$protectionIds: [String]"]
+        )
+      );
+
+      if (applicationProtections.errors) {
+        console.log('Error polling protection', applicationProtections.errors);
+
+        throw new Error(
+          `Protection failed. For more information visit: ${APP_URL}.`
+        );
+      } else {
+        const ended = applicationProtections.data.applicationProtections.filter(({state}) =>
+          state === 'finished' ||
+          state === 'errored' ||
+          state === 'canceled'
+        );
+        // print progress
+        ended.filter(({_id, state}) => !seen[_id] && state !== 'canceled').forEach(({_id, startedAt, finishedAt, state}) => {
+          seen[_id] = true;
+          console.log(`[${Object.keys(seen).length}/${protectionIds.length}] Protection=${_id}, state=${state}, build-time=${Math.round((new Date(finishedAt) - new Date(startedAt)) / 1000)}s`);
+        })
+        if (ended.length < protectionIds.length) {
+          await new Promise(resolve => setTimeout(resolve, getPollingInterval(start)));
+          return poll();
+        }
+        return applicationProtections.data.applicationProtections;
+      }
+    };
+
+    return poll();
+  },
   //
   async createApplication(client, data, fragments) {
     return client.post(
@@ -988,11 +1067,12 @@ export default {
     return client.get('/application', query);
   },
   //
-  async getApplicationProtections(client, applicationId, params, fragments) {
-    const query = await queries.getApplicationProtections(
+  async getApplicationProtections(client, applicationId, params, fragments, queryArgs) {
+    const query = queries.getApplicationProtections(
       applicationId,
       params,
-      fragments
+      fragments,
+      queryArgs
     );
     return client.get('/application', query);
   },
@@ -1137,6 +1217,56 @@ export default {
     );
 
     return client.post('/application', mutation);
+  },
+  /**
+   * Create one or more application protections at once
+   * @param {JscramblerClient} client
+   * @param {string} applicationId
+   * @param {object} protectionOptions
+   * @param {number} [protectionOptions.numberOfProtections]
+   * @param {object} fragments
+   * @returns {Promise<{data: {protections: Array.<{_id}>}, errors: Array}>}
+   */
+  async createApplicationProtections(
+    client,
+    applicationId,
+    protectionOptions,
+    fragments
+  ) {
+    let result;
+    if (!protectionOptions.numberOfProtections || protectionOptions.numberOfProtections < 2) {
+      result = await this.createApplicationProtection(client, applicationId, protectionOptions, fragments);
+      if (result.data && result.data.createApplicationProtection) {
+        result.data.protections = [result.data.createApplicationProtection];
+        delete result.data.createApplicationProtection;
+      }
+    } else {
+      const mutationType = await introspection.mutation(
+        client,
+        'createApplicationProtections'
+      );
+
+      if (!mutationType) {
+        console.error(
+          `"Create multiple protections at once" it's only available on Jscrambler version 7.2 and above.`
+        );
+        process.exit(1);
+      }
+
+      const mutation = await mutations.createApplicationProtections(
+        applicationId,
+        fragments,
+        protectionOptions,
+        mutationType.args
+      );
+
+      result = await client.post('/application', mutation);
+      if (result.data && result.data.createApplicationProtections) {
+        result.data.protections = result.data.createApplicationProtections.protections;
+        delete result.data.createApplicationProtections;
+      }
+    }
+    return result;
   },
   /**
    * @param {object} client

@@ -8,7 +8,7 @@ import filesizeParser from 'filesize-parser';
 import _config from '../config';
 import jscrambler from '../';
 import {mergeAndParseParams} from '../cli';
-import {getMatchedFiles} from '../utils';
+import {getMatchedFiles, validateNProtections} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -137,6 +137,10 @@ commander
     `(version 7.1 and above) Override application\'s environment detected automatically. Possible values: ${availableEnvironments.toString()}`,
     validateForceAppEnvironment
   )
+  .option(
+    '-n <number>',
+    `(version 7.2 and above) Create multiple protections at once.`
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -225,6 +229,8 @@ if (commander.forceAppEnvironment) {
 }
 
 config = defaults(config, _config);
+
+config.numberOfProtections = validateNProtections(commander.N);
 
 if (config.codeHardeningThreshold){
   config.codeHardeningThreshold = validateCodeHardeningThreshold(config.codeHardeningThreshold);
@@ -321,6 +327,7 @@ const {
   utc,
   entryPoint,
   excludeList,
+  numberOfProtections,
   forceAppEnvironment
 } = config;
 
@@ -455,6 +462,7 @@ if (commander.sourceMaps) {
       inputSymbolTable,
       entryPoint,
       excludeList,
+      numberOfProtections,
       forceAppEnvironment
     };
     try {
