@@ -3,6 +3,8 @@
   "packages": [
     "packages/*"
   ],
-  "npmClientArgs": ["--legacy-peer-deps"],
-  "version": "6.1.1"
+  "npmClientArgs": [
+    "--legacy-peer-deps"
+  ],
+  "version": "6.1.2"
 }
