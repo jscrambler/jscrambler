@@ -1236,7 +1236,7 @@ export default {
   ) {
     let result;
     if (!protectionOptions.numberOfProtections || protectionOptions.numberOfProtections < 2) {
-      result = await this.createApplicationProtection(client, applicationId, protectionOptions, fragments);
+      result = await this.createApplicationProtection(client, applicationId, {...protectionOptions, numberOfProtections: undefined}, fragments);
       if (result.data && result.data.createApplicationProtection) {
         result.data.protections = [result.data.createApplicationProtection];
         delete result.data.createApplicationProtection;
