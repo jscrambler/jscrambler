@@ -232,7 +232,7 @@ JScramblerClient.prototype.request = function(
   const start = Date.now();
   return promise.then(res => {
     if (metrics || debug) {
-      console.log(`${method} ${path} ${((data || settings.params).query || '').split('(')[0].trim().replace(' ', '-')} ${JSON.stringify(data || settings.params).length}b ${Date.now() - start}ms`);
+      console.log(`${method} ${path} ${((data || settings.params).query || '').split('(')[0].trim().replace(' ', '-')} ${JSON.stringify(data || settings.params).length}B ${Date.now() - start}ms`);
     }
     return res.data;
   }).catch(err => {
