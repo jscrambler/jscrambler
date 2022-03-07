@@ -28,7 +28,6 @@ export async function zip(files, cwd) {
     const zip = new JSZip();
     let zipFile = readFileSync(files[0]);
 
-    outputFileSync(temp.openSync({suffix: '.zip'}).path, zipFile);
     zipFile = await zip.loadAsync(zipFile);
     deferred.resolve(zipFile);
   } else {
@@ -73,17 +72,12 @@ export async function zip(files, cwd) {
         zip.file(name, buffer);
       }
     }
-    if (hasFiles) {
-      const tempFile = temp.openSync({suffix: '.zip'});
-      outputFileSync(tempFile.path, await zip.generateAsync({type: 'nodebuffer'}));
-      files[0] = tempFile.path;
-      files.length = 1;
-      deferred.resolve(zip);
-    } else {
+    if (!hasFiles) {
       throw new Error(
         'No source files found. If you intend to send a whole directory sufix your path with "**" (e.g. ./my-directory/**)'
       );
     }
+    deferred.resolve(zip);
   }
 
   return deferred.promise;
