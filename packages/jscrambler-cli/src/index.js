@@ -112,7 +112,7 @@ export default {
     applicationId,
     {sources, filesSrc, cwd, appProfiling}
   ) {
-    let promise = null;
+    let promise = Promise.resolve();
 
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
@@ -171,7 +171,7 @@ export default {
         extension: 'zip'
       };
 
-      promise
+      promise = promise
         .then(removeRes => {
           errorHandler(removeRes);
 
