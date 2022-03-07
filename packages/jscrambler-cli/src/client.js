@@ -19,6 +19,7 @@ import {
 import {version} from '../package.json';
 
 const debug = !!process.env.DEBUG;
+const metrics = !!process.env.METRICS;
 
 class ClientError extends Error {
   constructor(message, statusCode) {
@@ -228,7 +229,11 @@ JScramblerClient.prototype.request = function(
     promise = this.axiosInstance[method.toLowerCase()](formattedUrl, data, settings);
   }
 
+  const start = Date.now();
   return promise.then(res => {
+    if (metrics || debug) {
+      console.log(`${method} ${path} ${((data || settings.params).query || '').split('(')[0].trim().replace(' ', '-')} ${JSON.stringify(data || settings.params).length}B ${Date.now() - start}ms`);
+    }
     return res.data;
   }).catch(err => {
     let errorMessage = 'Unexpected Response: ';

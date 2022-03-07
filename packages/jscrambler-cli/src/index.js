@@ -158,7 +158,12 @@ export default {
     if (zipped) {
       const content = await zipped
         .generateAsync({
-          type: 'base64'
+          type: 'base64',
+          compression: 'DEFLATE',
+          compressionOptions: {
+            // 1 - 9 (max compression)
+            level: 5
+          }
         });
 
       if (debug) {
