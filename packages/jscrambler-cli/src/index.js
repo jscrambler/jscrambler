@@ -184,7 +184,9 @@ export default {
         })
         .then(errorHandler)
         .catch(e => {
-          console.warn(`Update application sources failed with ${e.message}`);
+          if (debug) {
+            console.warn(`Warning: Update application sources failed with ${e.message}`);
+          }
         });
     }
 
