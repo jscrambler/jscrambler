@@ -418,7 +418,7 @@ export default {
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
     }
 
-    const createApplicationProtectionRes = await this.createApplicationProtection(
+    const createApplicationProtectionRes = await this.createApplicationProtections(
       client,
       applicationId,
       protectionOptions
