@@ -112,8 +112,6 @@ export default {
     applicationId,
     {sources, filesSrc, cwd, appProfiling}
   ) {
-    let promise = Promise.resolve();
-
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
       if (appProfiling && appProfiling.data && appProfiling.data.state === 'READY') {
@@ -122,11 +120,13 @@ export default {
         );
       }
 
-      promise = this.removeSourceFromApplication(
+      const removeSourceRes = await this.removeSourceFromApplication(
         client,
         '',
         applicationId
       );
+
+      errorHandler(removeSourceRes);
     }
 
     let zipped;
@@ -176,21 +176,12 @@ export default {
         extension: 'zip'
       };
 
-      promise = promise
-        .then(removeRes => {
-          errorHandler(removeRes);
-
-          return this.addApplicationSource(client, applicationId, source)
-        })
-        .then(errorHandler)
-        .catch(e => {
-          if (debug) {
-            console.warn(`Warning: Update application sources failed with ${e.message}`);
-          }
-        });
+      errorHandler(
+        await this.addApplicationSource(client, applicationId, source)
+      );
     }
 
-    return {source, promise};
+    return source;
   },
   // This method is a shortcut method that accepts an object with everything needed
   // for the entire process of requesting an application protection and downloading
@@ -314,7 +305,7 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
-    let source, updateApplicationSourcePromise;
+    let source;
     if (!skipSources) {
       const appProfiling = await this.getApplicationProfiling(
         client,
@@ -332,14 +323,12 @@ export default {
         appProfiling.data.state = 'DELETED';
       }
 
-      ({source, promise: updateApplicationSourcePromise} =
-        await this.updateApplicationSources(client, applicationId, {
-          sources,
-          filesSrc,
-          cwd,
-          appProfiling
-        })
-      );
+      source = await this.updateApplicationSources(client, applicationId, {
+        sources,
+        filesSrc,
+        cwd,
+        appProfiling
+      });
     } else {
       console.log('Update source files SKIPPED');
     }
@@ -429,14 +418,11 @@ export default {
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
     }
 
-    const [createApplicationProtectionRes] = await Promise.all([
-      this.createApplicationProtections(
-        client,
-        applicationId,
-        protectionOptions
-      ),
-      updateApplicationSourcePromise
-    ]);
+    const createApplicationProtectionRes = await this.createApplicationProtection(
+      client,
+      applicationId,
+      protectionOptions
+    );
     errorHandler(createApplicationProtectionRes);
 
     const protectionIds = createApplicationProtectionRes.data.protections.map(({_id}) => _id);
