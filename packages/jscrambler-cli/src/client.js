@@ -67,7 +67,7 @@ function JScramblerClient(options) {
     },
     transformRequest: axios.defaults.transformRequest.concat(
       function (data, headers) {
-        // gzip request with more than 1MB
+        // gzip request with more than 1KiB
         if (!noCompression && typeof data === 'string' && data.length > 1024) {
           headers['Content-Encoding'] = 'gzip';
           data = gzipSync(data);
