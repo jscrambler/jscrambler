@@ -2,7 +2,7 @@ import defaults from 'lodash.defaults';
 import fs from 'fs';
 import keys from 'lodash.keys';
 import axios from 'axios';
-import { gzipSync } from 'zlib';
+import {gzipSync} from 'zlib';
 import url from 'url';
 import https from 'https';
 import http from 'http';
@@ -21,6 +21,7 @@ import {version} from '../package.json';
 
 const debug = !!process.env.DEBUG;
 const metrics = !!process.env.METRICS;
+const noCompression = !!process.env.NO_COMPRESSION;
 
 class ClientError extends Error {
   constructor(message, statusCode) {
@@ -67,7 +68,7 @@ function JScramblerClient(options) {
     transformRequest: axios.defaults.transformRequest.concat(
       function (data, headers) {
         // gzip request with more than 1MB
-        if (process.env.NO_COMPRESSION !== 'true' && typeof data === 'string' && data.length > 1024) {
+        if (!noCompression && typeof data === 'string' && data.length > 1024) {
           headers['Content-Encoding'] = 'gzip';
           data = gzipSync(data);
           if (metrics) {
