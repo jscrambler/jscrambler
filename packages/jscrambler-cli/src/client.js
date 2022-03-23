@@ -2,6 +2,7 @@ import defaults from 'lodash.defaults';
 import fs from 'fs';
 import keys from 'lodash.keys';
 import axios from 'axios';
+import { gzipSync } from 'zlib';
 import url from 'url';
 import https from 'https';
 import http from 'http';
@@ -63,6 +64,19 @@ function JScramblerClient(options) {
       jscramblerVersion,
       clientId
     },
+    transformRequest: axios.defaults.transformRequest.concat(
+      function (data, headers) {
+        // gzip request with more than 1MB
+        if (process.env.NO_COMPRESSION !== 'true' && typeof data === 'string' && data.length > 1024) {
+          headers['Content-Encoding'] = 'gzip';
+          data = gzipSync(data);
+          if (metrics) {
+            process.stdout.write(`[gzip ${data.length}B] `);
+          }
+        }
+        return data;
+      }
+    ),
     maxBodyLength: 100 * 1000 * 1000 // 100 MB
   });
 }
