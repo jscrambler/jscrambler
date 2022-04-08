@@ -263,7 +263,7 @@ JScramblerClient.prototype.request = function(
       statusCode = err.response.status;
 
       let incompatibleApi = false;
-      if (statusCode === HTTP_STATUS_CODES.UNAUTHORIZED) {
+      if (statusCode === HTTP_STATUS_CODES.UNAUTHORIZED && /Invalid Signature/i.test(err.response.data.message)) {
         incompatibleApi = err.response.data.errorCode !== JSCRAMBLER_ERROR_CODES.INVALID_SIGNATURE;
       }
 
