@@ -616,12 +616,11 @@ export default {
     }
 
     if (!skipSources) {
-      const {promise: updateApplicationSourcePromise} = await this.updateApplicationSources(client, applicationId, {
+      await this.updateApplicationSources(client, applicationId, {
         sources,
         filesSrc,
         cwd
       });
-      await updateApplicationSourcePromise;
     } else {
       console.log('Update source files SKIPPED');
     }
