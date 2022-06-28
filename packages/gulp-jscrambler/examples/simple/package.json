@@ -17,7 +17,7 @@
   "homepage": "https://jscrambler.com",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-jscrambler": "^1.0.0"
+    "gulp": "^4",
+    "gulp-jscrambler": "^6.0.0"
   }
 }
