@@ -307,9 +307,7 @@ export default {
 
     let source;
     if (!skipSources) {
-      // variable that checks whether profiling has been done beforehand
-      let profilingNotDone = false;
-
+      
       const appProfiling = await this.getApplicationProfiling(
         client,
         applicationId
@@ -320,14 +318,12 @@ export default {
           HTTP_STATUS_CODES.SERVICE_UNAVAILABLE
         ].includes(e.statusCode)) throw e;
         else if (HTTP_STATUS_CODES.NOT_FOUND === e.statusCode) { // if applicationProfiling is not found then then it hasn't been done yet
-          profilingNotDone = true;
+          // profiling cannot be done with automatic mode if it has never been done before
+          if (profilingDataMode === 'automatic') {
+            throw new Error('Cannot use the automatic mode without previous profiling having been done.');
+          }
         }
       });
-
-      // profiling cannot be done with automatic mode if it has never been done before
-      if (profilingNotDone && profilingDataMode === 'automatic') {
-        throw new Error('Cannot use the automatic mode without previous profiling having been done.');
-      }
 
 
       if (appProfiling && removeProfilingData) {
