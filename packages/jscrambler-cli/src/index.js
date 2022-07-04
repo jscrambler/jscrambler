@@ -307,7 +307,7 @@ export default {
 
     let source;
     if (!skipSources) {
-      
+
       const appProfiling = await this.getApplicationProfiling(
         client,
         applicationId
@@ -320,7 +320,7 @@ export default {
         else if (HTTP_STATUS_CODES.NOT_FOUND === e.statusCode) { // if applicationProfiling is not found then then it hasn't been done yet
           // profiling cannot be done with automatic mode if it has never been done before
           if (profilingDataMode === 'automatic') {
-            throw new Error('Cannot use the automatic mode without previous profiling having been done.');
+            throw new Error('You can not use the automatic mode without previous profiling having been done.');
           }
         }
       });
