@@ -139,7 +139,7 @@ commander
   )
   .option(
     '--ensure-code-annotation <bool>',
-    `Wether or not a Code annotation should be present in the source code (default: false)`,
+    `Fail protection if no annotations are found on the source code (default: false)`,
     validateBool('ensure-code-annotation')
   )
   .option(
