@@ -267,7 +267,7 @@ export default {
       entryPoint,
       excludeList,
       numberOfProtections,
-      ensureCodeAnnotation = false,
+      ensureCodeAnnotation,
       forceAppEnvironment
     } = finalConfig;
 

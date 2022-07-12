@@ -139,7 +139,7 @@ commander
   )
   .option(
     '--ensure-code-annotation <bool>',
-    `Fail protection if no annotations are found on the source code (default: false)`,
+    `(version 7.3 and above) Fail protection if no annotations are found on the source code (default: false)`,
     validateBool('ensure-code-annotation')
   )
   .option(
@@ -177,9 +177,6 @@ config.cwd = commander.cwd || config.cwd;
 config.useRecommendedOrder = commander.recommendedOrder
   ? commander.recommendedOrder !== 'false'
   : config.useRecommendedOrder;
-config.ensureCodeAnnotation = commander.ensureCodeAnnotation
-  ? commander.ensureCodeAnnotation !== 'false'
-  : config.ensureCodeAnnotation;
 config.tolerateMinification = commander.tolerateMinification
   ? commander.tolerateMinification !== 'false'
   : config.tolerateMinification;
@@ -218,6 +215,10 @@ if (commander.useProfilingData) {
 
 if (commander.useAppClassification) {
   config.useAppClassification = commander.useAppClassification !== 'false';
+}
+
+if (commander.ensureCodeAnnotation) {
+  config.ensureCodeAnnotation = commander.ensureCodeAnnotation === 'true';
 }
 
 if (config.jscramblerVersion && !/^(?:\d+\.\d+(?:-f)?|stable|latest)$/.test(config.jscramblerVersion)) {
