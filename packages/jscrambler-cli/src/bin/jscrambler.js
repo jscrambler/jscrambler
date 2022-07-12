@@ -138,6 +138,11 @@ commander
     validateForceAppEnvironment
   )
   .option(
+    '--ensure-code-annotation <bool>',
+    `Wether or not a Code annotation should be present in the source code (default: false)`,
+    validateBool('ensure-code-annotation')
+  )
+  .option(
     '-n <number>',
     `(version 7.2 and above) Create multiple protections at once.`
   )
@@ -172,6 +177,9 @@ config.cwd = commander.cwd || config.cwd;
 config.useRecommendedOrder = commander.recommendedOrder
   ? commander.recommendedOrder !== 'false'
   : config.useRecommendedOrder;
+config.ensureCodeAnnotation = commander.ensureCodeAnnotation
+  ? commander.ensureCodeAnnotation !== 'false'
+  : config.ensureCodeAnnotation;
 config.tolerateMinification = commander.tolerateMinification
   ? commander.tolerateMinification !== 'false'
   : config.tolerateMinification;
@@ -328,6 +336,7 @@ const {
   entryPoint,
   excludeList,
   numberOfProtections,
+  ensureCodeAnnotation,
   forceAppEnvironment
 } = config;
 
@@ -462,6 +471,7 @@ if (commander.sourceMaps) {
       inputSymbolTable,
       entryPoint,
       excludeList,
+      ensureCodeAnnotation,
       numberOfProtections,
       forceAppEnvironment
     };

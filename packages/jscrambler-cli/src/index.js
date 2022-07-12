@@ -267,6 +267,7 @@ export default {
       entryPoint,
       excludeList,
       numberOfProtections,
+      ensureCodeAnnotation = false,
       forceAppEnvironment
     } = finalConfig;
 
@@ -362,6 +363,7 @@ export default {
       profilingDataMode,
       sourceMaps,
       useAppClassification,
+      ensureCodeAnnotation,
       useProfilingData,
       useRecommendedOrder
     };
