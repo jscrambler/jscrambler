@@ -49,7 +49,6 @@ module.exports = {
       ignoreFile: resolve(__dirname, '.jscramblerignore'), // optional, defaults to no ignore file
       params: [], 
       obfuscationLevel: 'bundle' // optional. Available options are: bundle (default) or module
-      // entryPoint: undefined // optional. Must be set if obfuscation level is module 
       // and other jscrambler configurations
     })
   ]

@@ -60,9 +60,6 @@ class JscramblerPlugin {
       if (!Array.isArray(this.options.chunks)) {
         throw new Error('(JscramblerPlugin) when obfuscationLevel=file you must specify the chunks list');
       }
-      if (!this.options.entryPoint) {
-        throw new Error('(JscramblerPlugin) when obfuscationLevel=file you must specify entrypoint');
-      }
     }
   }
 
@@ -120,9 +117,6 @@ class JscramblerPlugin {
                   content: astring.generate(functionNode.body),
                   filename: moduleFilename
                 });
-                if (moduleId === this.options.entryPoint) {
-                  this.options.entryPoint = moduleFilename;
-                }
                 // add function arguments to exclude list
                 if (Array.isArray(functionNode.params)) {
                   functionNode.params.filter(n => n.type === 'Identifier').forEach(n => {
