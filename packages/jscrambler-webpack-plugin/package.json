@@ -24,6 +24,9 @@
   "homepage": "https://github.com/jscrambler/jscrambler",
   "dependencies": {
     "jscrambler": "^6.2.6",
+    "string": "^3.3.3",
+    "acorn": "^8.7.1",
+    "esrecurse": "^4.3.0",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
