@@ -28,7 +28,7 @@ class JscramblerPlugin {
     });
 
     if(![OBFUSCATION_LEVELS.BUNDLE, OBFUSCATION_LEVELS.MODULE].includes(this.options.obfuscationLevel)) {
-      throw new Error(`Unknow obfuscation level ${this.options.obfuscationLevel}. Options: ${OBFUSCATION_LEVELS.BUNDLE} or ${OBFUSCATION_LEVELS.MODULE}`)
+      throw new Error(`Unknown obfuscation level ${this.options.obfuscationLevel}. Options: ${OBFUSCATION_LEVELS.BUNDLE} or ${OBFUSCATION_LEVELS.MODULE}`)
     }
 
     this.instrument = instrument;
@@ -55,11 +55,12 @@ class JscramblerPlugin {
 
     if (this.options.obfuscationLevel === OBFUSCATION_LEVELS.MODULE) {
       if (sourceMaps) {
-        throw new Error('(JscramblerPlugin) obfuscationLevel=file is not compatible with source maps generation.')
+        throw new Error(`(JscramblerPlugin) obfuscationLevel=${this.options.obfuscationLevel} is not compatible with source maps generation.`)
       }
       if (!Array.isArray(this.options.chunks)) {
-        throw new Error('(JscramblerPlugin) when obfuscationLevel=file you must specify the chunks list');
+        throw new Error(`(JscramblerPlugin) when obfuscationLevel=${this.options.obfuscationLevel} you must specify the chunks list`);
       }
+      console.log('(JscramblerPlugin) Obfuscation Level set to module')
     }
   }
 
