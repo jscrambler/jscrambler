@@ -64,7 +64,7 @@ class JscramblerPlugin {
   }
 
   forEachModule(chunkName, contentOrTree, it) {
-    const tree = typeof contentOrTree === 'string' ? acorn.parse(contentOrTree) : contentOrTree;
+    const tree = typeof contentOrTree === 'string' ? acorn.parse(contentOrTree, {ecmaVersion: "latest"}) : contentOrTree;
     const options = this.options;
     esrecurse.visit(tree, {
       ObjectExpression(node) {
