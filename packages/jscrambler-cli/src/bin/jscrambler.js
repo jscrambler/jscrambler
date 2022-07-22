@@ -7,7 +7,6 @@ import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {mergeAndParseParams} from '../cli';
 import {getMatchedFiles, validateNProtections} from '../utils';
 
 const debug = !!process.env.DEBUG;
@@ -341,7 +340,7 @@ const {
   forceAppEnvironment
 } = config;
 
-const params = mergeAndParseParams(commander, config.params);
+const params = config.params;
 
 const incompatibleOptions = ['sourceMaps', 'instrument', 'startProfiling', 'stopProfiling'];
 const usedIncompatibleOptions = [];
