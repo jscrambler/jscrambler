@@ -115,6 +115,12 @@ module.exports = async function generateSourceMaps(payload) {
     } else {
       /* vendor code */
       newMappings[0].generated.line += shiftLines;
+
+      // code inserted with no real source file associated,
+      // so we need to clean the invalid source value (f.e. ".")
+      if (normalizePath.length === 0) {
+        newMappings[0].source = null;
+      }
     }
 
     newMappings.forEach((newMapping) => finalSourceMapGenerator.addMapping(newMapping));
