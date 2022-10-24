@@ -1,0 +1,20 @@
+name: 'Jscrambler Action'
+description: 'Applies Jscrambler obfuscation'
+inputs:
+  access-key:
+    description: 'Unique access key'
+    required: true
+  application-id:
+    description: 'Jscrambler Application ID'
+    required: true
+  secret-key:
+    description: 'Jscrambler secret key'
+    required: true
+outputs:
+  success:
+    description: 'Whether the application protection was successful or not'
+  source:
+    description: 'Source files protected by Jscrambler'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
