@@ -1,5 +1,6 @@
 {
 	"devDependencies": {
+		"@vercel/ncc": "^0.34.0",
 		"lerna": "^2.2.0"
 	}
 }
