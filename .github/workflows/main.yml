@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Send inputs to Jscrambler Action
         id: jscrambler1
-        uses: jscrambler/jscrambler-github-action@v1.1
+        uses: jscrambler/jscrambler-github-action@v1
         with:
           application-id: '123abc987zyx'
       # Use the output from the `hello` step
