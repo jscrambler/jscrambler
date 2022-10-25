@@ -1,1 +1,4 @@
 node_modules
+
+# Allow dist folder to be sent. Required
+!dist/
