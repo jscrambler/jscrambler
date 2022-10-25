@@ -1,20 +1,45 @@
-name: 'Jscrambler Action'
-description: 'Applies Jscrambler obfuscation'
+name: 'Jscrambler'
+description: 'Jscrambler Code Integrity Github Action'
+
 inputs:
-  access-key:
-    description: 'Unique access key'
-    required: true
-  application-id:
-    description: 'Jscrambler Application ID'
-    required: true
   secret-key:
-    description: 'Jscrambler secret key'
-    required: true
+    description: 'User Secret Key'
+    required: false
+  access-key:
+    description: 'User Access Key'
+    required: false
+  jscrambler-config-path:
+    description: 'Path to jscrambler configuration'
+    default: '.jscramblerrc'
+    required: false
+  application-id:
+    description: 'User Application Id'
+    required: false
+  filesSrc:
+    description: 'List of file sources (glob patterns allowed)'
+    required: false
+  filesDest:
+    description: 'Output directory/file'
+    required: false
+  jscramblerVersion:
+    description: 'Jscramber Version'
+    required: false
+  host:
+    description: 'Jscrambler API host'
+    required: false
+
+  # DEBUG
+  sourceMaps:
+    description: 'Use Sources Maps'
+    required: false
+  debugMode:
+    description: 'Set Debug Mode'
+    required: false
+
 outputs:
-  success:
-    description: 'Whether the application protection was successful or not'
-  source:
-    description: 'Source files protected by Jscrambler'
+  protection_id:
+    description: 'Protection's Id'
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
