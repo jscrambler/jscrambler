@@ -1,4 +1,8 @@
 {
+	"scripts": {
+		"build-action": "ncc build packages/jscrambler-github-action/index.js -o packages/jscrambler-github-action/dist",
+		"publish": "npm run build-action && lerna publish"
+	},
 	"devDependencies": {
 		"@vercel/ncc": "^0.34.0",
 		"lerna": "^2.2.0"
