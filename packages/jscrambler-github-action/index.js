@@ -2,13 +2,10 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 
 try {
-  const secretKey = core.getInput('secret-key');
-  const accessKey = core.getInput('access-key');
+  // Simply read and log the application ID for testing purposes
   const applicationId = core.getInput('application-id');
 
   console.log({
-    accessKey,
-    secretKey,
     applicationId
   });
 
