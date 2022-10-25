@@ -10,8 +10,7 @@ try {
   });
 
   const success = false;
-  core.setOutput("success", success);
-  core.setOutput("files", null);
+  core.setOutput("protection_id", 123);
   // Get the JSON webhook payload for the event that triggered the workflow
   const payload = JSON.stringify(github.context.payload, undefined, 2)
   console.log(`The event payload: ${payload}`);

@@ -1,0 +1,15 @@
+on: [push]
+
+jobs:
+  jscrambler_job:
+    runs-on: ubuntu-latest
+    name: A job to obfuscate code
+    steps:
+      - name: Send inputs to Jscrambler Action
+        id: jscrambler1
+        uses: jscrambler/jscrambler-github-action@v1.1
+        with:
+          application-id: '123abc987zyx'
+      # Use the output from the `hello` step
+      - name: Get the output protection_id
+        run: echo "Your protection was successful. ProtectionID: ${{ steps.jscrambler1.outputs.protection_id }}"
