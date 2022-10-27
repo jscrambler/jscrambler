@@ -18,4 +18,4 @@ jobs:
             b
       # Use the output from the `hello` step
       - name: Get the output protection_id
-        run: echo "Your protection was successful. ${{ steps.jscrambler.outputs.protection_id }}"
+        run: echo "Your protection was successful. ${{ steps.jscrambler.outputs.protection-id }}"
