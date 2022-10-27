@@ -14,8 +14,9 @@ jobs:
           secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}
           access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}
           files-src: |
-            a
-            b
+            packages/jscrambler-cli/src/index.js
+            packages/jscrambler-cli/src/config.js
+          files-dest: dist/
       # Use the output from the `hello` step
       - name: Get the output protection_id
         run: echo "Your protection was successful. ${{ steps.jscrambler.outputs.protection-id }}"
