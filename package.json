@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"build-action": "ncc build packages/jscrambler-github-action/index.js -o packages/jscrambler-github-action/dist",
+		"build-action": "cd packages/jscrambler-github-action && npm run build",
 		"publish": "npm run build-action && lerna publish"
 	},
 	"devDependencies": {

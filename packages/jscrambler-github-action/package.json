@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build index.js --license licenses.txt",
+    "build": "ncc build src/index.ts --license licenses.txt -o dist",
     "prepare": "npm run build"
   },
   "author": "",
@@ -12,6 +12,7 @@
   "devDependencies": {
     "@vercel/ncc": "^0.34.0",
     "@actions/core": "^1.10.0",
-    "jscrambler": "^6.2.8"
+    "jscrambler": "^6.2.8",
+    "typescript": "4.8.4"
   }
 }

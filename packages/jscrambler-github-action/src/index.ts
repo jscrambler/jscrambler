@@ -1,8 +1,8 @@
-const core = require('@actions/core');
+import * as core from '@actions/core';
 
 try {
   // Simply read and log the application ID for testing purposes
-  const applicationId = core.getInput('application-id');
+  const applicationId = core.getInput('files-src');
 
   console.log({
     applicationId
