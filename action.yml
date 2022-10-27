@@ -42,4 +42,4 @@ outputs:
 
 runs:
   using: 'node16'
-  main: 'dist/index.js'
+  main: 'packages/jscrambler-github-action/dist/index.js'
