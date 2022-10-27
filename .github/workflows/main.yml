@@ -5,13 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to obfuscate code
     steps:
-      - name: list
-        run: ls -la
-      - name: Send inputs to Jscrambler Action
-        id: jscrambler1
+      - uses: actions/checkout@v3
+      - name: Test Jscrambler Action
+        id: jscrambler
         uses: ./
         with:
           application-id: '123abc987zyx'
+          secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}
+          access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}
       # Use the output from the `hello` step
       - name: Get the output protection_id
-        run: echo "Your protection was successful. ${{ steps.jscrambler1.outputs.protection_id }}"
+        run: echo "Your protection was successful. ${{ steps.jscrambler.outputs.protection_id }}"
