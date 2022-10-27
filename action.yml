@@ -15,13 +15,13 @@ inputs:
   application-id:
     description: 'User Application Id'
     required: false
-  filesSrc:
+  files-src:
     description: 'List of file sources (glob patterns allowed)'
     required: false
-  filesDest:
+  files-dest:
     description: 'Output directory/file'
     required: false
-  jscramblerVersion:
+  jscrambler-version:
     description: 'Jscramber Version'
     required: false
   host:
@@ -29,15 +29,15 @@ inputs:
     required: false
 
   # DEBUG
-  sourceMaps:
+  source-maps:
     description: 'Use Sources Maps'
     required: false
-  debugMode:
+  debug-mode:
     description: 'Set Debug Mode'
     required: false
 
 outputs:
-  protection_id:
+  protection-id:
     description: 'Protection Id'
 
 runs:
