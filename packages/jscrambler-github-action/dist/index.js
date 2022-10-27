@@ -2809,35 +2809,6 @@ module.exports = require("util");
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -2858,20 +2829,62 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
+// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(186);
+;// CONCATENATED MODULE: ./src/get-inputs.ts
+
+function getStringParam(paramName) {
+    const value = core.getInput(paramName);
+    return value !== '' ? value : undefined;
+}
+function getStringArrayParam(paramName) {
+    const value = core.getMultilineInput(paramName).filter(line => line !== '');
+    return value.length !== 0 ? value : undefined;
+}
+function getBooleanParam(paramName) {
+    if (core.getInput(paramName) === '') {
+        return undefined;
+    }
+    return core.getBooleanInput(paramName);
+}
+function getInputs() {
+    return {
+        secretKey: getStringParam('secret-key'),
+        accessKey: getStringParam('access-key'),
+        jscramblerConfigPath: getStringParam('jscrambler-config-path'),
+        applicationId: getStringParam('application-id'),
+        filesSrc: getStringArrayParam('files-src'),
+        filesDest: getStringParam('files-dest'),
+        jscramblerVersion: getStringParam('jscrambler-version'),
+        host: getStringParam('host'),
+        sourceMaps: getBooleanParam('source-maps'),
+        debugMode: getBooleanParam('debug-mode'),
+    };
+}
+
+;// CONCATENATED MODULE: ./src/set-outputs.ts
+
+function setOutputs(outputs) {
+    core.setOutput("protection-id", outputs.protectionId);
+}
+
+;// CONCATENATED MODULE: ./src/index.ts
+
+
 
 try {
     // Simply read and log the application ID for testing purposes
-    const applicationId = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput('files-src');
-    console.log({
-        applicationId
+    const params = getInputs();
+    console.log('test param', params.applicationId);
+    setOutputs({
+        protectionId: 'dummy-value',
     });
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("protection-id", 123);
 }
 catch (error) {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
+    core.setFailed(error.message);
 }
 
 })();

@@ -32,9 +32,11 @@ inputs:
   source-maps:
     description: 'Use Sources Maps'
     required: false
+    type: boolean
   debug-mode:
     description: 'Set Debug Mode'
     required: false
+    type: boolean
 
 outputs:
   protection-id:
