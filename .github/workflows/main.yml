@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to obfuscate code
     steps:
+      - name: list
+        run: ls -la
       - name: Send inputs to Jscrambler Action
         id: jscrambler1
         uses: ./
