@@ -2864,11 +2864,11 @@ __nccwpck_require__.r(__webpack_exports__);
 
 try {
     // Simply read and log the application ID for testing purposes
-    const applicationId = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('files-src');
+    const applicationId = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput('files-src');
     console.log({
         applicationId
     });
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("protection_id", 123);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("protection-id", 123);
 }
 catch (error) {
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
