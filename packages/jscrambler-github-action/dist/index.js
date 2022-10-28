@@ -66609,7 +66609,10 @@ function getInputs() {
         filesSrc: getStringArrayParam('files-src'),
         filesDest: getStringParam('files-dest'),
         jscramblerVersion: getStringParam('jscrambler-version'),
+        protocol: getStringParam('protocol'),
         host: getStringParam('host'),
+        port: getStringParam('port'),
+        basePath: getStringParam('base-path'),
         sourceMapsOutputPath: getStringParam('source-maps-output-path'),
         debugMode: getBooleanParam('debug-mode'),
     };

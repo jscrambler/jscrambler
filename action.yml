@@ -24,8 +24,17 @@ inputs:
   jscrambler-version:
     description: 'Jscramber Version'
     required: false
+  protocol:
+    description: 'Jscrambler API protocol'
+    required: false
   host:
     description: 'Jscrambler API host'
+    required: false
+  port:
+    description: 'Jscrambler API port'
+    required: false
+  base-path:
+    description: 'Jscrambler API base path'
     required: false
 
   # DEBUG

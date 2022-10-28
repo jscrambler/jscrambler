@@ -10,7 +10,10 @@ export interface InputParams {
   filesSrc?: string[] | undefined;
   filesDest?: string | undefined;
   jscramblerVersion?: string | undefined;
+  protocol?: string | undefined;
   host?: string | undefined;
+  port?: string | undefined;
+  basePath?: string | undefined;
   sourceMapsOutputPath?: string | undefined;
   debugMode?: boolean | undefined;
 };
@@ -45,7 +48,10 @@ export default function getInputs(): InputParams {
     filesSrc: getStringArrayParam('files-src'),
     filesDest: getStringParam('files-dest'),
     jscramblerVersion: getStringParam('jscrambler-version'),
+    protocol: getStringParam('protocol'),
     host: getStringParam('host'),
+    port: getStringParam('port'),
+    basePath: getStringParam('base-path'),
     sourceMapsOutputPath: getStringParam('source-maps-output-path'),
     debugMode: getBooleanParam('debug-mode'),
   };

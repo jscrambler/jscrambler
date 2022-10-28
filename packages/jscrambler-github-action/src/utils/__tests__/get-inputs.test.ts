@@ -94,7 +94,10 @@ describe('getInputParams', function () {
       filesSrc: ['files-src'],
       filesDest: 'files-dest',
       jscramblerVersion: 'jscrambler-version',
+      protocol: 'protocol',
       host: 'host',
+      port: 'port',
+      basePath: 'base-path',
       sourceMapsOutputPath: 'source-maps-output-path',
       debugMode: true,
     };
