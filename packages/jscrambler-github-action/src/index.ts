@@ -9,7 +9,7 @@ async function launch() {
   // Simply read and log the application ID for testing purposes
   const params = getInputs();
 
-  const protectionId = jscrambler.protectAndDownload(params);
+  const protectionId = await jscrambler.protectAndDownload(params);
 
   setOutputs({
     protectionId,

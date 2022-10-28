@@ -65890,7 +65890,7 @@ function launch() {
     return __awaiter(this, void 0, void 0, function* () {
         // Simply read and log the application ID for testing purposes
         const params = getInputs();
-        const protectionId = jscrambler.protectAndDownload(params);
+        const protectionId = yield jscrambler.protectAndDownload(params);
         setOutputs({
             protectionId,
         });
