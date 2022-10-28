@@ -14,6 +14,7 @@ jobs:
           application-id: ${{ secrets.JSCRAMBLER_APPLICATION_ID }}
           secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}
           access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}
+          jscrambler-config-path: packages/jscrambler-github-action/test-config.json
           files-src: |
             packages/jscrambler-cli/src/index.js
             packages/jscrambler-cli/src/config.js
