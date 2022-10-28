@@ -58,12 +58,12 @@ test('passed parameters override config parameters', async function () {
 
 test('specifies source maps output', async function () {
   const config: Partial<InputParams> = {
-    sourceMapOutputPath: 'output.json',
+    sourceMapsOutputPath: 'output.json',
   };
-  const {finalParams, sourceMapOutputPath} = await buildParamsFromInputs(completeConfig(config));
-  expect(finalParams.sourceMapOutputPath).toBe(undefined);
+  const {finalParams, sourceMapsOutputPath} = await buildParamsFromInputs(completeConfig(config));
+  expect(finalParams.sourceMapsOutputPath).toBe(undefined);
   expect(finalParams.sourceMaps).toBe(true);
-  expect(sourceMapOutputPath).toBe('output.json');
+  expect(sourceMapsOutputPath).toBe('output.json');
 });
 
 afterEach(() => {

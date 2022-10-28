@@ -66566,13 +66566,13 @@ function buildParamsFromInputs(params) {
         else {
             finalParams = params;
         }
-        const { sourceMapOutputPath } = params;
-        if (sourceMapOutputPath !== undefined) {
+        const { sourceMapsOutputPath } = params;
+        if (sourceMapsOutputPath !== undefined) {
             finalParams.sourceMaps = true;
         }
         delete finalParams.jscramblerConfigPath;
-        delete finalParams.sourceMapOutputPath;
-        return { finalParams, sourceMapOutputPath };
+        delete finalParams.sourceMapsOutputPath;
+        return { finalParams, sourceMapsOutputPath };
     });
 }
 
@@ -66605,7 +66605,7 @@ function getInputs() {
         filesDest: getStringParam('files-dest'),
         jscramblerVersion: getStringParam('jscrambler-version'),
         host: getStringParam('host'),
-        sourceMapOutputPath: getStringParam('source-map-output-path'),
+        sourceMapsOutputPath: getStringParam('source-maps-output-path'),
         debugMode: getBooleanParam('debug-mode'),
     };
 }
@@ -66635,11 +66635,11 @@ const jscrambler = (__nccwpck_require__(75654)/* ["default"] */ .Z);
 function launch() {
     return src_awaiter(this, void 0, void 0, function* () {
         const params = getInputs();
-        const { finalParams, sourceMapOutputPath } = yield buildParamsFromInputs(params);
+        const { finalParams, sourceMapsOutputPath } = yield buildParamsFromInputs(params);
         const protectionId = yield jscrambler.protectAndDownload(finalParams);
         const downloadArtifactsParams = Object.assign(Object.assign({}, finalParams), { protectionId });
-        if (sourceMapOutputPath !== undefined) {
-            yield jscrambler.downloadSourceMaps(downloadArtifactsParams, sourceMapOutputPath);
+        if (sourceMapsOutputPath !== undefined) {
+            yield jscrambler.downloadSourceMaps(downloadArtifactsParams, sourceMapsOutputPath);
         }
         setOutputs({
             protectionId,
