@@ -41,6 +41,9 @@ inputs:
   source-maps-output-path:
     description: 'Source Maps Output Path -- The source maps are stored as files inside a jscramblerSourceMaps folder here'
     required: false
+  symbol-table-output-path:
+    description: 'Symbol table Output Path'
+    required: false
   debug-mode:
     description: 'Set Debug Mode'
     required: false

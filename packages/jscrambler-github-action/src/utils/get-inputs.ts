@@ -23,6 +23,7 @@ export interface InputParams {
   port?: string | undefined;
   basePath?: string | undefined;
   sourceMapsOutputPath?: string | undefined;
+  symbolTableOutputPath?: string | undefined;
   debugMode?: boolean | undefined;
 };
 
@@ -81,6 +82,7 @@ export default function getInputs(): InputParams {
     port: getStringParam('port'),
     basePath: getStringParam('base-path'),
     sourceMapsOutputPath: getStringParam('source-maps-output-path'),
+    symbolTableOutputPath: getStringParam('symbol-table-output-path'),
     debugMode: getBooleanParam('debug-mode'),
   };
 

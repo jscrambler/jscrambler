@@ -136,6 +136,7 @@ describe('getInputParams', function () {
       port: 'port',
       basePath: 'base-path',
       sourceMapsOutputPath: 'source-maps-output-path',
+      symbolTableOutputPath: 'symbol-table-output-path',
       debugMode: true,
       proxy: {
         host: 'proxy-host',

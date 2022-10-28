@@ -20,6 +20,7 @@ jobs:
             packages/jscrambler-cli/src/config.js
           files-dest: dist/
           source-maps-output-path: dist-extra/
+          symbol-table-output-path: dist-extra/symbols/
       # Use the output from the `hello` step
       - name: Get the output protection_id
         run: echo "Your protection was successful. ${{ steps.jscrambler.outputs.protection-id }}"
@@ -28,6 +29,12 @@ jobs:
         with:
           name: protected-source-code
           path: dist/
+          retention-days: 1
+      - name: Upload symbol table
+        uses: actions/upload-artifact@v3
+        with:
+          name: source-maps
+          path: dist-extra/symbols/
           retention-days: 1
       - name: Upload source maps
         uses: actions/upload-artifact@v3
