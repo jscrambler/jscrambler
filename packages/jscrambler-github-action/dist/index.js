@@ -66644,7 +66644,7 @@ function launch() {
         const protectionId = yield jscrambler.protectAndDownload(finalParams);
         const downloadArtifactsParams = Object.assign(Object.assign({}, finalParams), { protectionId });
         if (sourceMapsOutputPath !== undefined) {
-            yield jscrambler.downloadSourceMaps(downloadArtifactsParams, sourceMapsOutputPath);
+            yield jscrambler.downloadSourceMaps(Object.assign(Object.assign({}, downloadArtifactsParams), { filesDest: sourceMapsOutputPath }));
         }
         setOutputs({
             protectionId,
