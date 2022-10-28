@@ -1,8 +1,10 @@
 import * as core from '@actions/core';
 
 export interface InputParams {
-  secretKey: string | undefined;
-  accessKey: string | undefined;
+  keys: {
+    secretKey: string | undefined;
+    accessKey: string | undefined;
+  };
   jscramblerConfigPath: string | undefined;
   applicationId: string | undefined;
   filesSrc: string[] | undefined;
@@ -34,8 +36,10 @@ export function getBooleanParam(paramName: string): boolean | undefined {
 
 export default function getInputs(): InputParams {
   return {
-    secretKey: getStringParam('secret-key'),
-    accessKey: getStringParam('access-key'),
+    keys: {
+      secretKey: getStringParam('secret-key'),
+      accessKey: getStringParam('access-key'),
+    },
     jscramblerConfigPath: getStringParam('jscrambler-config-path'),
     applicationId: getStringParam('application-id'),
     filesSrc: getStringArrayParam('files-src'),

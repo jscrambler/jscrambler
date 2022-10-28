@@ -65850,8 +65850,10 @@ function getBooleanParam(paramName) {
 }
 function getInputs() {
     return {
-        secretKey: getStringParam('secret-key'),
-        accessKey: getStringParam('access-key'),
+        keys: {
+            secretKey: getStringParam('secret-key'),
+            accessKey: getStringParam('access-key'),
+        },
         jscramblerConfigPath: getStringParam('jscrambler-config-path'),
         applicationId: getStringParam('application-id'),
         filesSrc: getStringArrayParam('files-src'),

@@ -85,8 +85,10 @@ describe('getInputParams', function () {
     jest.spyOn(core, 'getMultilineInput').mockImplementation(name => [name]);
 
     const expectedValue: InputParams = {
-      secretKey: 'secret-key',
-      accessKey: 'access-key',
+      keys: {
+        secretKey: 'secret-key',
+        accessKey: 'access-key',
+      },
       jscramblerConfigPath: 'jscrambler-config-path',
       applicationId: 'application-id',
       filesSrc: ['files-src'],
