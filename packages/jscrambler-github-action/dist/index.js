@@ -66566,8 +66566,13 @@ function buildParamsFromInputs(params) {
         else {
             finalParams = params;
         }
+        const { sourceMapOutputPath } = params;
+        if (sourceMapOutputPath !== undefined) {
+            finalParams.sourceMaps = true;
+        }
         delete finalParams.jscramblerConfigPath;
-        return { finalParams };
+        delete finalParams.sourceMapOutputPath;
+        return { finalParams, sourceMapOutputPath };
     });
 }
 
@@ -66630,8 +66635,12 @@ const jscrambler = (__nccwpck_require__(75654)/* ["default"] */ .Z);
 function launch() {
     return src_awaiter(this, void 0, void 0, function* () {
         const params = getInputs();
-        const { finalParams } = yield buildParamsFromInputs(params);
+        const { finalParams, sourceMapOutputPath } = yield buildParamsFromInputs(params);
         const protectionId = yield jscrambler.protectAndDownload(finalParams);
+        const downloadArtifactsParams = Object.assign(Object.assign({}, finalParams), { protectionId });
+        if (sourceMapOutputPath !== undefined) {
+            yield jscrambler.downloadSourceMaps(downloadArtifactsParams, sourceMapOutputPath);
+        }
         setOutputs({
             protectionId,
         });

@@ -56,3 +56,16 @@ test('passed parameters override config parameters', async function () {
   expect(finalParams.applicationId).toBe('a');
 });
 
+test('specifies source maps output', async function () {
+  const config: Partial<InputParams> = {
+    sourceMapOutputPath: 'output.json',
+  };
+  const {finalParams, sourceMapOutputPath} = await buildParamsFromInputs(completeConfig(config));
+  expect(finalParams.sourceMapOutputPath).toBe(undefined);
+  expect(finalParams.sourceMaps).toBe(true);
+  expect(sourceMapOutputPath).toBe('output.json');
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});

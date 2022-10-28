@@ -14,6 +14,12 @@ export default async function buildParamsFromInputs(params: InputParams) {
     finalParams = params;
   }
 
+  const {sourceMapOutputPath} = params;
+  if (sourceMapOutputPath !== undefined) {
+    finalParams.sourceMaps = true;
+  }
+
   delete finalParams.jscramblerConfigPath;
-  return {finalParams};
+  delete finalParams.sourceMapOutputPath;
+  return {finalParams, sourceMapOutputPath};
 }

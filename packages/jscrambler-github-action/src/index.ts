@@ -8,9 +8,17 @@ const jscrambler = require('jscrambler').default;
 
 async function launch() {
   const params = getInputs();
-  const {finalParams} = await buildParamsFromInputs(params);
+  const {finalParams, sourceMapOutputPath} = await buildParamsFromInputs(params);
 
   const protectionId = await jscrambler.protectAndDownload(finalParams);
+
+  const downloadArtifactsParams = {
+    ...finalParams,
+    protectionId,
+  };
+  if (sourceMapOutputPath !== undefined) {
+    await jscrambler.downloadSourceMaps(downloadArtifactsParams, sourceMapOutputPath);
+  }
 
   setOutputs({
     protectionId,
