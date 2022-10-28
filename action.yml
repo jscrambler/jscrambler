@@ -29,10 +29,9 @@ inputs:
     required: false
 
   # DEBUG
-  source-maps:
-    description: 'Use Sources Maps'
+  source-map-output-path:
+    description: 'Sources Map Output Path'
     required: false
-    type: boolean
   debug-mode:
     description: 'Set Debug Mode'
     required: false

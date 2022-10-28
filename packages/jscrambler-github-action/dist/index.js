@@ -66536,13 +66536,44 @@ __nccwpck_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(42186);
+;// CONCATENATED MODULE: external "fs/promises"
+const promises_namespaceObject = require("fs/promises");
 // EXTERNAL MODULE: ./node_modules/lodash.defaults/index.js
 var lodash_defaults = __nccwpck_require__(11289);
 var lodash_defaults_default = /*#__PURE__*/__nccwpck_require__.n(lodash_defaults);
-;// CONCATENATED MODULE: external "fs/promises"
-const promises_namespaceObject = require("fs/promises");
-;// CONCATENATED MODULE: ./src/get-inputs.ts
+;// CONCATENATED MODULE: ./src/utils/build-params-from-inputs.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
+
+function buildParamsFromInputs(params) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let finalParams;
+        if (params.jscramblerConfigPath !== undefined) {
+            // Explicit parameters take precedence over config-specified parameters
+            // Note: require(...) wouldn't work here -- ncc doesn't allow dynamically loading modules
+            const configFile = yield (0,promises_namespaceObject.readFile)(params.jscramblerConfigPath, 'utf-8');
+            const configObject = JSON.parse(configFile);
+            finalParams = lodash_defaults_default()(params, configObject);
+        }
+        else {
+            finalParams = params;
+        }
+        delete finalParams.jscramblerConfigPath;
+        return { finalParams };
+    });
+}
+
+;// CONCATENATED MODULE: ./src/utils/get-inputs.ts
+
+;
 function getStringParam(paramName) {
     const value = core.getInput(paramName);
     return value !== '' ? value : undefined;
@@ -66569,19 +66600,19 @@ function getInputs() {
         filesDest: getStringParam('files-dest'),
         jscramblerVersion: getStringParam('jscrambler-version'),
         host: getStringParam('host'),
-        sourceMaps: getBooleanParam('source-maps'),
+        sourceMapOutputPath: getStringParam('source-map-output-path'),
         debugMode: getBooleanParam('debug-mode'),
     };
 }
 
-;// CONCATENATED MODULE: ./src/set-outputs.ts
+;// CONCATENATED MODULE: ./src/utils/set-outputs.ts
 
 function setOutputs(outputs) {
     core.setOutput("protection-id", outputs.protectionId);
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -66594,25 +66625,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 // Types are not currently available for the jscrambler package
 const jscrambler = (__nccwpck_require__(75654)/* ["default"] */ .Z);
 function launch() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Simply read and log the application ID for testing purposes
+    return src_awaiter(this, void 0, void 0, function* () {
         const params = getInputs();
-        let finalParams;
-        if (params.jscramblerConfigPath !== undefined) {
-            // Explicit parameters take precedence over config-specified parameters
-            // Note: require(...) wouldn't work here -- ncc doesn't allow dynamically loading modules
-            const configFile = yield (0,promises_namespaceObject.readFile)(params.jscramblerConfigPath, 'utf-8');
-            const configObject = JSON.parse(configFile);
-            finalParams = lodash_defaults_default()(params, configObject);
-        }
-        else {
-            finalParams = params;
-        }
-        const protectionId = yield jscrambler.protectAndDownload(params);
+        const { finalParams } = yield buildParamsFromInputs(params);
+        const protectionId = yield jscrambler.protectAndDownload(finalParams);
         setOutputs({
             protectionId,
         });

@@ -2,18 +2,18 @@ import * as core from '@actions/core';
 
 export interface InputParams {
   keys: {
-    secretKey: string | undefined;
-    accessKey: string | undefined;
+    secretKey?: string | undefined;
+    accessKey?: string | undefined;
   };
-  jscramblerConfigPath: string | undefined;
-  applicationId: string | undefined;
-  filesSrc: string[] | undefined;
-  filesDest: string | undefined;
-  jscramblerVersion: string | undefined;
-  host: string | undefined;
-  sourceMaps: boolean | undefined;
-  debugMode: boolean | undefined;
-}
+  jscramblerConfigPath?: string | undefined;
+  applicationId?: string | undefined;
+  filesSrc?: string[] | undefined;
+  filesDest?: string | undefined;
+  jscramblerVersion?: string | undefined;
+  host?: string | undefined;
+  sourceMapOutputPath?: string | undefined;
+  debugMode?: boolean | undefined;
+};
 
 export function getStringParam(paramName: string): string | undefined {
   const value = core.getInput(paramName);
@@ -46,7 +46,7 @@ export default function getInputs(): InputParams {
     filesDest: getStringParam('files-dest'),
     jscramblerVersion: getStringParam('jscrambler-version'),
     host: getStringParam('host'),
-    sourceMaps: getBooleanParam('source-maps'),
+    sourceMapOutputPath: getStringParam('source-map-output-path'),
     debugMode: getBooleanParam('debug-mode'),
   };
 }

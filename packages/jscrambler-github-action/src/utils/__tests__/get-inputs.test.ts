@@ -95,7 +95,7 @@ describe('getInputParams', function () {
       filesDest: 'files-dest',
       jscramblerVersion: 'jscrambler-version',
       host: 'host',
-      sourceMaps: true,
+      sourceMapOutputPath: 'source-map-output-path',
       debugMode: true,
     };
     expect(getInputs()).toStrictEqual(expectedValue);
