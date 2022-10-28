@@ -9,7 +9,6 @@ async function launch() {
   // Simply read and log the application ID for testing purposes
   const params = getInputs();
 
-  console.log('test get values', params);
   const protectionId = jscrambler.protectAndDownload(params);
 
   setOutputs({

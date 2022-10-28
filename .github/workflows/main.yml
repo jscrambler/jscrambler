@@ -11,7 +11,7 @@ jobs:
         id: jscrambler
         uses: ./
         with:
-          application-id: '123abc987zyx'
+          application-id: ${{ secrets.JSCRAMBLER_APPLICATION_ID }}
           secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}
           access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}
           files-src: |
