@@ -66598,8 +66598,25 @@ function getBooleanParam(paramName) {
     }
     return core.getBooleanInput(paramName);
 }
-function getInputs() {
+function getProxyParams() {
+    const host = getStringParam('proxy-host');
+    const port = getStringParam('proxy-port');
+    const username = getStringParam('proxy-auth-username');
+    const password = getStringParam('proxy-auth-password');
+    if (host === undefined && port === undefined && username === undefined && password === undefined) {
+        return undefined;
+    }
     return {
+        host,
+        port,
+        auth: {
+            username,
+            password,
+        }
+    };
+}
+function getInputs() {
+    const params = {
         keys: {
             secretKey: getStringParam('secret-key'),
             accessKey: getStringParam('access-key'),
@@ -66616,6 +66633,11 @@ function getInputs() {
         sourceMapsOutputPath: getStringParam('source-maps-output-path'),
         debugMode: getBooleanParam('debug-mode'),
     };
+    const proxy = getProxyParams();
+    if (proxy !== undefined) {
+        params.proxy = proxy;
+    }
+    return params;
 }
 
 ;// CONCATENATED MODULE: ./src/utils/set-outputs.ts

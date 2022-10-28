@@ -1,5 +1,11 @@
 import * as core from '@actions/core';
-import getInputs, {getBooleanParam, getStringArrayParam, getStringParam, InputParams} from '../get-inputs';
+import getInputs, {
+  getBooleanParam,
+  getStringArrayParam,
+  getStringParam,
+  getProxyParams,
+  InputParams
+} from '../get-inputs';
 
 describe('getStringParam', function () {
   it('returns the given string value from the relevant input', function () {
@@ -78,6 +84,37 @@ describe('getStringArrayParam', function () {
   });
 });
 
+describe('getProxyParams', function () {
+  it('returns undefined if no proxy values are specified', function () {
+    const stub = jest.spyOn(core, 'getInput').mockReturnValue('');
+
+    expect(getProxyParams()).toBe(undefined);
+
+    expect(stub).toHaveBeenCalledWith('proxy-host');
+    expect(stub).toHaveBeenCalledWith('proxy-port');
+    expect(stub).toHaveBeenCalledWith('proxy-auth-username');
+    expect(stub).toHaveBeenCalledWith('proxy-auth-password');
+  });
+
+  it('returns the proxy params if specified', function () {
+    const stub = jest.spyOn(core, 'getInput').mockImplementation(name => name);
+
+    expect(getProxyParams()).toStrictEqual({
+      host: 'proxy-host',
+      port: 'proxy-port',
+      auth: {
+        username: 'proxy-auth-username',
+        password: 'proxy-auth-password',
+      }
+    });
+
+    expect(stub).toHaveBeenCalledWith('proxy-host');
+    expect(stub).toHaveBeenCalledWith('proxy-port');
+    expect(stub).toHaveBeenCalledWith('proxy-auth-username');
+    expect(stub).toHaveBeenCalledWith('proxy-auth-password');
+  });
+});
+
 describe('getInputParams', function () {
   it('returns the specified dummy values', function () {
     jest.spyOn(core, 'getInput').mockImplementation(name => name);
@@ -100,6 +137,14 @@ describe('getInputParams', function () {
       basePath: 'base-path',
       sourceMapsOutputPath: 'source-maps-output-path',
       debugMode: true,
+      proxy: {
+        host: 'proxy-host',
+        port: 'proxy-port',
+        auth: {
+          username: 'proxy-auth-username',
+          password: 'proxy-auth-password',
+        },
+      }
     };
     expect(getInputs()).toStrictEqual(expectedValue);
   })

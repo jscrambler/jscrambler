@@ -5,6 +5,14 @@ export interface InputParams {
     secretKey?: string | undefined;
     accessKey?: string | undefined;
   };
+  proxy?: {
+    host: string | undefined;
+    port: string | undefined;
+    auth: {
+      username: string | undefined;
+      password: string | undefined;
+    };
+  };
   jscramblerConfigPath?: string | undefined;
   applicationId?: string | undefined;
   filesSrc?: string[] | undefined;
@@ -37,8 +45,28 @@ export function getBooleanParam(paramName: string): boolean | undefined {
   return core.getBooleanInput(paramName);
 }
 
-export default function getInputs(): InputParams {
+export function getProxyParams(): InputParams['proxy'] {
+  const host = getStringParam('proxy-host');
+  const port = getStringParam('proxy-port');
+  const username = getStringParam('proxy-auth-username');
+  const password = getStringParam('proxy-auth-password');
+
+  if (host === undefined && port === undefined && username === undefined && password === undefined) {
+    return undefined;
+  }
+
   return {
+    host,
+    port,
+    auth: {
+      username,
+      password,
+    }
+  };
+}
+
+export default function getInputs(): InputParams {
+  const params: InputParams = {
     keys: {
       secretKey: getStringParam('secret-key'),
       accessKey: getStringParam('access-key'),
@@ -55,4 +83,11 @@ export default function getInputs(): InputParams {
     sourceMapsOutputPath: getStringParam('source-maps-output-path'),
     debugMode: getBooleanParam('debug-mode'),
   };
+
+  const proxy = getProxyParams();
+  if (proxy !== undefined) {
+    params.proxy = proxy;
+  }
+
+  return params;
 }
