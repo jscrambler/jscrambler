@@ -1,7 +1,10 @@
 {
   "params": [
     {
-      "name": "identifiersRenaming"
+      "name": "identifiersRenaming",
+      "options": {
+        "mode": "UNSAFE"
+      }
     }
   ]
 }
