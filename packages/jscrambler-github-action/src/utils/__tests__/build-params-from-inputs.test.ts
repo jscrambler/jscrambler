@@ -62,7 +62,9 @@ test('specifies source maps output', async function () {
   };
   const {finalParams, sourceMapsOutputPath} = await buildParamsFromInputs(completeConfig(config));
   expect(finalParams.sourceMapsOutputPath).toBe(undefined);
-  expect(finalParams.sourceMaps).toBe(true);
+  expect(finalParams.sourceMaps).toStrictEqual({
+    sourceContent: true,
+  });
   expect(sourceMapsOutputPath).toBe('output.json');
 });
 
