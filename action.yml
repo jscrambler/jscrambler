@@ -30,7 +30,7 @@ inputs:
 
   # DEBUG
   source-maps-output-path:
-    description: 'Source Maps Output Path'
+    description: 'Source Maps Output Path -- The source maps are stored as files inside a jscramblerSourceMaps folder here'
     required: false
   debug-mode:
     description: 'Set Debug Mode'

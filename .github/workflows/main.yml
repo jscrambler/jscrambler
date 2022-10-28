@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: source-maps
-          path: dist-extra/
+          path: dist-extra/jscramblerSourceMaps/
           retention-days: 1
