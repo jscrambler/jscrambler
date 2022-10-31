@@ -52,5 +52,5 @@ jobs:
         run: |
              npm i
              alias lerna=node_modules/.bin/lerna
-             lerna bootstrap
+             lerna bootstrap --hoist
              lerna exec --scope jscrambler-github-action "npm run test"
