@@ -49,4 +49,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Test Jscrambler Action
         id: jscrambler
-        run: lerna exec --scope jscrambler-github-action "npm run test"
+        run: |
+             npm i
+             alias lerna=node_modules/.bin/lerna
+             lerna bootstrap
+             lerna exec --scope jscrambler-github-action "npm run test"
