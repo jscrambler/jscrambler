@@ -1,9 +1,9 @@
 on: [push]
 
 jobs:
-  jscrambler_job:
+  github_action_test:
     runs-on: ubuntu-latest
-    name: A job to obfuscate code
+    name: Test Protection
     environment: production
     steps:
       - uses: actions/checkout@v3
@@ -42,3 +42,12 @@ jobs:
           name: source-maps
           path: dist-extra/jscramblerSourceMaps/
           retention-days: 1
+  test:
+    runs-on: ubuntu-latest
+    name: Test Protection
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Jscrambler Action
+        id: jscrambler
+        uses: ./
+        run: lerna exec --scope jscrambler-github-action "npm run test"
