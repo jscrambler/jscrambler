@@ -4,29 +4,24 @@ This action lets you protect your source code with Jscrambler.
 
 ## Inputs
 
-### `access-key`
+The following inputs are supported:
 
-**Required** Your Jscrambler access key.
-
-### `secret-key`
-
-**Required** Your Jscrambler secret key.
-
-### `application-id`
-
-**Required** The Jscrambler Application ID of your application.
+  * `access-key` and `secret-key`: User keys for authentication (we recommend using github secrets for this)
+  * `application-id`: User application ID
+  * `jscrambler-config-path`: Path to JSON with Jscrambler configuration, including protection parameters
+  * `files-src`: Paths of source files to protect. Glob patterns allowed. Use multiline strings to specify multiple files.
+  * `files-dest`: Path of protected output
+  * `jscrambler-version`: Jscrambler version to use
+  * `protocol`, `host`, `path` and `base-path`: Alternative path of protection server
+  * `source-maps-output-path`: Path of output source maps
+  * `symbol-table-output-path`: Path of output symbol table
+  * `debug-mode`: Whether to turn on debug mode
 
 ## Outputs
 
-### `success`
+Jscrambler generates a `protection-id` as an output
 
-Whether the protection was successful.
-
-### `source code`
-
-**Required** Your Jscrambler protected source code.
-
-## Example usage
+## Usage
 
 ```yaml
 uses: actions/jscrambler-github-action@v1.1
