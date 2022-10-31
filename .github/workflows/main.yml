@@ -33,7 +33,7 @@ jobs:
       - name: Upload symbol table
         uses: actions/upload-artifact@v3
         with:
-          name: source-maps
+          name: symbols
           path: dist-extra/symbols/
           retention-days: 1
       - name: Upload source maps
