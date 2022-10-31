@@ -44,7 +44,7 @@ jobs:
           retention-days: 1
   test:
     runs-on: ubuntu-latest
-    name: Test Protection
+    name: Run Unit Tests
     steps:
       - uses: actions/checkout@v3
       - name: Test Jscrambler Action
