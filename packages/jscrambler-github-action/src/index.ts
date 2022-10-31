@@ -19,6 +19,7 @@ async function launch() {
   if (sourceMapsOutputPath !== undefined) {
     await jscrambler.downloadSourceMaps({
       ...downloadArtifactsParams,
+      filesSrc: undefined, // If filesSrc is specified, then Jscrambler prints a warning
       filesDest: sourceMapsOutputPath,
     });
   }
