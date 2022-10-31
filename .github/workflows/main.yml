@@ -49,5 +49,4 @@ jobs:
       - uses: actions/checkout@v3
       - name: Test Jscrambler Action
         id: jscrambler
-        uses: ./
         run: lerna exec --scope jscrambler-github-action "npm run test"
