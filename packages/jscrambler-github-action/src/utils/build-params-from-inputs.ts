@@ -26,6 +26,6 @@ export default async function buildParamsFromInputs(params: InputParams) {
 
   delete finalParams.jscramblerConfigPath;
   delete finalParams.sourceMapsOutputPath;
-  delete finalParams.outputSymbolTable;
+  delete finalParams.symbolTableOutputPath;
   return {finalParams, sourceMapsOutputPath, symbolTableOutputPath};
 }

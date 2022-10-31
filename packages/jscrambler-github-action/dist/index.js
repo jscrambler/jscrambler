@@ -66566,7 +66566,7 @@ function buildParamsFromInputs(params) {
         else {
             finalParams = params;
         }
-        const { sourceMapsOutputPath } = params;
+        const { sourceMapsOutputPath, symbolTableOutputPath } = params;
         if (sourceMapsOutputPath !== undefined) {
             finalParams.sourceMaps = {
                 sourceContent: true
@@ -66577,7 +66577,8 @@ function buildParamsFromInputs(params) {
         }
         delete finalParams.jscramblerConfigPath;
         delete finalParams.sourceMapsOutputPath;
-        return { finalParams, sourceMapsOutputPath };
+        delete finalParams.symbolTableOutputPath;
+        return { finalParams, sourceMapsOutputPath, symbolTableOutputPath };
     });
 }
 
@@ -66631,6 +66632,7 @@ function getInputs() {
         port: getStringParam('port'),
         basePath: getStringParam('base-path'),
         sourceMapsOutputPath: getStringParam('source-maps-output-path'),
+        symbolTableOutputPath: getStringParam('symbol-table-output-path'),
         debugMode: getBooleanParam('debug-mode'),
     };
     const proxy = getProxyParams();
@@ -66665,11 +66667,17 @@ const jscrambler = (__nccwpck_require__(75654)/* ["default"] */ .Z);
 function launch() {
     return src_awaiter(this, void 0, void 0, function* () {
         const params = getInputs();
-        const { finalParams, sourceMapsOutputPath } = yield buildParamsFromInputs(params);
+        const { finalParams, sourceMapsOutputPath, symbolTableOutputPath, } = yield buildParamsFromInputs(params);
         const protectionId = yield jscrambler.protectAndDownload(finalParams);
-        const downloadArtifactsParams = Object.assign(Object.assign({}, finalParams), { protectionId });
+        const downloadArtifactsParams = Object.assign(Object.assign({}, finalParams), { 
+            // If filesSrc is specified, then Jscrambler prints a warning because
+            // inputs make no sense in subsequent steps
+            filesSrc: undefined, protectionId });
         if (sourceMapsOutputPath !== undefined) {
             yield jscrambler.downloadSourceMaps(Object.assign(Object.assign({}, downloadArtifactsParams), { filesDest: sourceMapsOutputPath }));
+        }
+        if (symbolTableOutputPath !== undefined) {
+            yield jscrambler.downloadSymbolTable(Object.assign(Object.assign({}, downloadArtifactsParams), { filesDest: symbolTableOutputPath }));
         }
         setOutputs({
             protectionId,

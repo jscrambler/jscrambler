@@ -8,19 +8,31 @@ const jscrambler = require('jscrambler').default;
 
 async function launch() {
   const params = getInputs();
-  const {finalParams, sourceMapsOutputPath} = await buildParamsFromInputs(params);
+  const {
+    finalParams,
+    sourceMapsOutputPath,
+    symbolTableOutputPath,
+  } = await buildParamsFromInputs(params);
 
   const protectionId = await jscrambler.protectAndDownload(finalParams);
 
   const downloadArtifactsParams = {
     ...finalParams,
+    // If filesSrc is specified, then Jscrambler prints a warning because
+    // inputs make no sense in subsequent steps
+    filesSrc: undefined,
     protectionId,
   };
   if (sourceMapsOutputPath !== undefined) {
     await jscrambler.downloadSourceMaps({
       ...downloadArtifactsParams,
-      filesSrc: undefined, // If filesSrc is specified, then Jscrambler prints a warning
       filesDest: sourceMapsOutputPath,
+    });
+  }
+  if (symbolTableOutputPath !== undefined) {
+    await jscrambler.downloadSymbolTable({
+      ...downloadArtifactsParams,
+      filesDest: symbolTableOutputPath,
     });
   }
 

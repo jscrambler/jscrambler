@@ -68,6 +68,16 @@ test('specifies source maps output', async function () {
   expect(sourceMapsOutputPath).toBe('output.json');
 });
 
+test('specifies symbol table output', async function () {
+  const config: Partial<InputParams> = {
+    symbolTableOutputPath: 'output',
+  };
+  const {finalParams, symbolTableOutputPath} = await buildParamsFromInputs(completeConfig(config));
+  expect(finalParams.symbolTableOutputPath).toBe(undefined);
+  expect(symbolTableOutputPath).toBe('output');
+});
+
+
 afterEach(() => {
   jest.clearAllMocks();
 });
