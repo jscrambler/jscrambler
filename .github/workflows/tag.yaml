@@ -30,6 +30,8 @@ jobs:
              git checkout -b release-branch
              shopt -s extglob
              rm -rf !(dist|action.tml) .github .gitignore
+             git add .
+             git commit -m "Release ${GITHUB_REF_NAME}"
              # Prepare release
              git tag "${GITHUB_REF_NAME}"
              git push --tags
