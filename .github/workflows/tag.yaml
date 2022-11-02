@@ -31,7 +31,7 @@ jobs:
              # Create new branch, but do not push it
              git checkout -b release-branch
              shopt -s extglob
-             rm -rf !(dist|action.tml) .github .gitignore
+             rm -rf !(dist|action.yml) .github .gitignore
              git add .
              git config user.name "${COMMIT_AUTHOR_NAME}"
              git config user.email "${COMMIT_AUTHOR_EMAIL}"
