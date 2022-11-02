@@ -22,6 +22,7 @@ jobs:
              npm t
              # Create new branch, but do not push it
              git checkout -b release-branch
+             shopt extglob
              rm -rf !(dist|action.tml) .github .gitignore
              # Prepare release
              git tag "${GITHUB_REF_NAME}"
