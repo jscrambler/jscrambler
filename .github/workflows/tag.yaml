@@ -9,6 +9,6 @@ jobs:
     name: Publish GitHub Action
     steps:
       - uses: actions/checkout@v3
-        run:
-          - echo $GITHUB_REF_NAME
+      - name: Print tag name
+        run: echo $GITHUB_REF_NAME
         
