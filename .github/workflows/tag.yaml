@@ -10,6 +10,8 @@ jobs:
     environment: production
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      COMMIT_AUTHOR_NAME: "Jscrambler from GitHub Runner"
+      COMMIT_AUTHOR_EMAIL: "code@jscrambler.com"
     steps:
       - uses: actions/checkout@v3
       - name: Clone GitHub Action Repository
@@ -31,6 +33,8 @@ jobs:
              shopt -s extglob
              rm -rf !(dist|action.tml) .github .gitignore
              git add .
+             git config user.name "${COMMIT_AUTHOR_NAME}"
+             git config user.email "${COMMIT_AUTHOR_EMAIL}"
              git commit -m "Release ${GITHUB_REF_NAME}"
              # Prepare release
              git tag "${GITHUB_REF_NAME}"
