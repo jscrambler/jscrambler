@@ -31,6 +31,6 @@ jobs:
              git commit -m "${GITHUB_REF_NAME}"
              # Prepare release
              git tag "${GITHUB_REF_NAME}"
-             git push --tags
+             git push && git push --tags
              # Release
              gh release create "${GITHUB_REF_NAME}"
