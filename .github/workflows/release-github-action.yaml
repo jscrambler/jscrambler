@@ -1,3 +1,5 @@
+name: Release Github Action
+
 on:
   push:
     tags:
