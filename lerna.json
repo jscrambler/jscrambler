@@ -6,12 +6,5 @@
   "npmClientArgs": [
     "--legacy-peer-deps"
   ],
-  "command": {
-    "publish": {
-      "ignore": [
-        "jscrambler-github-action"
-      ]
-    }
-  },
   "version": "6.2.9"
 }
