@@ -1,10 +1,5 @@
 {
-	"scripts": {
-		"build-action": "cd packages/jscrambler-github-action && npm run build",
-		"publish": "npm run build-action && lerna publish"
-	},
 	"devDependencies": {
-		"@vercel/ncc": "^0.34.0",
 		"lerna": "^2.2.0"
 	}
 }
