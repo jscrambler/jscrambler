@@ -11,9 +11,7 @@ jobs:
     name: Publish Jscrambler GitHub Action
     environment: production
     env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      COMMIT_AUTHOR_NAME: "Jscrambler from GitHub Runner"
-      COMMIT_AUTHOR_EMAIL: "code@jscrambler.com"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
