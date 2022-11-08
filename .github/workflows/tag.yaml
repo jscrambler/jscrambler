@@ -6,7 +6,7 @@ on:
 jobs:
   publish_github_action:
     runs-on: ubuntu-latest
-    name: Publish GitHub Action
+    name: Publish Jscrambler GitHub Action
     environment: production
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -14,23 +14,20 @@ jobs:
       COMMIT_AUTHOR_EMAIL: "code@jscrambler.com"
     steps:
       - uses: actions/checkout@v3
-      - name: Clone GitHub Action Repository
-        run: |
-             git clone https://github.com/jscrambler/jscrambler-github-action
-      - name: Publish GitHub Action
-        run: |
-             cd jscrambler-github-action
-             gh auth setup-git
-             # Update Jscrambler version and build
-             PACKAGE_VERSION=${GITHUB_REF_NAME:1}
-             echo $(jq ".dependencies.jscrambler=\"${PACKAGE_VERSION}\" | .version=\"${PACKAGE_VERSION}\"" package.json) > new-package.json
-             cp new-package.json package.json
-             git add package.json
-             git config user.name "${COMMIT_AUTHOR_NAME}"
-             git config user.email "${COMMIT_AUTHOR_EMAIL}"
-             git commit -m "${GITHUB_REF_NAME}"
-             # Prepare release
-             git tag "${GITHUB_REF_NAME}"
-             git push && git push --tags
-             # Release
-             gh release create "${GITHUB_REF_NAME}"
+        with:
+          repository: jscrambler/jscrambler-github-action
+      - uses: olegtarasov/get-tag@v2.1.2
+        id: tagName
+      - name: Update Jscrambler CLI Version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: package.json
+          field: dependencies.jscrambler
+          value: ${{ steps.tagName.outputs.tag }}
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Bump Jscrambler to ${{ steps.tagName.outputs.tag }}
+          commit_user_name: Jscrambler
+          commit_user_email: code@jscrambler.com
+          commit_author: Jscrambler <code@jscrambler.com>
+          tagging_message: ${{ steps.tagName.outputs.tag }}
