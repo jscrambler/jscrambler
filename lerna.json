@@ -6,5 +6,10 @@
   "npmClientArgs": [
     "--legacy-peer-deps"
   ],
+  "command": {
+    "publish": {
+      "forcePublish": true
+    }
+  },
   "version": "6.2.9"
 }
