@@ -6,15 +6,20 @@ on:
       - '*'
 
 jobs:
-  publish_github_action:
+  publish_code_integrity_github_action:
     runs-on: ubuntu-latest
-    name: Publish Jscrambler GitHub Action
-    environment: production
+    name: Publish Jscrambler Code Integrity GitHub Action
     steps:
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v1
+        with:
+          application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
+          application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
       - uses: actions/checkout@v3
         with:
           repository: jscrambler/jscrambler-github-action
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ steps.get_workflow_token.outputs.token }}
       - uses: olegtarasov/get-tag@v2.1.2
         id: tagName
       - name: Update Jscrambler CLI Version
