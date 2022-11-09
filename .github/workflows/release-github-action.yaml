@@ -22,7 +22,8 @@ jobs:
         with:
           file: package.json
           field: dependencies.jscrambler
-          value: ${{ steps.tagName.outputs.tag }}
+          # value: ${{ steps.tagName.outputs.tag }}
+          value: 6.2.9
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Bump Jscrambler to ${{ steps.tagName.outputs.tag }}
