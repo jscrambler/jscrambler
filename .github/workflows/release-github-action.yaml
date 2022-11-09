@@ -1,4 +1,4 @@
-name: Release Github Action
+name: Release Code Integrity Github Actions
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   publish_code_integrity_github_action:
     runs-on: ubuntu-latest
-    name: Publish Jscrambler Code Integrity GitHub Action
+    name: Publish Code Integrity GitHub Actions
     steps:
       - name: Get Token
         id: get_workflow_token
@@ -18,7 +18,7 @@ jobs:
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
       - uses: actions/checkout@v3
         with:
-          repository: jscrambler/jscrambler-github-action
+          repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
       - uses: olegtarasov/get-tag@v2.1.2
         id: tagName
