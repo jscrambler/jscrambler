@@ -11,7 +11,7 @@ jobs:
     name: Publish Jscrambler GitHub Action
     environment: production
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
