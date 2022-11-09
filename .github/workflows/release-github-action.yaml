@@ -3,7 +3,7 @@ name: Release Github Action
 on:
   push:
     tags:
-      - '*'
+      - v*
 
 jobs:
   publish_code_integrity_github_action:
