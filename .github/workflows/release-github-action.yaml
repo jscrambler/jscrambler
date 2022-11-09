@@ -33,4 +33,3 @@ jobs:
         with:
           commit_message: Bump Jscrambler to ${{ steps.tagName.outputs.tag }}
           tagging_message: ${{ steps.tagName.outputs.tag }}
-          push_options: --force
