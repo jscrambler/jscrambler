@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish Jscrambler GitHub Action
     environment: production
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
           repository: jscrambler/jscrambler-github-action
+          token: ${{ secrets.GH_TOKEN }}
       - uses: olegtarasov/get-tag@v2.1.2
         id: tagName
       - name: Update Jscrambler CLI Version
