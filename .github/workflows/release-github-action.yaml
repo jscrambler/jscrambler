@@ -20,16 +20,17 @@ jobs:
         with:
           repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
-      - uses: olegtarasov/get-tag@v2.1.2
-        id: tagName
+      - name: Parse Tag
+        id: get_version
+        uses: battila7/get-version-action@v2
       - name: Update Jscrambler CLI Version
         uses: jossef/action-set-json-field@v2.1
         with:
           file: package.json
           field: dependencies.jscrambler
-          value: ${{ steps.tagName.outputs.tag }}
-          # value: 6.2.8
+          value: ${{ steps.get_version.outputs.version-without-v }}
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Bump Jscrambler to ${{ steps.tagName.outputs.tag }}
+          commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           tagging_message: ${{ steps.tagName.outputs.tag }}
+          push_options: '--force'
