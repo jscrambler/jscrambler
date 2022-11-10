@@ -28,8 +28,7 @@ jobs:
         with:
           file: package.json
           field: dependencies.jscrambler
-          # value: ${{ steps.get_version.outputs.version-without-v }}
-          value: 6.2.8
+          value: ${{ steps.get_version.outputs.version-without-v }}
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
