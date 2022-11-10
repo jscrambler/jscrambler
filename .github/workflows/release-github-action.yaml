@@ -6,9 +6,9 @@ on:
       - v*
 
 jobs:
-  publish_code_integrity_github_action:
+  tag_code_integrity_github_action:
     runs-on: ubuntu-latest
-    name: Publish Code Integrity GitHub Actions
+    name: Tag Code Integrity GitHub Actions
     steps:
       - name: Get Token
         id: get_workflow_token
