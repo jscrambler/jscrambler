@@ -35,4 +35,3 @@ jobs:
           commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           tagging_message: ${{ steps.get_version.outputs.version }}
           push_options: '--force'
-          skip_dirty_check: false
