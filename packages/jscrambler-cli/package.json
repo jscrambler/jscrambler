@@ -21,7 +21,6 @@
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
     "watch": "grunt watch",
-    "postpublish": "printf \"\\033[91m** IMPORTANT:  PUBLISH Code Integrity GitHub Action **\\033[0m - https://github.com/jscrambler/code-integrity-actions/releases\n\n\"",
     "prepublish": "npm run build"
   },
   "engines": {
