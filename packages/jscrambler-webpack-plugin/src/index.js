@@ -123,6 +123,12 @@ class JscramblerPlugin {
     }
   }
 
+  assertEmitHook() {
+    if (this.options.obfuscationHook === OBFUSCATION_HOOKS.PROCESS_ASSETS) {
+      throw new Error(`obfuscation hook ${this.options.obfuscationHook} is only compatible with webpack version 5 or higher. Change to: ${OBFUSCATION_HOOKS.EMIT} (default)`)
+    }
+  }
+
   /**
    * The hooks setup depend on the webpack version
    *  - <= v3 use compiler.plugin
@@ -136,15 +142,15 @@ class JscramblerPlugin {
     // noinspection FallThroughInSwitchStatementJS
     switch (webpackMajorVersion) {
       case 3:
+        this.assertEmitHook();
+
         return (arg) => compiler.plugin(this.options.obfuscationHook, (compilation, callback) => {
           compilation.updateJscramblerObfuscationAsset = this.updateJscramblerObfuscationAsset.bind(this, undefined);
           arg(compilation, callback);
         });
 
       case 4:
-        if (this.options.obfuscationHook === OBFUSCATION_HOOKS.PROCESS_ASSETS) {
-          throw new Error(`obfuscation hook ${this.options.obfuscationHook} is only compatible with webpack version 5 or higher. Change to: ${OBFUSCATION_HOOKS.EMIT} (default)`)
-        }
+        this.assertEmitHook();
 
       case 5:
       default:
