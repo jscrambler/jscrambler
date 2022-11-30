@@ -49,6 +49,7 @@ module.exports = {
       ignoreFile: resolve(__dirname, '.jscramblerignore'), // optional, defaults to no ignore file
       params: [], 
       obfuscationLevel: 'bundle' // optional. Available options are: bundle (default) or module
+      obfuscationHook: 'emit' // optional. Available options are: emit (default) or processAssets  
       // and other jscrambler configurations
     })
   ]
@@ -68,3 +69,9 @@ You can obfuscation **the entire bundle (default way)** or **the modules** insid
 **Early versions of NativeScript** mobile framework (<= 6) are a good example of this behaviour, and in order to protect those NativeScript Applications with Jscrambler you must set **obfuscationLevel** to **module**.
 
 **Note:** Ofuscation level module is not compatible with source maps.
+
+## Obfuscation Hook
+
+There are some webpack plugins, such as [webpack-subresources-integrity](https://www.npmjs.com/package/webpack-subresource-integrity), that should run after the obfuscation step. If those plugin are taking advantage of the new `processAssets` compilation hook (available on webpack 5 and onwards) to perform their tasks, that creates an incompatibility with the `jscrambler-webpack-plugin`. 
+
+If your use case matches the one describe above, please set `obfuscationHook: processAssets` **(Only for webpack >= 5)**

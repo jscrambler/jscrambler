@@ -10,9 +10,14 @@ const {SourceMapSource} = require('webpack-sources');
 const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
+const PLUGIN_NAME = 'JscramblerPlugin';
 const OBFUSCATION_LEVELS = {
   MODULE: 'module',
   BUNDLE: 'bundle'
+}
+const OBFUSCATION_HOOKS = {
+  EMIT: 'emit',
+  PROCESS_ASSETS: 'processAssets'
 }
 
 class JscramblerPlugin {
@@ -22,6 +27,7 @@ class JscramblerPlugin {
 
     this.options = Object.assign({
       excludeList: [],
+      obfuscationHook: 'emit',
       obfuscationLevel: OBFUSCATION_LEVELS.BUNDLE
     }, options, {
       clientId: 2,
@@ -29,6 +35,10 @@ class JscramblerPlugin {
 
     if(![OBFUSCATION_LEVELS.BUNDLE, OBFUSCATION_LEVELS.MODULE].includes(this.options.obfuscationLevel)) {
       throw new Error(`Unknown obfuscation level ${this.options.obfuscationLevel}. Options: ${OBFUSCATION_LEVELS.BUNDLE} or ${OBFUSCATION_LEVELS.MODULE}`)
+    }
+
+    if(![OBFUSCATION_HOOKS.EMIT, OBFUSCATION_HOOKS.PROCESS_ASSETS].includes(this.options.obfuscationHook)) {
+      throw new Error(`Unknown obfuscation hook ${this.options.obfuscationHook}. Options: ${OBFUSCATION_HOOKS.EMIT} or ${OBFUSCATION_HOOKS.PROCESS_ASSETS}`)
     }
 
     this.instrument = instrument;
@@ -43,24 +53,28 @@ class JscramblerPlugin {
     this.processSourceMaps = this.processSourceMaps.bind(this);
 
     if (client.config.filesSrc || client.config.filesDest || options.filesSrc || options.filesDest) {
-      console.warn('(JscramblerPlugin) Options *filesSrc* and *filesDest* were ignored. Webpack entry and output fields will be used instead!')
+      console.warn(`(${PLUGIN_NAME}) Options *filesSrc* and *filesDest* were ignored. Webpack entry and output fields will be used instead!`)
     }
 
     if (typeof this.options.ignoreFile === 'string') {
       if (basename(this.options.ignoreFile) !== JSCRAMBLER_IGNORE) {
-        throw new Error('(JscramblerPlugin) *ignoreFile* option must point to .jscramblerignore file');
+        throw new Error(`(${PLUGIN_NAME}) *ignoreFile* option must point to .jscramblerignore file`);
       }
       this.ignoreFileSource = {content: readFileSync(this.options.ignoreFile, { encoding: 'utf-8'}), filename: JSCRAMBLER_IGNORE};
     }
 
     if (this.options.obfuscationLevel === OBFUSCATION_LEVELS.MODULE) {
       if (sourceMaps) {
-        throw new Error(`(JscramblerPlugin) obfuscationLevel=${this.options.obfuscationLevel} is not compatible with source maps generation.`)
+        throw new Error(`(${PLUGIN_NAME}) obfuscationLevel=${this.options.obfuscationLevel} is not compatible with source maps generation.`)
       }
       if (!Array.isArray(this.options.chunks)) {
-        throw new Error(`(JscramblerPlugin) when obfuscationLevel=${this.options.obfuscationLevel} you must specify the chunks list`);
+        throw new Error(`(${PLUGIN_NAME}) when obfuscationLevel=${this.options.obfuscationLevel} you must specify the chunks list`);
       }
-      console.log('(JscramblerPlugin) Obfuscation Level set to module')
+      console.log(`(${PLUGIN_NAME}) Obfuscation Level set to module`)
+    }
+
+    if (sourceMaps && this.options.obfuscationHook === OBFUSCATION_HOOKS.PROCESS_ASSETS) {
+      throw new Error(`(${PLUGIN_NAME}) source-maps are not compatible with obfuscationHook=${this.options.obfuscationHook}`)
     }
   }
 
@@ -84,6 +98,89 @@ class JscramblerPlugin {
     });
   }
 
+  getWebpackMajorVersion(compiler) {
+    if (!compiler.hooks) {
+      return 3;
+    }
+
+    return compiler.webpack && typeof compiler.webpack.version === 'string' ? parseInt(compiler.webpack.version.split('.')[0], 10) : 4;
+  }
+
+  updateJscramblerObfuscationAsset(compilation, assets, filename, newContent) {
+    if (compilation && typeof compilation.updateAsset === 'function' && compilation.compiler) {
+      compilation.updateAsset(filename, new compilation.compiler.webpack.sources.RawSource(newContent));
+    } else if (newContent instanceof SourceMapSource) {
+      assets[filename] = newContent;
+    } else {
+      assets[filename] = {
+        source() {
+          return newContent;
+        },
+        size() {
+          return newContent.length;
+        }
+      };
+    }
+  }
+
+  assertEmitHook() {
+    if (this.options.obfuscationHook === OBFUSCATION_HOOKS.PROCESS_ASSETS) {
+      throw new Error(`obfuscation hook ${this.options.obfuscationHook} is only compatible with webpack version 5 or higher. Change to: ${OBFUSCATION_HOOKS.EMIT} (default)`)
+    }
+  }
+
+  /**
+   * The hooks setup depend on the webpack version
+   *  - <= v3 use compiler.plugin
+   *  - v4 or if sourcemaps it set use compiler.hooks.emit
+   *  - >= v5 use processAssets hook
+   * @param compiler
+   * @returns {function(*): *}
+   */
+  attachHooks(compiler) {
+    const webpackMajorVersion = this.getWebpackMajorVersion(compiler);
+    // noinspection FallThroughInSwitchStatementJS
+    switch (webpackMajorVersion) {
+      case 3:
+        this.assertEmitHook();
+
+        return (arg) => compiler.plugin(this.options.obfuscationHook, (compilation, callback) => {
+          compilation.updateJscramblerObfuscationAsset = this.updateJscramblerObfuscationAsset.bind(this, undefined);
+          arg(compilation, callback);
+        });
+
+      case 4:
+        this.assertEmitHook();
+
+      case 5:
+      default:
+        if (this.options.obfuscationHook === OBFUSCATION_HOOKS.EMIT || sourceMaps /* fixme on >= v5 */ || Number.isNaN(webpackMajorVersion) || webpackMajorVersion === 4) {
+          return (arg) => compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+            compilation.updateJscramblerObfuscationAsset = this.updateJscramblerObfuscationAsset.bind(this, undefined);
+            arg(compilation, callback);
+          });
+        }
+
+        return (arg) =>
+            compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) =>
+                compilation.hooks.processAssets.tapAsync(
+                    {
+                      name: PLUGIN_NAME,
+                      stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE
+                    },
+                    (assets, callback) => {
+                      const chunks = [];
+                      Object.keys(assets).forEach((pathname) => {
+                        if (/\.(js|html|htm)$/i.test(pathname)) {
+                          chunks.push({files: [pathname], name: pathname.substring(0, pathname.lastIndexOf('.'))});
+                        }
+                      });
+                      arg({chunks, assets, compiler: compilation.compiler, updateJscramblerObfuscationAsset: this.updateJscramblerObfuscationAsset.bind(this, compilation)}, callback);
+                    })
+            );
+    }
+  }
+
   apply(compiler) {
     const enable =
       this.options.enable !== undefined ? this.options.enable : true;
@@ -92,11 +189,7 @@ class JscramblerPlugin {
       return;
     }
 
-    const emitFn = compiler.hooks
-      ? (arg) => compiler.hooks.emit.tapAsync("JscramblerPlugin", arg)
-      : (arg) => compiler.plugin("emit", arg); // compatibility with webpack <=3
-
-    emitFn((compilation, callback) => {
+    this.attachHooks(compiler)((compilation, callback) => {
       const sources = [];
       compilation.chunks.forEach(chunk => {
         if (
@@ -184,21 +277,14 @@ class JscramblerPlugin {
       const sm = JSON.parse(result.content);
 
       if (compilation.assets[sourceFilename]) {
-        compilation.assets[`${sourceFilename}.map`] = {
-          source() {
-            return result.content;
-          },
-          size() {
-            return result.content.length;
-          }
-        };
+        compilation.updateJscramblerObfuscationAsset(compilation.assets, `${sourceFilename}.map`, result.content);
 
         const content = compilation.assets[sourceFilename].source();
-        compilation.assets[sourceFilename] = new SourceMapSource(
-          content,
-          sourceFilename,
-          sm
-        );
+        compilation.updateJscramblerObfuscationAsset(compilation.assets, sourceFilename, new SourceMapSource(
+            content,
+            sourceFilename,
+            sm
+        ));
       }
     }
 
@@ -238,14 +324,7 @@ class JscramblerPlugin {
 
     for(const [chunkFileName, treeOrCode] of protectTreesOrCodeMap.entries()) {
       const bundleCode = typeof treeOrCode === 'string' ? treeOrCode : astring.generate(treeOrCode, {indent: ""});
-      compilation.assets[chunkFileName] = {
-        source() {
-          return bundleCode;
-        },
-        size() {
-          return bundleCode.length;
-        }
-      };
+      compilation.updateJscramblerObfuscationAsset(compilation.assets, chunkFileName, bundleCode);
     }
 
     // turn off source-maps download if jscramblerOp is instrumentAndDowload
