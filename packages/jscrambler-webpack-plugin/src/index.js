@@ -160,7 +160,7 @@ class JscramblerPlugin {
                 compilation.hooks.processAssets.tapAsync(
                     {
                       name: PLUGIN_NAME,
-                      stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
+                      stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE
                     },
                     (assets, callback) => {
                       const chunks = [];
