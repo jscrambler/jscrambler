@@ -169,12 +169,7 @@ class JscramblerPlugin {
                       stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE
                     },
                     (assets, callback) => {
-                      const chunks = [];
-                      Object.keys(assets).forEach((pathname) => {
-                        if (/\.(js|html|htm)$/i.test(pathname)) {
-                          chunks.push({files: [pathname], name: pathname.substring(0, pathname.lastIndexOf('.'))});
-                        }
-                      });
+                      const chunks = Array.from(compilation.chunks.values());
                       arg({chunks, assets, compiler: compilation.compiler, updateJscramblerObfuscationAsset: this.updateJscramblerObfuscationAsset.bind(this, compilation)}, callback);
                     })
             );
