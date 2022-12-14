@@ -44,12 +44,12 @@ module.exports = {
   },
   plugins: [
     new JscramblerWebpack({
-      enable: true, // optional, defaults to true
-      chunks: ['protected'], // optional, defaults to all chunks
-      ignoreFile: resolve(__dirname, '.jscramblerignore'), // optional, defaults to no ignore file
+      enable: true, // OPTIONAL, defaults to true
+      chunks: ['protected'], // OPTIONAL, defaults to all chunks
+      ignoreFile: resolve(__dirname, '.jscramblerignore'), // OPTIONAL, defaults to no ignore file
       params: [], 
-      obfuscationLevel: 'bundle' // optional. Available options are: bundle (default) or module
-      obfuscationHook: 'emit' // optional. Available options are: emit (default) or processAssets  
+      obfuscationLevel: 'bundle', // OPTIONAL. Available options are: bundle (default) or module
+      obfuscationHook: 'emit' // OPTIONAL. Available options are: emit (default) or processAssets  
       // and other jscrambler configurations
     })
   ]
