@@ -489,7 +489,7 @@ export default {
       const sourcesErrors = [];
 
       protection.sources.forEach(s => {
-        if (s.errorMessages && s.errorMessages.length > 0) {
+        if (s.isSource && s.errorMessages && s.errorMessages.length > 0) {
           sourcesErrors.push(
             ...s.errorMessages.map(e => ({
               filename: s.filename,
