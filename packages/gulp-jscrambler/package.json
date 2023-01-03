@@ -1,7 +1,7 @@
 {
   "name": "gulp-jscrambler",
   "description": "Obfuscate your source files using the Jscrambler API.",
-  "version": "6.4.4",
+  "version": "6.4.5",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": "Jscrambler <code@jscrambler.com>",
   "repository": {
@@ -31,7 +31,7 @@
     "mocha": "^1.21.5"
   },
   "dependencies": {
-    "jscrambler": "^6.4.4",
+    "jscrambler": "^6.4.5",
     "lodash.defaults": "^4.0.1",
     "plugin-error": "^1.0.1",
     "through2": "^2.0.3",
