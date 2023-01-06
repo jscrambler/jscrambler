@@ -94,6 +94,7 @@ function buildFinalConfig(configPathOrObject) {
 export default {
   Client: JscramblerClient,
   config,
+  queries,
   generateSignedParams,
   /**
    * Remove and Add application sources
