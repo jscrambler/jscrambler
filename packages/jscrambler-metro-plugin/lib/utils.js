@@ -8,6 +8,9 @@ const {
   JSCRAMBLER_END_ANNOTATION,
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_SELF_DEFENDING,
+  JSCRAMBLER_ANTI_TAMPERING,
+  JSCRAMBLER_ANTI_TAMPERING_MODE_SKL,
+  JSCRAMBLER_ANTI_TAMPERING_MODE_RCK,
   JSCRAMBLER_TOLERATE_BENIGN_POISONING,
   JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION,
   BUNDLE_OUTPUT_CLI_ARG,
@@ -279,6 +282,43 @@ function injectTolerateBegninPoisoning(config) {
   }
 }
 
+/**
+ * @param {object} config
+ * @param {string} processedMetroBundle
+ * @returns {{addShowSource: boolean, requireStartAtFirstColumn: boolean}}
+ */
+function handleAntiTampering(config, processedMetroBundle) {
+  let addShowSource = false;
+  let requireStartAtFirstColumn = false
+  if (Array.isArray(config.params)) {
+    const antiTampering = config.params.find(
+      (param) => param.name === JSCRAMBLER_ANTI_TAMPERING
+    );
+    if (antiTampering) {
+      antiTampering.options = antiTampering.options || {};
+      antiTampering.options.mode = antiTampering.options.mode || [JSCRAMBLER_ANTI_TAMPERING_MODE_RCK, JSCRAMBLER_ANTI_TAMPERING_MODE_SKL];
+      if (config.hermesEnabled) {
+        addShowSource = true;
+        if (
+          Array.isArray(antiTampering.options.mode) &&
+          antiTampering.options.mode.includes(JSCRAMBLER_ANTI_TAMPERING_MODE_SKL)
+        ) {
+          console.log(`info Jscrambler Anti-Tampering Mode SKL can not be use in hermes engine. RCK mode was SET.`);
+          antiTampering.options.mode = [JSCRAMBLER_ANTI_TAMPERING_MODE_RCK];
+        }
+      }
+
+      if (antiTampering.options.mode.includes(JSCRAMBLER_ANTI_TAMPERING_MODE_SKL)) {
+        const singleLineModule = processedMetroBundle.match(RegExp(`\n\\S+${JSCRAMBLER_BEG_ANNOTATION}`, 'm'));
+        if (singleLineModule !== null) {
+          requireStartAtFirstColumn = true;
+        }
+      }
+    }
+  }
+  return {addShowSource, requireStartAtFirstColumn};
+}
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
@@ -291,5 +331,6 @@ module.exports = {
   addBundleArgsToExcludeList,
   handleExcludeList,
   injectTolerateBegninPoisoning,
+  handleAntiTampering,
   wrapCodeWithTags
 };

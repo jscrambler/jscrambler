@@ -29,6 +29,7 @@ const {
   addBundleArgsToExcludeList,
   handleExcludeList,
   injectTolerateBegninPoisoning,
+  handleAntiTampering,
   wrapCodeWithTags
 } = require('./utils');
 
@@ -154,6 +155,8 @@ async function obfuscateBundle(
     process.exit(-1);
   }
 
+  const {addShowSource, requireStartAtFirstColumn} = handleAntiTampering(config, processedMetroBundle);
+
   const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
 
   const jscramblerOp = !!config.instrument
@@ -183,7 +186,7 @@ async function obfuscateBundle(
       c.indexOf(JSCRAMBLER_END_ANNOTATION),
       c.length
     );
-    return acc + JSCRAMBLER_BEG_ANNOTATION + obfuscatedCode + tillCodeEnd;
+    return `${acc}${JSCRAMBLER_BEG_ANNOTATION}${addShowSource ? '"show source";' : ''}${requireStartAtFirstColumn ? '\n' : ''}${obfuscatedCode}${tillCodeEnd}`;
   }, '');
 
   await writeFile(bundlePath, stripJscramblerTags(finalBundle));
@@ -244,7 +247,7 @@ function validateModule(modulePath, config, projectRoot) {
 /**
  * Add serialize.processModuleFilter option to metro and attach listener to beforeExit event.
  * *config.fileSrc* and *config.filesDest* will be ignored.
- * @param {object} _config
+ * @param {{enable: boolean, hermesEnabled: boolean }} _config
  * @param {string} [projectRoot=process.cwd()]
  * @returns {{serializer: {processModuleFilter(*): boolean}}}
  */
