@@ -23,6 +23,7 @@ const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
   /* optional */
   {
     enable: true,
+    enabledHermes: false, // set if you are using hermes engine
     ignoreFile: resolve(__dirname, '.jscramblerignore'),
     params: [
       {
