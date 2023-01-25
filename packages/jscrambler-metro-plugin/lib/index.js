@@ -247,7 +247,7 @@ function validateModule(modulePath, config, projectRoot) {
 /**
  * Add serialize.processModuleFilter option to metro and attach listener to beforeExit event.
  * *config.fileSrc* and *config.filesDest* will be ignored.
- * @param {{enable: boolean, hermesEnabled: boolean }} _config
+ * @param {{enable: boolean, enabledHermes: boolean }} _config
  * @param {string} [projectRoot=process.cwd()]
  * @returns {{serializer: {processModuleFilter(*): boolean}}}
  */

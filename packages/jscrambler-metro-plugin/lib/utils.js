@@ -297,7 +297,7 @@ function handleAntiTampering(config, processedMetroBundle) {
     if (antiTampering) {
       antiTampering.options = antiTampering.options || {};
       antiTampering.options.mode = antiTampering.options.mode || [JSCRAMBLER_ANTI_TAMPERING_MODE_RCK, JSCRAMBLER_ANTI_TAMPERING_MODE_SKL];
-      if (config.hermesEnabled) {
+      if (config.enabledHermes) {
         addShowSource = true;
         if (
           Array.isArray(antiTampering.options.mode) &&
