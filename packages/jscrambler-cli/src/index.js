@@ -314,19 +314,22 @@ export default {
         client,
         applicationId
       ).catch(e => {
-        if (![
-          HTTP_STATUS_CODES.NOT_FOUND,
-          HTTP_STATUS_CODES.FORBIDDEN,
-          HTTP_STATUS_CODES.SERVICE_UNAVAILABLE
-        ].includes(e.statusCode)) throw e;
-        else if (HTTP_STATUS_CODES.NOT_FOUND === e.statusCode) { // if applicationProfiling is not found then then it hasn't been done yet
-          // profiling cannot be done with automatic mode if it has never been done before
-          if (profilingDataMode === 'automatic') {
-            throw new Error('You can not use the automatic mode without previous profiling having been done.');
+        if (typeof profilingDataMode === 'string' && profilingDataMode !== 'off') {
+          switch (e.statusCode) {
+            case HTTP_STATUS_CODES.FORBIDDEN:
+              throw new Error(`No ${profilingDataMode} profiling feature in your plan. Please set profilingDataMode to "off" or contact the Jscrambler Support.`);
+            case HTTP_STATUS_CODES.NOT_FOUND:
+              if (profilingDataMode === 'automatic') {
+                throw new Error('You can not use the automatic mode without previous profiling having been done.');
+              }
+              break;
+            case HTTP_STATUS_CODES.SERVICE_UNAVAILABLE:
+              if (profilingDataMode === 'automatic') {
+                throw e
+              }
           }
         }
       });
-
 
       if (appProfiling && removeProfilingData) {
         await this.deleteProfiling(client, appProfiling.data.id);
