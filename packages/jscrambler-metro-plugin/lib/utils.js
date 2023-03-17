@@ -232,8 +232,8 @@ const addBundleArgsToExcludeList = (chunk, excludeList) => {
   const m = regex.exec(chunk);
   if (Array.isArray(m) && m.length > 1) {
     for (const arg of m[m.length - 1].split(",")) {
-      if (!excludeList.includes(arg)) {
-        excludeList.push(arg);
+      if (!excludeList.includes(arg.trim())) {
+        excludeList.push(arg.trim());
       }
     }
     return;
