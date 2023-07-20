@@ -1,4 +1,4 @@
-import glob from 'glob';
+import {globSync} from 'glob';
 import fs from 'fs';
 
 /**
@@ -7,7 +7,7 @@ import fs from 'fs';
  * @returns {string[]}
  */
 export function getMatchedFiles(pattern) {
-  let matchedFiles = glob.sync(pattern, {
+  let matchedFiles = globSync(pattern, {
     dot: true
   });
 
