@@ -33,7 +33,7 @@
     "core-js": "^3.16.4",
     "filesize-parser": "1.5.0",
     "fs-extra": "^10.1.0",
-    "glob": "^10.3.3",
+    "glob": "^8.1.0",
     "http-proxy-agent": "^4.0.1",
     "jszip": "^3.7.1",
     "lodash.clone": "^4.0.3",

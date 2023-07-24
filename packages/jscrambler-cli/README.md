@@ -35,6 +35,8 @@ Please make sure you install the right version, otherwise some functionalities m
 
 ## Installation
 
+Jscrambler **requires node v12.17.0 or higher**
+
 On your project:
 
 ```js
