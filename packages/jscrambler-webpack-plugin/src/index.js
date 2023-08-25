@@ -20,6 +20,19 @@ const OBFUSCATION_HOOKS = {
   PROCESS_ASSETS: 'processAssets'
 }
 
+function chunkMatchesFilter(chunk, filter) {
+  if (typeof filter === 'string') {
+    return filter === chunk.name;
+  }
+  if (typeof filter === 'function') {
+    return filter(chunk);
+  }
+  if (filter instanceof RegExp) {
+    return filter.exec(chunk.name) !== null;
+  }
+  throw new Error(`Unsupported chunk filtering: value was ${filter} (expected string, RegExp or function)`);
+}
+
 class JscramblerPlugin {
   constructor(_options) {
     let options = _options;
@@ -189,7 +202,7 @@ class JscramblerPlugin {
       compilation.chunks.forEach(chunk => {
         if (
           Array.isArray(this.options.chunks) &&
-          !this.options.chunks.includes(chunk.name)
+          !this.options.chunks.some(filter => chunkMatchesFilter(chunk, filter))
         ) {
           return;
         }
