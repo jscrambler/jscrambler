@@ -57,7 +57,9 @@ const protectionFields = {
   size: 1,
   startedAt: 1,
   finishedAt: 1,
-  transformedSize: 1
+  transformedSize: 1,
+  hasForcedDateLock: 1,
+  parameters: 1,
 };
 
 const deprecationFields = {
