@@ -472,6 +472,9 @@ export default {
       if (protection.growthWarning) {
         console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
       }
+      if (protection.hasForcedDateLock) {
+        console.warn(`Warning: Since your plan is a Trial, your protected files will stop working on ${protection.parameters.find(p => p.name === 'dateLock' && p.options.endDate).options.endDate}`)
+      }
       if (debug) {
         console.log('Finished protecting');
       }
