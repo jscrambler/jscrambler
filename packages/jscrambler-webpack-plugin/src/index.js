@@ -189,6 +189,20 @@ class JscramblerPlugin {
     }
   }
 
+  /**
+   * @param {string} filename source map or matching source code file name
+   * @param {object} compilation
+   * @returns {{sourceMapContent?: string, sourceMapFilename: string}}
+   */
+  getSourceMapInfo(filename, compilation) {
+    let sourceMapFilename = `${filename}.map`;
+    if (/\.(js.map)$/.test(filename)) {
+      sourceMapFilename = filename;
+    }
+    const sourceMap = compilation.assets[sourceMapFilename];
+    return {sourceMapContent: sourceMap && sourceMap.source(), sourceMapFilename};
+  }
+
   apply(compiler) {
     const enable =
       this.options.enable !== undefined ? this.options.enable : true;
@@ -231,12 +245,12 @@ class JscramblerPlugin {
             }
           }
 
-          if ((this.instrument || sourceMaps) && /\.(js.map)$/.test(filename)) {
-            const sourceMapContent = compilation.assets[filename].source();
-            if (sourceMapContent) {
+          if ((this.instrument || sourceMaps)) {
+            const { sourceMapContent, sourceMapFilename} = this.getSourceMapInfo(filename, compilation);
+            if (sourceMapContent && sources.every((filename) => filename !== sourceMapFilename)) {
               sources.push({
                 content: sourceMapContent,
-                filename
+                filename: sourceMapFilename
               });
             }
           }
