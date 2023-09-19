@@ -208,6 +208,7 @@ class JscramblerPlugin {
       this.options.enable !== undefined ? this.options.enable : true;
 
     if (!enable) {
+      console.warn(`${PLUGIN_NAME} is disabled!`)
       return;
     }
 
@@ -258,6 +259,7 @@ class JscramblerPlugin {
       });
 
       if (sources.length > 0) {
+        console.log(`${PLUGIN_NAME}: sent ${sources.filter(({filename}) => !filename.endsWith('.map')).length} file(s) for protection`);
         if (this.ignoreFileSource) {
           sources.push(this.ignoreFileSource);
         }
@@ -278,7 +280,10 @@ class JscramblerPlugin {
           )
         )
           .then(protectionId =>
-            this.processResult(protectionId, compilation, callback)
+            this.processResult(protectionId, compilation, (...args) => {
+              console.log(`${PLUGIN_NAME}: protection ${protectionId} ended`);
+              callback(...args);
+            })
           )
           .catch(err => {
             callback(err);
@@ -351,6 +356,7 @@ class JscramblerPlugin {
 
     // turn off source-maps download if jscramblerOp is instrumentAndDowload
     if (!this.instrument && sourceMaps) {
+      console.log(`${PLUGIN_NAME}: downloading source-maps`);
       client.downloadSourceMaps(
         Object.assign({}, client.config, {stream: false, protectionId}),
         res => this.processSourceMaps(res, compilation, callback)
