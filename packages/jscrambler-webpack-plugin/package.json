@@ -3,6 +3,7 @@
   "version": "6.4.18",
   "description": "A webpack plugin to protect your generated bundle using Jscrambler",
   "main": "lib/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "prepare": "npm run build",
     "build": "babel src --out-dir lib"
@@ -33,5 +34,6 @@
     "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0"
-  }
+  },
+  "files": ["lib", "index.d.ts"]
 }
