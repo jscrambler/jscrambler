@@ -396,8 +396,9 @@ export default {
       );
       const updateApplicationRes = await this.updateApplication(
         client,
+        applicationUpdate,
+        undefined,
         applicationId,
-        applicationUpdate
       );
       if (debug) {
         console.log('Finished updating parameters of protection');
@@ -1048,8 +1049,8 @@ export default {
     return client.post('/application', mutation);
   },
   //
-  async updateApplication(client, applicationId, applicationData, fragments) {
-    const mutation = await mutations.updateApplication(applicationId, applicationData, fragments);
+  async updateApplication(client, applicationData, fragments, applicationId) {
+    const mutation = await mutations.updateApplication(applicationData, fragments, applicationId);
     return client.post('/application', mutation);
   },
   //

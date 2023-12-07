@@ -123,10 +123,13 @@ const updateApplicationDefaultFragments = `
 `;
 
 export function updateApplication(
-  applicationId,
   applicationData,
-  fragments = updateApplicationDefaultFragments
+  fragments = updateApplicationDefaultFragments,
+  applicationId = undefined,
 ) {
+  const appId = applicationId ?? applicationData._id;
+  delete applicationData._id;
+
   return {
     query: `
       mutation updateApplication ($applicationId: String!, $data: ApplicationUpdate!) {
@@ -136,7 +139,7 @@ export function updateApplication(
       }
     `,
     params: {
-      applicationId,
+      applicationId: appId,
       data: applicationData
     }
   };
