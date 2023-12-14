@@ -86,7 +86,6 @@ fragment TypeRef on __Type {
   };
 
   const res = await client.get('/application', query);
-
   const __type = res.data.__type;
 
   typeCache[jscramblerVersion][__type.name] = __type;
@@ -111,7 +110,8 @@ export async function query(client, name) {
 }
 
 export async function intoObjectType(client, obj, name) {
-  const fields = (await type(client, name)).fields;
+  const resultType = (await type(client, name));
+  const fields = resultType.fields ?? resultType.inputFields;
 
   const finalObj = {};
   const keys = Object.keys(obj);

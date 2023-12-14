@@ -347,7 +347,6 @@ export default {
     }
 
     const updateData = {
-      _id: applicationId,
       debugMode: !!debugMode,
       tolerateMinification,
       codeHardeningThreshold
@@ -393,11 +392,13 @@ export default {
       const applicationUpdate = await intoObjectType(
         client,
         updateData,
-        'Application'
+        'ApplicationUpdate'
       );
       const updateApplicationRes = await this.updateApplication(
         client,
-        applicationUpdate
+        applicationUpdate,
+        undefined,
+        applicationId,
       );
       if (debug) {
         console.log('Finished updating parameters of protection');
@@ -410,7 +411,6 @@ export default {
       console.log('Creating Application Protection');
     }
 
-    delete updateData._id;
     const protectionOptions = {
       ...updateData,
       bail,
@@ -1049,8 +1049,8 @@ export default {
     return client.post('/application', mutation);
   },
   //
-  async updateApplication(client, application, fragments) {
-    const mutation = await mutations.updateApplication(application, fragments);
+  async updateApplication(client, applicationData, fragments, applicationId) {
+    const mutation = await mutations.updateApplication(applicationData, fragments, applicationId);
     return client.post('/application', mutation);
   },
   //

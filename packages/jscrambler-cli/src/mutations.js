@@ -123,11 +123,12 @@ const updateApplicationDefaultFragments = `
 `;
 
 export function updateApplication(
-  application,
-  fragments = updateApplicationDefaultFragments
+  applicationData,
+  fragments = updateApplicationDefaultFragments,
+  applicationId = undefined,
 ) {
-  const applicationId = application._id;
-  delete application._id;
+  const appId = applicationId ?? applicationData._id;
+  delete applicationData._id;
 
   return {
     query: `
@@ -138,8 +139,8 @@ export function updateApplication(
       }
     `,
     params: {
-      applicationId,
-      data: application
+      applicationId: appId,
+      data: applicationData
     }
   };
 }
