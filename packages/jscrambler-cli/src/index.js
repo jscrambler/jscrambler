@@ -61,16 +61,19 @@ function errorHandler(res) {
 function printSourcesErrors(errors) {
   console.error('Source errors:');
   for (let i = 0; i < Math.min(MAX_PRINTED_ERRORS, errors.length); i ++) {
-    let withLineAndColumn = errors[i].line
+    let sourceErrorsMessage = errors[i].line
       ? ':' + errors[i].line + ':' + errors[i].column + ': '
       : ': ';
-    console.error('- ' + errors[i].filename + withLineAndColumn + errors[i].message);
+    console.error('- ' + errors[i].filename + sourceErrorsMessage + errors[i].message);
   }
+
+  const errorsLeft = errors.length - MAX_PRINTED_ERRORS;
+
   if (errors.length > MAX_PRINTED_ERRORS) {
-    if (errors.length - MAX_PRINTED_ERRORS === 1) {
+    if (errorsLeft === 1) {
       console.error('There is 1 more error.');
     } else {
-      console.error('There are ' + (errors.length - MAX_PRINTED_ERRORS) + ' more errors.');
+      console.error('There are ' + errorsLeft + ' more errors.');
     }
   }
   console.error();
