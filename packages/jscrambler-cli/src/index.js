@@ -60,7 +60,7 @@ function errorHandler(res) {
 
 function printSourcesErrors(errors) {
   console.error('Source errors:');
-  for (let i = 0; i < Math.min(MAX_PRINTED_ERRORS, errors.length); i ++) {
+  for (let i = 0; i < Math.min(MAX_PRINTED_ERRORS, errors.length); i++) {
     let sourceErrorsMessage = errors[i].line
       ? ':' + errors[i].line + ':' + errors[i].column + ': '
       : ': ';
@@ -69,7 +69,7 @@ function printSourcesErrors(errors) {
 
   const errorsLeft = errors.length - MAX_PRINTED_ERRORS;
 
-  if (errors.length > MAX_PRINTED_ERRORS) {
+  if (errorsLeft > 0) {
     if (errorsLeft === 1) {
       console.error('There is 1 more error.');
     } else {
