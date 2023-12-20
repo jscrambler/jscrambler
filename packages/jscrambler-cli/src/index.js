@@ -26,6 +26,7 @@ const APP_URL = 'https://app.jscrambler.com';
 const POLLING_MIN_INTERVAL = 1000;
 const POLLING_MAX_INTERVAL = 10000;
 const INCREASE_POLL_INTERVAL_EVERY = 30000;
+const MAX_PRINTED_ERRORS = 3;
 
 /**
  * Calculate polling interval for protection and instrumentation.
@@ -58,9 +59,24 @@ function errorHandler(res) {
 }
 
 function printSourcesErrors(errors) {
-  console.error('Application sources errors:');
-  console.error(JSON.stringify(errors, null, 2));
-  console.error('');
+  console.error('Source errors:');
+  for (let i = 0; i < Math.min(MAX_PRINTED_ERRORS, errors.length); i++) {
+    let sourceErrorsMessage = errors[i].line
+      ? ':' + errors[i].line + ':' + errors[i].column + ': '
+      : ': ';
+    console.error('- ' + errors[i].filename + sourceErrorsMessage + errors[i].message);
+  }
+
+  const errorsLeft = errors.length - MAX_PRINTED_ERRORS;
+
+  if (errorsLeft > 0) {
+    if (errorsLeft === 1) {
+      console.error('There is 1 more error.');
+    } else {
+      console.error('There are ' + errorsLeft + ' more errors.');
+    }
+  }
+  console.error();
 }
 
 

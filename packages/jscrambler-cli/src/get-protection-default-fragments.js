@@ -69,6 +69,7 @@ const deprecationFields = {
 
 const sourceFields = {
   filename: 1,
+  isSource: 1
 }
 
 const errorMessageFields = {
