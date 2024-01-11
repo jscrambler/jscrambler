@@ -19,7 +19,9 @@
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
     "watch": "grunt watch",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "eslint": "eslint src/",
+    "eslint:fix": "eslint src/ --fix"
   },
   "engines": {
     "node": ">= 6.10.0"

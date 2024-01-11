@@ -4,7 +4,9 @@
   "version": "6.4.21",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "eslint": "eslint tasks/ examples/",
+    "eslint:fix": "pnpm run eslint --fix"
   },
   "author": "Jscrambler <support@jscrambler.com>",
   "contributors": [

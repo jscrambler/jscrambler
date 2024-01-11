@@ -7,6 +7,10 @@
   ],
   "homepage": "https://jscrambler.com",
   "license": "MIT",
+  "scripts": {
+    "eslint": "eslint .",
+    "eslint:fix": "pnpm run eslint --fix"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

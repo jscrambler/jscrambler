@@ -16,7 +16,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "eslint": "eslint .",
+    "eslint:fix": "pnpm run eslint --fix"
   },
   "engines": {
     "node": ">= 0.1"
