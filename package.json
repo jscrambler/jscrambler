@@ -1,5 +1,12 @@
 {
-	"devDependencies": {
-		"lerna": "^2.2.0"
-	}
+  "name": "jscrambler-github-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "Jscrambler <support@jscrambler.com>",
+  "license": "MIT",
+  "engines": {
+    "pnpm": "^8.14.0"
+  },
+  "private": true
 }

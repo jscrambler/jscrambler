@@ -11,12 +11,7 @@
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jscrambler/javascript-jscrambler/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",

@@ -9,7 +9,7 @@
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
-    "jscrambler": "^6.4.21"
+    "jscrambler": "workspace:*"
   },
   "keywords": [
     "jscrambler",
