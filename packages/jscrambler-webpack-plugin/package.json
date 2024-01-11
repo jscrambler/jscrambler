@@ -19,6 +19,9 @@
   ],
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },

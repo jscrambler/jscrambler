@@ -6,7 +6,7 @@
   "scripts": {
     "test": "grunt"
   },
-  "author": "Jscrambler <code@jscrambler.com>",
+  "author": "Jscrambler <support@jscrambler.com>",
   "contributors": [
     "Michael Nicholls <nicholls.mc@gmail.com> (https://github.com/mcnicholls)"
   ],
@@ -18,6 +18,9 @@
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "engines": {
     "node": ">= 0.1"
   },

@@ -3,7 +3,7 @@
   "description": "Obfuscate your source files using the Jscrambler API.",
   "version": "6.4.21",
   "homepage": "https://github.com/jscrambler/jscrambler",
-  "author": "Jscrambler <code@jscrambler.com>",
+  "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/jscrambler/jscrambler.git"
@@ -12,6 +12,9 @@
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "test": "gulp test"
   },

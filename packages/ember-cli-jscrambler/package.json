@@ -7,6 +7,9 @@
   ],
   "homepage": "https://jscrambler.com",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
     "type": "git",
