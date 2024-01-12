@@ -43,7 +43,6 @@
     "lodash.size": "^4.0.1",
     "q": "^1.4.1",
     "rc": "^1.1.0",
-    "regenerator-runtime": "^0.13.9",
     "snake-case": "^2.1.0",
     "temp": "^0.8.3"
   },
