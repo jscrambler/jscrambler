@@ -15,7 +15,7 @@
     "release": "scripts/release.sh"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
+    "@babel/core": "^7.23.7",
     "@babel/eslint-parser": "^7.23.3",
     "@commitlint/cli": "17.6.1",
     "@commitlint/config-conventional": "17.6.1",
