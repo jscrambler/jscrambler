@@ -7,4 +7,4 @@
 
 # Releases
 
-TODO
+  * Run `pnpm run release`

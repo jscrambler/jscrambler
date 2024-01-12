@@ -11,7 +11,8 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "release": "scripts/release.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
