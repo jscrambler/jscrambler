@@ -11,7 +11,6 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "commit": "git-cz",
     "release": "scripts/release.sh"
   },
   "devDependencies": {
@@ -20,7 +19,6 @@
     "@commitlint/cli": "17.6.1",
     "@commitlint/config-conventional": "17.6.1",
     "commitizen": "4.3.0",
-    "cz-conventional-changelog": "3.3.0",
     "eslint": "8.56.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
