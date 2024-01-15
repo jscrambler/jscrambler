@@ -1,7 +1,4 @@
 /* eslint-disable no-console */
-import 'regenerator-runtime';
-import 'core-js'
-
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
