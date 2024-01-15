@@ -60,6 +60,17 @@ const validateForceAppEnvironment = env => {
   return normalizeEnvironment;
 };
 
+const validateConcatScript = (value) => {
+  const [ script, targetFile ] = value.split(',');
+
+  if(!targetFile) {
+    console.error('No target file has been provided.');
+    process.exit(1);
+  }
+
+  return { script, targetFile };
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -145,6 +156,15 @@ commander
     '-n <number>',
     `(version 7.2 and above) Create multiple protections at once.`
   )
+  .option(
+    '--prepend-script <files...>',
+    `Script to prepend to file`,
+    validateConcatScript,
+  )
+  .option('--append-script <files...>', 
+    'Append script to code files', 
+    validateConcatScript,
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -186,6 +206,10 @@ config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
 config.removeProfilingData = commander.removeProfilingData;
 config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
+config.concatScripts = { 
+  appendScript: commander.appendScript && { ...(commander.appendScript) },
+  prependScript: commander.prependScript && { ...(commander.prependScript) }
+}
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -337,7 +361,8 @@ const {
   excludeList,
   numberOfProtections,
   ensureCodeAnnotation,
-  forceAppEnvironment
+  forceAppEnvironment,
+  concatScripts
 } = config;
 
 const params = config.params;
@@ -473,7 +498,8 @@ if (commander.sourceMaps) {
       excludeList,
       ensureCodeAnnotation,
       numberOfProtections,
-      forceAppEnvironment
+      forceAppEnvironment,
+      concatScripts
     };
     try {
       if (typeof werror !== 'undefined') {
