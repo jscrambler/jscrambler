@@ -14,7 +14,7 @@ const debug = !!process.env.DEBUG;
 // ./zip.js module is excluded from browser-like environments. We take advantage of that here.
 export {outputFileSync};
 
-export async function zip(files, cwd, concatScripts) {
+export async function zip(files, cwd, runBeforeProtection) {
   debug && console.log('Zipping files', inspect(files));
   const deferred = defer();
   // Flag to detect if any file was added to the zip archive
@@ -65,14 +65,18 @@ export async function zip(files, cwd, concatScripts) {
         }
         buffer = readFileSync(sPath);
 
-        const { appendScript, prependScript } = concatScripts;
+        const { appendingScripts, prependingScripts } = runBeforeProtection;
 
-        if(appendScript) {
-          buffer = concatenate(appendScript, cwd, sPath, buffer);
+        if(appendingScripts.length > 0) {
+          appendingScripts.map((appendScript) => {
+            buffer = concatenate(appendScript, cwd, sPath, buffer);
+          });
         }
 
-        if(prependScript) {
-          buffer = concatenate(prependScript, cwd, sPath, buffer);
+        if(prependingScripts.length > 0) {
+          prependingScripts.map((prependScript) => {
+            buffer = concatenate(prependScript, cwd, sPath, buffer);
+          });
         }
       } else {
         // Else if it's a directory path

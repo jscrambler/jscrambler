@@ -60,15 +60,37 @@ const validateForceAppEnvironment = env => {
   return normalizeEnvironment;
 };
 
-const validateConcatScript = (value) => {
-  const [ script, targetFile ] = value.split(',');
-
-  if(!targetFile) {
-    console.error('No target file has been provided.');
-    process.exit(1);
+const validateBeforeProtection = (beforeProtectionArray = []) => {
+  if(beforeProtectionArray.length === 0) {
+    return;
   }
 
-  return { script, targetFile };
+  const mandatoryKeys = ['type', 'target', 'source'];
+
+  const appendingScripts = [];
+  const prependingScripts = [];
+
+  beforeProtectionArray.filter((element) => {
+    const hasMandatoryKeys = mandatoryKeys.every((key) => key in element);
+
+    if(!hasMandatoryKeys) {
+      console.error('Invalid structure on beforeProtection array: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
+      process.exit(1);
+    }
+
+    switch(element.type) {
+      case 'append-js':
+        appendingScripts.push(element);
+        break;
+      case 'prepend-js':
+        prependingScripts.push(element);
+        break;
+      default:
+        break;
+    }
+  });
+
+  return { appendingScripts, prependingScripts };
 };
 
 commander
@@ -156,15 +178,6 @@ commander
     '-n <number>',
     `(version 7.2 and above) Create multiple protections at once.`
   )
-  .option(
-    '--prepend-script <files...>',
-    `Script to prepend to file`,
-    validateConcatScript,
-  )
-  .option('--append-script <files...>', 
-    'Append script to code files', 
-    validateConcatScript,
-  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -206,10 +219,6 @@ config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
 config.removeProfilingData = commander.removeProfilingData;
 config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
-config.concatScripts = { 
-  appendScript: commander.appendScript && { ...(commander.appendScript) },
-  prependScript: commander.prependScript && { ...(commander.prependScript) }
-}
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -270,6 +279,10 @@ if (config.codeHardeningThreshold){
 
 if (config.profilingDataMode) {
   config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
+}
+
+if(config.beforeProtection) {
+  config.beforeProtection = validateBeforeProtection(config.beforeProtection);
 }
 
 globSrc = config.filesSrc;
@@ -362,7 +375,7 @@ const {
   numberOfProtections,
   ensureCodeAnnotation,
   forceAppEnvironment,
-  concatScripts
+  beforeProtection
 } = config;
 
 const params = config.params;
@@ -499,7 +512,7 @@ if (commander.sourceMaps) {
       ensureCodeAnnotation,
       numberOfProtections,
       forceAppEnvironment,
-      concatScripts
+      beforeProtection
     };
     try {
       if (typeof werror !== 'undefined') {

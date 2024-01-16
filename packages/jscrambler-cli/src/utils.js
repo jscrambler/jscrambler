@@ -40,8 +40,8 @@ export function validateNProtections(n) {
 
 /**
  * 
- * @param {*} firstFile in case we're prepending a script, this should be the script file, otherwise, it should be the file to be appended to
- * @param {*} secondFile in case we're appending a script, this should be the script file, otherwise, it should be the file to be prepend
+ * @param {*} firstFile if prepending: script file; if appending: target file.
+ * @param {*} secondFile if prepending: target file; if appending: script file.
  * @returns first and second files concatenated
  */
 function handleScriptConcatenation (firstFile, secondFile) {
@@ -52,34 +52,38 @@ function handleScriptConcatenation (firstFile, secondFile) {
     firstFileContent +
     "\n" + 
     secondFileContent;
-    
+
   return concatenatedContent;
 }
 
 /**
  * 
- * @param {*} scriptObject the object with the script content: { script, targetFile }. Is used for both appending and prepending
+ * @param {*} scriptObject the object with the script content: { target: '/path/to/target/file', source: '/path/to/script/file', type: 'append-js' | 'prepend-js' }. Its used for both appending and prepending.
  * @param {*} cwd current working directory, passed by argument
  * @param {*} path file path (file being parsed)
  * @param {*} buffer file contents
  */
 export function concatenate (scriptObject, cwd, path, buffer) {
-  let { targetFile } = scriptObject;
+  let { target } = scriptObject;
 
   if(cwd) {
-    targetFile = join(cwd, targetFile);
+    target = join(cwd, target);
   }
 
-  if(targetFile === path) {
-    const { script } = scriptObject;
+  if(target === path) {
+    const { source, type } = scriptObject;
 
-    if(!existsSync(script)) {
+    if(!existsSync(source)) {
       throw new Error('Provided script file does not exist');
     }
 
     const fileContent = buffer;
-    const scriptContent = readFileSync(script);
-    const concatContent = handleScriptConcatenation(scriptContent, fileContent);
+    const scriptContent = readFileSync(source);
+
+    const concatContent = type === 'append-js' 
+      ? handleScriptConcatenation(fileContent, scriptContent)
+      : handleScriptConcatenation(scriptContent, fileContent); 
+
     buffer = Buffer.from(concatContent, 'utf-8');
   }
 

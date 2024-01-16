@@ -124,7 +124,7 @@ export default {
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd, appProfiling, concatScripts = {}}
+    {sources, filesSrc, cwd, appProfiling, runBeforeProtection = []}
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
@@ -160,7 +160,7 @@ export default {
         console.log('Creating zip from source files');
       }
 
-      zipped = await zip(_filesSrc, cwd, concatScripts);
+      zipped = await zip(_filesSrc, cwd, runBeforeProtection);
     } else if (sources) {
       if (debug) {
         console.log('Creating zip from sources');
@@ -304,7 +304,7 @@ export default {
     let filesSrc = finalConfig.filesSrc;
     let filesDest = finalConfig.filesDest;
 
-    let concatScripts = finalConfig.concatScripts;
+    let runBeforeProtection = finalConfig.beforeProtection;
 
     if (sources) {
       filesSrc = undefined;
@@ -356,7 +356,7 @@ export default {
         filesSrc,
         cwd,
         appProfiling,
-        concatScripts
+        runBeforeProtection
       });
     } else {
       console.log('Update source files SKIPPED');
