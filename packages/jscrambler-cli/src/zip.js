@@ -3,33 +3,16 @@
 import size from 'lodash.size';
 import temp from 'temp';
 import JSZip from 'jszip';
-import {readFileSync, statSync, outputFileSync, existsSync} from 'fs-extra';
+import {readFileSync, statSync, outputFileSync} from 'fs-extra';
 import {normalize, resolve, relative, join, isAbsolute} from 'path';
 import {defer} from 'q';
 import {inspect} from 'util';
+import { concatenate } from './utils';
 
 const debug = !!process.env.DEBUG;
 
 // ./zip.js module is excluded from browser-like environments. We take advantage of that here.
 export {outputFileSync};
-
-/**
- * 
- * @param {*} firstFile in case we're prepending a script, this should be the script file, otherwise, it should be the file to be appended to
- * @param {*} secondFile in case we're appending a script, this should be the script file, otherwise, it should be the file to be prepend
- * @returns first and second files concatenated
- */
-function handleConcatScript (firstFile, secondFile) {
-  const firstFileContent = firstFile.toString('utf-8');
-  const secondFileContent = secondFile.toString('utf-8');
-
-  const concatenatedContent = 
-    firstFileContent +
-    "\n" + 
-    secondFileContent;
-    
-  return concatenatedContent;
-}
 
 export async function zip(files, cwd, concatScripts) {
   debug && console.log('Zipping files', inspect(files));
@@ -85,48 +68,11 @@ export async function zip(files, cwd, concatScripts) {
         const { appendScript, prependScript } = concatScripts;
 
         if(appendScript) {
-          let { targetFile } = appendScript;
-
-          if(cwd) {
-            targetFile = join(cwd, targetFile);
-          }
-
-          if(targetFile === sPath) {
-            const { script } = appendScript;
-  
-            if(!existsSync(script)) {
-              throw new Error('Provided script file does not exist');
-            }
-  
-            const fileContent = readFileSync(targetFile);
-  
-            const scriptContent = readFileSync(script);
-            const concatContent = handleConcatScript(fileContent, scriptContent);
-            buffer = Buffer.from(concatContent, 'utf-8');
-          }
+          buffer = concatenate(appendScript, cwd, sPath, buffer);
         }
 
         if(prependScript) {
-          let { targetFile } = prependScript;
-
-          if(cwd) {
-            targetFile = join(cwd, targetFile);
-          }
-
-          if(targetFile === sPath) {
-            const { script } = prependScript;
-  
-            if(!existsSync(script)) {
-              throw new Error('Provided script file does not exist');
-            }
-  
-            const fileContent = !appendScript ? readFileSync(targetFile) : buffer;
-  
-            const scriptContent = readFileSync(script);
-  
-            const concatContent = handleConcatScript(scriptContent, fileContent);
-            buffer = Buffer.from(concatContent, 'utf-8');
-          }
+          buffer = concatenate(prependScript, cwd, sPath, buffer);
         }
       } else {
         // Else if it's a directory path

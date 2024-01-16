@@ -1,5 +1,6 @@
 import glob from 'glob';
 import fs from 'fs';
+import { existsSync, readFileSync } from 'fs-extra'
 
 /**
  * Return the list of matched files for minimatch patterns.
@@ -35,4 +36,52 @@ export function validateNProtections(n) {
     process.exit(1);
   }
   return nProtections;
+}
+
+/**
+ * 
+ * @param {*} firstFile in case we're prepending a script, this should be the script file, otherwise, it should be the file to be appended to
+ * @param {*} secondFile in case we're appending a script, this should be the script file, otherwise, it should be the file to be prepend
+ * @returns first and second files concatenated
+ */
+function handleScriptConcatenation (firstFile, secondFile) {
+  const firstFileContent = firstFile.toString('utf-8');
+  const secondFileContent = secondFile.toString('utf-8');
+
+  const concatenatedContent = 
+    firstFileContent +
+    "\n" + 
+    secondFileContent;
+    
+  return concatenatedContent;
+}
+
+/**
+ * 
+ * @param {*} scriptObject the object with the script content: { script, targetFile }. Is used for both appending and prepending
+ * @param {*} cwd current working directory, passed by argument
+ * @param {*} path file path (file being parsed)
+ * @param {*} buffer file contents
+ */
+export function concatenate (scriptObject, cwd, path, buffer) {
+  let { targetFile } = scriptObject;
+
+  if(cwd) {
+    targetFile = join(cwd, targetFile);
+  }
+
+  if(targetFile === path) {
+    const { script } = scriptObject;
+
+    if(!existsSync(script)) {
+      throw new Error('Provided script file does not exist');
+    }
+
+    const fileContent = buffer;
+    const scriptContent = readFileSync(script);
+    const concatContent = handleScriptConcatenation(scriptContent, fileContent);
+    buffer = Buffer.from(concatContent, 'utf-8');
+  }
+
+  return buffer;
 }
