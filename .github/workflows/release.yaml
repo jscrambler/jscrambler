@@ -30,6 +30,7 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm publish
+          commit: "chore: version packages"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
