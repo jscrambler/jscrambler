@@ -60,14 +60,16 @@ const validateForceAppEnvironment = env => {
   return normalizeEnvironment;
 };
 
-const validateBeforeProtection = (beforeProtectionArray = []) => {
+const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = []) => {
   if(beforeProtectionArray.length === 0) {
     return;
   }
 
   const mandatoryKeys = ['type', 'target', 'source'];
+  const usedTargets = new Set();
 
   beforeProtectionArray.filter((element) => {
+    // Check if every array element has a type, a target and a source
     const hasMandatoryKeys = mandatoryKeys.every((key) => key in element);
 
     if(!hasMandatoryKeys) {
@@ -75,9 +77,32 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
       process.exit(1);
     }
 
-    // check if the provided files are JS files
-    if(!isJavascriptFile(element.target) || !isJavascriptFile(element.source)) {
-      console.error('Invalid extension for beforeProtection target or source files: only Javascript files can be used to append or prepend.');
+    const { target, source } = element;
+
+    // Check if the provided files are js, mjs or cjs files
+    if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
+      console.error('Invalid extension for beforeProtection target or source files: only *js, mjs and cjs* files can be used to append or prepend.');
+      process.exit(1);
+    }
+
+    // Check if target file is being protected
+    if(!filesToProtect.includes(target)) {
+      console.error('Target files need to be in the files to protect list (or filesSrc).');
+      process.exit(1);
+    }
+
+    // Check if the target has already been used as a source
+    if (usedTargets.has(target)) {
+      console.error(`File "${target}" has already been used as target.`);
+      process.exit(1);
+    }
+
+    // Add the target to the set
+    usedTargets.add(target);
+
+    // Check if the target and source are the same
+    if (target === source) {
+      console.error(`"${target}" can't be used as both a target and a source.`);
       process.exit(1);
     }
   });
@@ -273,10 +298,6 @@ if (config.profilingDataMode) {
   config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
 }
 
-if(config.beforeProtection) {
-  config.beforeProtection = validateBeforeProtection(config.beforeProtection);
-}
-
 globSrc = config.filesSrc;
 // If src paths have been provided
 if (commander.args.length > 0) {
@@ -329,6 +350,10 @@ if (globSrc && globSrc.length) {
   console.log(
     'No filesSrc provided. Using the ones in the application (if any).'
   );
+}
+
+if(config.beforeProtection) {
+  config.beforeProtection = validateBeforeProtection(config.beforeProtection, globSrc);
 }
 
 const {

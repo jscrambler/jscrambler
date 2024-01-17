@@ -335,6 +335,7 @@ Instrument is used when you want to [Profile](https://docs.jscrambler.com/code-i
 
 This option is available in your configuration file and allows for Javascript files to be appended or prepended to specific files before protecting your code.
 It allows for multiple files to be affixed or prefixed with another file, without changing the original content of the file and more than one script can act on the same file - you can both append and prepend the same JS file with the desired scripts on the same protection.
+The concatenation of files can result in max file size errors - even though the original file may be under the max limit, the result of the concatenation may exceed this threshold.
 
 ```json
 {
