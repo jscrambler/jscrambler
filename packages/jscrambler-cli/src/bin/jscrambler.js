@@ -67,9 +67,6 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
 
   const mandatoryKeys = ['type', 'target', 'source'];
 
-  const appendingScripts = [];
-  const prependingScripts = [];
-
   beforeProtectionArray.filter((element) => {
     const hasMandatoryKeys = mandatoryKeys.every((key) => key in element);
 
@@ -83,20 +80,9 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
       console.error('Invalid extension for beforeProtection target or source files: only Javascript files can be used to append or prepend.');
       process.exit(1);
     }
-
-    switch(element.type) {
-      case 'append-js':
-        appendingScripts.push(element);
-        break;
-      case 'prepend-js':
-        prependingScripts.push(element);
-        break;
-      default:
-        break;
-    }
   });
 
-  return { appendingScripts, prependingScripts };
+  return beforeProtectionArray;
 };
 
 commander

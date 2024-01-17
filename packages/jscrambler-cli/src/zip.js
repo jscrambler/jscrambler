@@ -65,19 +65,9 @@ export async function zip(files, cwd, runBeforeProtection) {
         }
         buffer = readFileSync(sPath);
 
-        const { appendingScripts, prependingScripts } = runBeforeProtection;
-
-        if(appendingScripts.length > 0) {
-          appendingScripts.map((appendScript) => {
-            buffer = concatenate(appendScript, cwd, sPath, buffer);
-          });
-        }
-
-        if(prependingScripts.length > 0) {
-          prependingScripts.map((prependScript) => {
-            buffer = concatenate(prependScript, cwd, sPath, buffer);
-          });
-        }
+        runBeforeProtection.map((element) => {
+          buffer = concatenate(element, cwd, sPath, buffer);
+        });
       } else {
         // Else if it's a directory path
         zip.folder(sPath);
