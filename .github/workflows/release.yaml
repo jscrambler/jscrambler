@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - chore/pnpm
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -31,6 +31,7 @@ jobs:
         with:
           publish: pnpm publish
           commit: "chore: version packages"
+          baseBranch: chore/pnpm
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
