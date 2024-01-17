@@ -10,8 +10,7 @@
   },
   "scripts": {
     "preinstall": "only-allow pnpm",
-    "postinstall": "husky install",
-    "release": "scripts/release.sh"
+    "postinstall": "husky install"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
