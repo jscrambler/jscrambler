@@ -58,7 +58,7 @@
   },
   "files": [
     "dist",
-    "LICENSE-MIT"
+    "LICENSE"
   ],
   "main": "dist/index.js",
   "bin": {
