@@ -58,7 +58,7 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "CHANGELOG.md"
   ],
   "main": "dist/index.js",
   "bin": {

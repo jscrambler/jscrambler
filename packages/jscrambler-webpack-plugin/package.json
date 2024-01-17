@@ -42,6 +42,7 @@
   },
   "files": [
     "lib",
+    "CHANGELOG.md",
     "index.d.ts"
   ]
 }
