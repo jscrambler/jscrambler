@@ -7,7 +7,7 @@ import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {getMatchedFiles, validateNProtections} from '../utils';
+import {getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -75,6 +75,12 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
 
     if(!hasMandatoryKeys) {
       console.error('Invalid structure on beforeProtection array: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
+      process.exit(1);
+    }
+
+    // check if the provided files are JS files
+    if(!isJavascriptFile(element.target) || !isJavascriptFile(element.source)) {
+      console.error('Invalid extension for beforeProtection target or source files: only Javascript files can be used to append or prepend.');
       process.exit(1);
     }
 

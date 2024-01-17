@@ -89,3 +89,9 @@ export function concatenate (scriptObject, cwd, path, buffer) {
 
   return buffer;
 }
+
+export function isJavascriptFile (filename) {
+  const fileExtension = filename.split('.').pop().toLowerCase();
+
+  return fileExtension === 'js';
+}
