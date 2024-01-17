@@ -4,7 +4,7 @@
   "commit": true,
   "fixed": [],
   "linked": [],
-  "baseBranch": "chore/pnpm",
+  "baseBranch": "master",
   "updateInternalDependencies": "patch",
   "ignore": []
 }

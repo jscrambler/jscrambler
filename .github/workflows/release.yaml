@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - chore/pnpm
+      - master
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -29,7 +29,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm -r publish --dry-run --publish-branch=chore/pnpm
+          publish: pnpm changeset publish
           commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
