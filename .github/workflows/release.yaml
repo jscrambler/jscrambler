@@ -29,7 +29,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm -r publish --dry-run
+          publish: pnpm -r publish --dry-run --publish-branch=chore/pnpm
           commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
