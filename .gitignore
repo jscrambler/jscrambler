@@ -2,7 +2,6 @@
 .jscramblerrc
 jscrambler_keys.json
 jscrambler.json
-config.json
 package-lock.json
 node_modules
 results
