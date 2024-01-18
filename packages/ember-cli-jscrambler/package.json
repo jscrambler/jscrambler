@@ -2,8 +2,14 @@
   "name": "ember-cli-jscrambler",
   "version": "6.4.21",
   "description": "Jscrambler JavaScript protection for Ember-CLI",
+  "main": "index.js",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "jscrambler",
+    "obfuscate",
+    "protect",
+    "js",
+    "javascript"
   ],
   "homepage": "https://jscrambler.com",
   "license": "MIT",
@@ -31,6 +37,10 @@
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"
   },
+  "files": [
+    "index.js",
+    "jscrambler-plugin.js"
+  ],
   "ember-addon": {
     "before": "ember-cli-sri",
     "after": [

@@ -18,7 +18,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
-    "watch": "grunt watch",
+    "watch": "babel -w src --out-dir dist",
     "prepublish": "npm run build",
     "eslint": "eslint src/",
     "eslint:fix": "eslint src/ --fix"
@@ -49,12 +49,7 @@
   "devDependencies": {
     "@babel/cli": "^7.23.4",
     "@babel/core": "^7.23.7",
-    "@babel/preset-env": "^7.23.8",
-    "grunt": "^1.0.2",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "@babel/preset-env": "^7.23.8"
   },
   "files": [
     "dist",
@@ -63,5 +58,13 @@
   "main": "dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
-  }
+  },
+  "keywords": [
+    "cli",
+    "jscrambler",
+    "obfuscate",
+    "protect",
+    "js",
+    "javascript"
+  ]
 }

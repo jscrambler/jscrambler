@@ -1,7 +1,6 @@
 {
   "name": "jscrambler-github-monorepo",
-  "description": "",
-  "keywords": [],
+  "description": "Jscrambler public monorepo for CLI and Plugins",
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {

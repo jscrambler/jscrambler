@@ -37,6 +37,10 @@
   "dependencies": {
     "jscrambler": "workspace:*"
   },
+  "files": [
+    "Gruntfile.js",
+    "tasks"
+  ],
   "keywords": [
     "gruntplugin",
     "jscrambler",

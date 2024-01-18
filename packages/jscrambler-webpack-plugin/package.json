@@ -17,7 +17,10 @@
   "keywords": [
     "jscrambler",
     "javascript",
-    "webpack"
+    "webpack",
+    "obfuscate",
+    "protect",
+    "js"
   ],
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",

@@ -19,7 +19,13 @@
     "jscrambler",
     "javascript",
     "react-native",
-    "metro"
+    "metro",
+    "obfuscate",
+    "protect",
+    "js"
+  ],
+  "files": [
+    "lib"
   ],
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
