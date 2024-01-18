@@ -3,7 +3,7 @@
   "description": "Jscrambler API client.",
   "version": "6.4.21",
   "homepage": "https://github.com/jscrambler/jscrambler",
-  "author": "Jscrambler <code@jscrambler.com>",
+  "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/jscrambler/jscrambler.git"
@@ -11,17 +11,17 @@
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jscrambler/javascript-jscrambler/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
-    "watch": "grunt watch",
-    "prepublish": "npm run build"
+    "watch": "babel -w src --out-dir dist",
+    "prepublish": "npm run build",
+    "eslint": "eslint src/",
+    "eslint:fix": "eslint src/ --fix"
   },
   "engines": {
     "node": ">= 6.10.0"
@@ -43,27 +43,28 @@
     "lodash.size": "^4.0.1",
     "q": "^1.4.1",
     "rc": "^1.1.0",
-    "regenerator-runtime": "^0.13.9",
     "snake-case": "^2.1.0",
     "temp": "^0.8.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.15.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.14.7",
-    "@babel/preset-env": "^7.15.0",
-    "grunt": "^1.0.2",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8"
   },
   "files": [
     "dist",
-    "LICENSE-MIT"
+    "CHANGELOG.md"
   ],
   "main": "dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
-  }
+  },
+  "keywords": [
+    "cli",
+    "jscrambler",
+    "obfuscate",
+    "protect",
+    "js",
+    "javascript"
+  ]
 }

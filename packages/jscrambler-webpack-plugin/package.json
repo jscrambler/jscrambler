@@ -6,7 +6,9 @@
   "types": "index.d.ts",
   "scripts": {
     "prepare": "npm run build",
-    "build": "babel src --out-dir lib"
+    "build": "babel src --out-dir lib",
+    "eslint": "eslint src/",
+    "eslint:fix": "pnpm run eslint --fix"
   },
   "repository": {
     "type": "git",
@@ -15,10 +17,16 @@
   "keywords": [
     "jscrambler",
     "javascript",
-    "webpack"
+    "webpack",
+    "obfuscate",
+    "protect",
+    "js"
   ],
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
@@ -27,16 +35,17 @@
     "acorn": "^8.7.1",
     "astring": "^1.8.3",
     "esrecurse": "^4.3.0",
-    "jscrambler": "^6.4.21",
+    "jscrambler": "workspace:*",
     "webpack-sources": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.15.0",
-    "@babel/preset-env": "^7.15.0"
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8"
   },
   "files": [
     "lib",
+    "CHANGELOG.md",
     "index.d.ts"
   ]
 }

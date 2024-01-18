@@ -1,17 +1,12 @@
 {
   "presets": [
-    ["@babel/preset-env", {
-      "targets": {
-        "browsers": ["last 2 versions", "safari >= 7"]
-      }
-    }]
-  ],
-  "plugins": [
-    ["@babel/plugin-proposal-object-rest-spread",
-      {
-        "useBuiltIns": "entry",
-        "corejs": "3.16"
+    [
+      "@babel/preset-env", {
+        "useBuiltIns": "usage",
+        "corejs": 3,
+        "targets": "safari >= 11, node >= 12"
       }
     ]
-  ]
+  ],
+  "plugins": []
 }

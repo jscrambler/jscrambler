@@ -3,20 +3,33 @@
   "version": "6.4.21",
   "description": "A plugin to use metro with Jscrambler",
   "main": "lib/index.js",
+  "scripts": {
+    "eslint": "eslint lib/",
+    "eslint:fix": "pnpm run eslint --fix"
+  },
   "peerDependencies": {
     "metro-source-map": "0.x"
   },
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
-    "jscrambler": "^6.4.21"
+    "jscrambler": "workspace:*"
   },
   "keywords": [
     "jscrambler",
     "javascript",
     "react-native",
-    "metro"
+    "metro",
+    "obfuscate",
+    "protect",
+    "js"
+  ],
+  "files": [
+    "lib"
   ],
   "author": "Jscrambler <support@jscrambler.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }

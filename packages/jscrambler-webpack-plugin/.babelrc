@@ -1,7 +1,5 @@
 {
   "presets": [["@babel/preset-env", {
-    "targets": {
-      "node": 4
-    }
+    "targets": "node >= 12"
   }]]
 }

@@ -1,11 +1,8 @@
 /* eslint-disable no-console */
-import 'regenerator-runtime';
-import 'core-js'
-
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
-import fs from 'fs';
+import fsPromises from 'fs/promises';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';
@@ -441,10 +438,10 @@ export default {
     };
 
     if (finalConfig.inputSymbolTable) {
-      // Note: we can not use the fs.promises API because some users may not have node 10.
-      // Once node 10 is old enough to be safe to assume that all users will have it, this
-      // should be safe to replace with `await fs.promises.readFile`.
-      const inputSymbolTableContents = fs.readFileSync(finalConfig.inputSymbolTable, 'utf-8');
+      const inputSymbolTableContents = await fsPromises.readFile(
+        finalConfig.inputSymbolTable,
+        'utf-8',
+      );
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
     }
 

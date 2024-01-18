@@ -10,26 +10,35 @@ jobs:
     runs-on: ubuntu-latest
     name: Tag Code Integrity Actions
     steps:
+      - name: Parse Tag
+        id: get_version
+        uses: battila7/get-version-action@v2
+      - uses: yakubique/npm-versions@v1
+        id: getjscramblerversions
+        with:
+          package: jscrambler
+          sortVersions: 'desc'
       - name: Get Token
+        if: ${{ contains(fromJSON(steps.getjscramblerversions.outputs.versions, steps.get_version.outputs.version-without-v) }}
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v1
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
       - uses: actions/checkout@v3
+        if: ${{ contains(fromJSON(steps.getjscramblerversions.outputs.versions, steps.get_version.outputs.version-without-v) }}
         with:
           repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
-      - name: Parse Tag
-        id: get_version
-        uses: battila7/get-version-action@v2
       - name: Update Jscrambler CLI Version
+        if: ${{ contains(fromJSON(steps.getjscramblerversions.outputs.versions, steps.get_version.outputs.version-without-v) }}
         uses: jossef/action-set-json-field@v2.1
         with:
           file: package.json
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version-without-v }}
       - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ contains(fromJSON(steps.getjscramblerversions.outputs.versions, steps.get_version.outputs.version-without-v) }}
         with:
           commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           tagging_message: ${{ steps.get_version.outputs.version }}

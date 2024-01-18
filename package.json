@@ -1,5 +1,34 @@
 {
-	"devDependencies": {
-		"lerna": "^2.2.0"
-	}
+  "name": "jscrambler-github-monorepo",
+  "description": "Jscrambler public monorepo for CLI and Plugins",
+  "author": "Jscrambler <support@jscrambler.com>",
+  "license": "MIT",
+  "engines": {
+    "pnpm": "^8.14.0",
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "preinstall": "only-allow pnpm",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/eslint-parser": "^7.23.3",
+    "@changesets/cli": "2.27.1",
+    "@commitlint/cli": "17.6.1",
+    "@commitlint/config-conventional": "17.6.1",
+    "eslint": "8.56.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.1.3",
+    "husky": "8.0.3",
+    "only-allow": "1.1.1",
+    "prettier": "3.1.1"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "private": true
 }

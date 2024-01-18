@@ -2,8 +2,9 @@
   "name": "gulp-jscrambler",
   "description": "Obfuscate your source files using the Jscrambler API.",
   "version": "6.4.21",
+  "main": "index.js",
   "homepage": "https://github.com/jscrambler/jscrambler",
-  "author": "Jscrambler <code@jscrambler.com>",
+  "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/jscrambler/jscrambler.git"
@@ -11,14 +12,14 @@
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jscrambler/jscrambler/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "eslint": "eslint .",
+    "eslint:fix": "pnpm run eslint --fix"
   },
   "engines": {
     "node": ">= 0.1"
@@ -31,12 +32,15 @@
     "mocha": "^1.21.5"
   },
   "dependencies": {
-    "jscrambler": "^6.4.21",
+    "jscrambler": "workspace:*",
     "lodash.defaults": "^4.0.1",
     "plugin-error": "^1.0.1",
     "through2": "^2.0.3",
     "vinyl": "^2.1.0"
   },
+  "files": [
+    "index.js"
+  ],
   "keywords": [
     "gulpplugin",
     "jscrambler",
