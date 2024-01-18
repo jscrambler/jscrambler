@@ -7,4 +7,4 @@
 
 # Releases
 
-  * Run `pnpm run release`
+There is a GitHub action that takes care of that. Merge the "Update versions" Pull Request and the action will take care of the rest.
