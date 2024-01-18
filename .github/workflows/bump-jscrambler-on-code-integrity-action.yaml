@@ -3,7 +3,7 @@ name: Release Code Integrity Github Actions
 on:
   push:
     tags:
-      - jscrambler@*
+      - 'jscrambler@*'
 
 jobs:
   tag_code_integrity_github_action:
