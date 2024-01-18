@@ -40,4 +40,5 @@ jobs:
         if: steps.changesets.outputs.published == 'true'
         env:
           WEBHOOK_API_URI: ${{ secrets.WEBHOOK_API_URI }}
-        run: "wget -X POST \"${WEBHOOK_API_URI}\" --header 'Content-Type: application/json' --post-data '{\"text\": \"New release of `jscrambler` npm packages: ${GITHUB_REF}\"}'"
+          PUBLISHED_PACKAGES: ${{ toJSON(steps.changesets.outputs.publishedPackages) }}
+        run: "wget -X POST \"${WEBHOOK_API_URI}\" --header 'Content-Type: application/json' --post-data '{\"text\": \"New release of `jscrambler` npm packages: `${PUBLISHED_PACKAGES}`\"}'"
