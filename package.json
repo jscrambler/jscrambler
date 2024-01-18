@@ -5,7 +5,8 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
-    "pnpm": "^8.14.0"
+    "pnpm": "^8.14.0",
+    "node": ">=18.0.0"
   },
   "scripts": {
     "preinstall": "only-allow pnpm",
