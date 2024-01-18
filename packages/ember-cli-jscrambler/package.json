@@ -18,6 +18,7 @@
     "eslint:fix": "pnpm run eslint --fix"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "author": "Jscrambler <support@jscrambler.com>",
