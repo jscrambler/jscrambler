@@ -2,6 +2,8 @@ name: Release Code Integrity Github Actions
 
 on:
   push:
+    branches:
+      - '*'
     tags:
       - 'jscrambler@*'
 
