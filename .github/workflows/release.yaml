@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          ssh-key: "${{ DEPLOY_PRIVATE_KEY_GITHUB_ACTION  }}"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -34,5 +36,4 @@ jobs:
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
