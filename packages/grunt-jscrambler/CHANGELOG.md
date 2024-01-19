@@ -1,5 +1,13 @@
 # grunt-jscrambler
 
+## 6.4.27
+
+### Patch Changes
+
+- [c346840]: Use private key for tagging
+- [c346840]: Updated dependencies
+  - jscrambler@6.4.27
+
 ## 6.4.26
 
 ### Patch Changes

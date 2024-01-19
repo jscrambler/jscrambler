@@ -1,6 +1,6 @@
 {
   "name": "jscrambler-metro-plugin",
-  "version": "6.4.26",
+  "version": "6.4.27",
   "description": "A plugin to use metro with Jscrambler",
   "main": "lib/index.js",
   "scripts": {
