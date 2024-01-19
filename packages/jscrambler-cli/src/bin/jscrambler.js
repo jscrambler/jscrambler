@@ -69,11 +69,11 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
   const usedTargets = new Set();
 
   beforeProtectionArray.filter((element) => {
-    // Check if every array element has a type, a target and a source
-    const hasMandatoryKeys = mandatoryKeys.every((key) => key in element);
+    // Check if every array element has a type, a target and a source and their values are strings
+    const validateMandatoryKeys = mandatoryKeys.every((key) => key in element && typeof element[key] === 'string');
 
-    if(!hasMandatoryKeys) {
-      console.error('Invalid structure on beforeProtection array: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
+    if(!validateMandatoryKeys) {
+      console.error('Invalid structure on beforeProtection: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
       process.exit(1);
     }
 
@@ -87,13 +87,13 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
 
     // Check if target file is being protected
     if(!filesToProtect.includes(target)) {
-      console.error('Target files need to be in the files to protect list (or filesSrc).');
-      process.exit(1);
+      console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
+      process.exit(1); 
     }
 
     // Check if the target has already been used as a source
-    if (usedTargets.has(target)) {
-      console.error(`File "${target}" has already been used as target.`);
+    if (usedTargets.has(source)) {
+      console.error(`Error on beforeProtection: File "${target}" has already been used as target.`);
       process.exit(1);
     }
 
@@ -102,7 +102,7 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
 
     // Check if the target and source are the same
     if (target === source) {
-      console.error(`"${target}" can't be used as both a target and a source.`);
+      console.error(`Error on beforeProtection: File "${target}" can't be used as both a target and a source.`);
       process.exit(1);
     }
   });

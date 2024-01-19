@@ -1,6 +1,7 @@
 import glob from 'glob';
 import fs from 'fs';
 import { existsSync, readFileSync } from 'fs-extra'
+import { extname, join, normalize } from 'path';
 
 /**
  * Return the list of matched files for minimatch patterns.
@@ -53,7 +54,7 @@ function handleScriptConcatenation (firstFile, secondFile) {
     "\n" + 
     secondFileContent;
 
-  return concatenatedContent;
+    return concatenatedContent;
 }
 
 /**
@@ -65,10 +66,12 @@ function handleScriptConcatenation (firstFile, secondFile) {
  */
 export function concatenate (scriptObject, cwd, path, buffer) {
   let { target } = scriptObject;
-
+  
   if(cwd) {
     target = join(cwd, target);
   }
+  
+  target = normalize(target);
 
   if(target === path) {
     const { source, type } = scriptObject;
@@ -77,7 +80,7 @@ export function concatenate (scriptObject, cwd, path, buffer) {
       throw new Error('Provided script file does not exist');
     }
 
-    const fileContent = buffer;
+    const fileContent = readFileSync(target);
     const scriptContent = readFileSync(source);
 
     const concatContent = type === 'append-js' 
@@ -91,8 +94,8 @@ export function concatenate (scriptObject, cwd, path, buffer) {
 }
 
 export function isJavascriptFile (filename) {
-  const fileExtension = filename.split('.').pop().toLowerCase();
-  const validJsFileExtensions = ['js', 'mjs', 'cjs'];
+  const fileExtension = extname(filename);
+  const validJsFileExtensions = ['.js', '.mjs', '.cjs'];
 
   return validJsFileExtensions.includes(fileExtension);
 }
