@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
-          ssh-key: "${{ DEPLOY_PRIVATE_KEY_GITHUB_ACTION  }}"
+          ssh-key: "${{ secrets.DEPLOY_PRIVATE_KEY_GITHUB_ACTION  }}"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
