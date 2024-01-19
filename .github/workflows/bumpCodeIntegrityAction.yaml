@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Tag Code Integrity Actions
     steps:
-      - name: Parser
+      - name: Get Jscrambler Version
         id: get_version
         uses: johngeorgewright/parse-version-action
         with:
           ref: ${{ github.ref }}
           trim-start: jscrambler@
-      - name: Get Token
+      - name: Get Access Token to Code Integrity Action Repository
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v1
         with:
@@ -32,7 +32,8 @@ jobs:
           file: package.json
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version }}
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           tagging_message: ${{ steps.get_version.outputs.version }}
