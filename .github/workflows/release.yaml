@@ -12,10 +12,15 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - name: Get Access Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v1
+        with:
+          application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
+          application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
+
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          ssh-key: "${{ secrets.DEPLOY_PRIVATE_KEY_GITHUB_ACTION  }}"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -36,4 +41,5 @@ jobs:
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
         env:
+          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
