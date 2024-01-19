@@ -12,30 +12,30 @@ jobs:
     runs-on: ubuntu-latest
     name: Tag Code Integrity Actions
     steps:
-#      - name: Parser
-#        id: get_version
-#        uses: johngeorgewright/parse-version-action
-#        with:
-#          ref: ${{ github.ref }}
-#          trim-start: "jscrambler@"
+      - name: Parser
+        id: get_version
+        uses: johngeorgewright/parse-version-action
+        with:
+          ref: ${{ github.ref }}
+          trim-start: "jscrambler@"
       - name: Get Token
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v1
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
-#      - uses: actions/checkout@v3
-#        with:
-#          repository: jscrambler/code-integrity-actions
-#          token: ${{ steps.get_workflow_token.outputs.token }}
-#      - name: Update Jscrambler CLI Version
-#        uses: jossef/action-set-json-field@v2.1
-#        with:
-#          file: package.json
-#          field: dependencies.jscrambler
-#          value: ${{ steps.get_version.outputs.version }}
-#      - uses: stefanzweifel/git-auto-commit-action@v4
-#        with:
-#          commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
-#          tagging_message: ${{ steps.get_version.outputs.version }}
-#          push_options: '--force'
+      - uses: actions/checkout@v3
+        with:
+          repository: jscrambler/code-integrity-actions
+          token: ${{ steps.get_workflow_token.outputs.token }}
+      - name: Update Jscrambler CLI Version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: package.json
+          field: dependencies.jscrambler
+          value: ${{ steps.get_version.outputs.version }}
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
+          tagging_message: ${{ steps.get_version.outputs.version }}
+          push_options: '--force'
