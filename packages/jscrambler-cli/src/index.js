@@ -117,14 +117,15 @@ export default {
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
    *  cwd: string,
-   *  appProfiling: ?object
+   *  appProfiling: ?object,
+   * runBeforeProtection?: Array<{type: string, target: string, source: string }>
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd, appProfiling}
+    {sources, filesSrc, cwd, appProfiling, runBeforeProtection = []}
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
@@ -160,7 +161,16 @@ export default {
         console.log('Creating zip from source files');
       }
 
-      zipped = await zip(_filesSrc, cwd);
+      if(runBeforeProtection.length > 0) {
+        runBeforeProtection.map((element) => {
+          if(!_filesSrc.includes(element.target)) {
+            console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
+            process.exit(1); 
+          }
+        });
+      }
+
+      zipped = await zip(_filesSrc, cwd, runBeforeProtection);
     } else if (sources) {
       if (debug) {
         console.log('Creating zip from sources');
@@ -304,6 +314,8 @@ export default {
     let filesSrc = finalConfig.filesSrc;
     let filesDest = finalConfig.filesDest;
 
+    let runBeforeProtection = finalConfig.beforeProtection;
+
     if (sources) {
       filesSrc = undefined;
     }
@@ -353,7 +365,8 @@ export default {
         sources,
         filesSrc,
         cwd,
-        appProfiling
+        appProfiling,
+        runBeforeProtection
       });
     } else {
       console.log('Update source files SKIPPED');

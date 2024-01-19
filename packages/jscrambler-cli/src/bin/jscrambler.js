@@ -7,7 +7,7 @@ import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {getMatchedFiles, validateNProtections} from '../utils';
+import {APPEND_JS_TYPE, PREPEND_JS_TYPE, getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -58,6 +58,63 @@ const validateForceAppEnvironment = env => {
   }
 
   return normalizeEnvironment;
+};
+
+const validateBeforeProtection = (beforeProtectionArray = []) => {
+  if(beforeProtectionArray.length === 0) {
+    return;
+  }
+
+  const mandatoryKeys = ['type', 'target', 'source'];
+  const usedTargets = new Set();
+  const usedSources = new Set();
+
+  beforeProtectionArray.filter((element) => {
+    // Check if every array element has a type, a target and a source
+    const validateMandatoryKeys = mandatoryKeys.every((key) => key in element);
+
+    if(!validateMandatoryKeys) {
+      console.error('Invalid structure on beforeProtection: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
+      process.exit(1);
+    }
+
+    const { target, source, type } = element;
+
+    // Check if only valid types are being used
+    if(type !== APPEND_JS_TYPE && type !== PREPEND_JS_TYPE) {
+      console.error(`Invalid type on beforeProtection: only "${APPEND_JS_TYPE}" or "${PREPEND_JS_TYPE}" are allowed.`);
+      process.exit(1);
+    }
+
+    // Check if the provided files are js, mjs or cjs files
+    if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
+      console.error('Invalid extension for beforeProtection target or source files: only *js, mjs and cjs* files can be used to append or prepend.');
+      process.exit(1);
+    }
+
+    // Check if the target has already been used as a source
+    if (usedTargets.has(source)) {
+      console.error(`Error on beforeProtection: file "${source}" has already been used as target and can't be used as source.`);
+      process.exit(1);
+    }
+
+    if(usedSources.has(target)) {
+      console.error(`Error on beforeProtection: file "${target}" has already been used as source and can't be used as target.`);
+      process.exit(1);
+    }
+
+    // Check if the target and source are the same
+    if (target === source) {
+      console.error(`Error on beforeProtection: File "${target}" can't be used as both a target and a source.`);
+      process.exit(1);
+    }
+
+    // Add the target and the source to the corresponding sets
+    usedTargets.add(target);
+    usedSources.add(source);
+  });
+
+  return beforeProtectionArray;
 };
 
 commander
@@ -248,6 +305,10 @@ if (config.profilingDataMode) {
   config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
 }
 
+if(config.beforeProtection) {
+  config.beforeProtection = validateBeforeProtection(config.beforeProtection);
+}
+
 globSrc = config.filesSrc;
 // If src paths have been provided
 if (commander.args.length > 0) {
@@ -337,7 +398,8 @@ const {
   excludeList,
   numberOfProtections,
   ensureCodeAnnotation,
-  forceAppEnvironment
+  forceAppEnvironment,
+  beforeProtection
 } = config;
 
 const params = config.params;
@@ -473,7 +535,8 @@ if (commander.sourceMaps) {
       excludeList,
       ensureCodeAnnotation,
       numberOfProtections,
-      forceAppEnvironment
+      forceAppEnvironment,
+      beforeProtection
     };
     try {
       if (typeof werror !== 'undefined') {

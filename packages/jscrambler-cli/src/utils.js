@@ -1,5 +1,7 @@
 import glob from 'glob';
 import fs from 'fs';
+import { existsSync, readFileSync } from 'fs-extra'
+import { extname, join, normalize } from 'path';
 
 /**
  * Return the list of matched files for minimatch patterns.
@@ -35,4 +37,68 @@ export function validateNProtections(n) {
     process.exit(1);
   }
   return nProtections;
+}
+
+export const APPEND_JS_TYPE = 'append-js';
+export const PREPEND_JS_TYPE = 'prepend-js';
+
+/**
+ * 
+ * @param {*} firstFile if prepending: script file; if appending: target file.
+ * @param {*} secondFile if prepending: target file; if appending: script file.
+ * @returns first and second files concatenated
+ */
+function handleScriptConcatenation (firstFile, secondFile) {
+  const firstFileContent = firstFile.toString('utf-8');
+  const secondFileContent = secondFile.toString('utf-8');
+
+  const concatenatedContent = 
+    firstFileContent +
+    "\n" + 
+    secondFileContent;
+
+    return concatenatedContent;
+}
+
+/**
+ * 
+ * @param {*} scriptObject the object with the script content: { target: '/path/to/target/file', source: '/path/to/script/file', type: 'append-js' | 'prepend-js' }. Its used for both appending and prepending.
+ * @param {*} cwd current working directory, passed by argument
+ * @param {*} path file path (file being parsed)
+ * @param {*} buffer file contents
+ */
+export function concatenate (scriptObject, cwd, path, buffer) {
+  let { target } = scriptObject;
+  
+  if(cwd) {
+    target = join(cwd, target);
+  }
+  
+  target = normalize(target);
+
+  if(target === path) {
+    const { source, type } = scriptObject;
+
+    if(!existsSync(source)) {
+      throw new Error('Provided script file does not exist');
+    }
+
+    const fileContent = readFileSync(target);
+    const scriptContent = readFileSync(source);
+
+    const concatContent = type === APPEND_JS_TYPE 
+      ? handleScriptConcatenation(fileContent, scriptContent)
+      : handleScriptConcatenation(scriptContent, fileContent); 
+
+    buffer = Buffer.from(concatContent, 'utf-8');
+  }
+
+  return buffer;
+}
+
+export function isJavascriptFile (filename) {
+  const fileExtension = extname(filename);
+  const validJsFileExtensions = ['.js', '.mjs', '.cjs'];
+
+  return validJsFileExtensions.includes(fileExtension);
 }

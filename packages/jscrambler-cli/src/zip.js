@@ -7,13 +7,14 @@ import {readFileSync, statSync, outputFileSync} from 'fs-extra';
 import {normalize, resolve, relative, join, isAbsolute} from 'path';
 import {defer} from 'q';
 import {inspect} from 'util';
+import { concatenate } from './utils';
 
 const debug = !!process.env.DEBUG;
 
 // ./zip.js module is excluded from browser-like environments. We take advantage of that here.
 export {outputFileSync};
 
-export async function zip(files, cwd) {
+export async function zip(files, cwd, runBeforeProtection) {
   debug && console.log('Zipping files', inspect(files));
   const deferred = defer();
   // Flag to detect if any file was added to the zip archive
@@ -63,6 +64,10 @@ export async function zip(files, cwd) {
           name = files[i];
         }
         buffer = readFileSync(sPath);
+
+        runBeforeProtection.map((element) => {
+          buffer = concatenate(element, cwd, sPath, buffer);
+        });
       } else {
         // Else if it's a directory path
         zip.folder(sPath);
