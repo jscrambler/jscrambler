@@ -39,6 +39,9 @@ export function validateNProtections(n) {
   return nProtections;
 }
 
+export const APPEND_JS_TYPE = 'append-js';
+export const PREPEND_JS_TYPE = 'prepend-js';
+
 /**
  * 
  * @param {*} firstFile if prepending: script file; if appending: target file.
@@ -83,7 +86,7 @@ export function concatenate (scriptObject, cwd, path, buffer) {
     const fileContent = readFileSync(target);
     const scriptContent = readFileSync(source);
 
-    const concatContent = type === 'append-js' 
+    const concatContent = type === APPEND_JS_TYPE 
       ? handleScriptConcatenation(fileContent, scriptContent)
       : handleScriptConcatenation(scriptContent, fileContent); 
 

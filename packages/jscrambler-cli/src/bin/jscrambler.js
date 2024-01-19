@@ -7,7 +7,7 @@ import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
+import {APPEND_JS_TYPE, PREPEND_JS_TYPE, getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -70,15 +70,21 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
   const usedSources = new Set();
 
   beforeProtectionArray.filter((element) => {
-    // Check if every array element has a type, a target and a source and their values are strings
-    const validateMandatoryKeys = mandatoryKeys.every((key) => key in element && typeof element[key] === 'string');
+    // Check if every array element has a type, a target and a source
+    const validateMandatoryKeys = mandatoryKeys.every((key) => key in element);
 
     if(!validateMandatoryKeys) {
       console.error('Invalid structure on beforeProtection: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
       process.exit(1);
     }
 
-    const { target, source } = element;
+    const { target, source, type } = element;
+
+    // Check if only valid types are being used
+    if(type !== APPEND_JS_TYPE && type !== PREPEND_JS_TYPE) {
+      console.error(`Invalid type on beforeProtection: only "${APPEND_JS_TYPE}" or "${PREPEND_JS_TYPE}" are allowed.`);
+      process.exit(1);
+    }
 
     // Check if the provided files are js, mjs or cjs files
     if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
