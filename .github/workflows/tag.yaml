@@ -11,4 +11,4 @@ jobs:
     name: Tag Code Integrity Actions
     steps:
       - name: Send a publish notification
-        run: "wget -X POST \"${{ secrets.TEST_WEBHOOK }}\" --header 'Content-Type: application/json' --post-data '{\"text\": \"*${{  github.ref_name }}* was published 🚀\"}'"
+        run: "wget -X POST \"${{ secrets.WEBHOOK_API_URI }}\" --header 'Content-Type: application/json' --post-data '{\"text\": \"*${{  github.ref_name }}* was published 🚀\"}'"
