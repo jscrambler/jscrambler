@@ -1,5 +1,11 @@
 # ember-cli-jscrambler
 
+## 6.4.28
+
+### Patch Changes
+
+- [80b2d6d]: Test check with access token
+
 ## 6.4.27
 
 ### Patch Changes
