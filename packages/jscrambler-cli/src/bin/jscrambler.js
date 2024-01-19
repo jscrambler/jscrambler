@@ -67,6 +67,7 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
 
   const mandatoryKeys = ['type', 'target', 'source'];
   const usedTargets = new Set();
+  const usedSources = new Set();
 
   beforeProtectionArray.filter((element) => {
     // Check if every array element has a type, a target and a source and their values are strings
@@ -93,18 +94,24 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
 
     // Check if the target has already been used as a source
     if (usedTargets.has(source)) {
-      console.error(`Error on beforeProtection: File "${target}" has already been used as target.`);
+      console.error(`Error on beforeProtection: file "${source}" has already been used as target and can't be used as source.`);
       process.exit(1);
     }
 
-    // Add the target to the set
-    usedTargets.add(target);
+    if(usedSources.has(target)) {
+      console.error(`Error on beforeProtection: file "${target}" has already been used as source and can't be used as target.`);
+      process.exit(1);
+    }
 
     // Check if the target and source are the same
     if (target === source) {
       console.error(`Error on beforeProtection: File "${target}" can't be used as both a target and a source.`);
       process.exit(1);
     }
+
+    // Add the target and the source to the corresponding sets
+    usedTargets.add(target);
+    usedSources.add(source);
   });
 
   return beforeProtectionArray;
