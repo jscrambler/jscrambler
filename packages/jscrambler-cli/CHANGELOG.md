@@ -1,5 +1,11 @@
 # jscrambler
 
+## 6.4.26
+
+### Patch Changes
+
+- [f5882d4]: Update release process
+
 ## 6.4.25
 
 ### Patch Changes
