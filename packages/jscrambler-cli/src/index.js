@@ -117,7 +117,8 @@ export default {
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
    *  cwd: string,
-   *  appProfiling: ?object
+   *  appProfiling: ?object,
+   * runBeforeProtection?: Array<{type: string, target: string, source: string }>
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
@@ -158,6 +159,15 @@ export default {
 
       if (debug) {
         console.log('Creating zip from source files');
+      }
+
+      if(runBeforeProtection.length > 0) {
+        runBeforeProtection.map((element) => {
+          if(!_filesSrc.includes(element.target)) {
+            console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
+            process.exit(1); 
+          }
+        });
       }
 
       zipped = await zip(_filesSrc, cwd, runBeforeProtection);

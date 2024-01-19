@@ -60,7 +60,7 @@ const validateForceAppEnvironment = env => {
   return normalizeEnvironment;
 };
 
-const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = []) => {
+const validateBeforeProtection = (beforeProtectionArray = []) => {
   if(beforeProtectionArray.length === 0) {
     return;
   }
@@ -90,12 +90,6 @@ const validateBeforeProtection = (beforeProtectionArray = [], filesToProtect = [
     if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
       console.error('Invalid extension for beforeProtection target or source files: only *js, mjs and cjs* files can be used to append or prepend.');
       process.exit(1);
-    }
-
-    // Check if target file is being protected
-    if(!filesToProtect.includes(target)) {
-      console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
-      process.exit(1); 
     }
 
     // Check if the target has already been used as a source
@@ -311,6 +305,10 @@ if (config.profilingDataMode) {
   config.profilingDataMode = validateProfilingDataMode(config.profilingDataMode);
 }
 
+if(config.beforeProtection) {
+  config.beforeProtection = validateBeforeProtection(config.beforeProtection);
+}
+
 globSrc = config.filesSrc;
 // If src paths have been provided
 if (commander.args.length > 0) {
@@ -363,10 +361,6 @@ if (globSrc && globSrc.length) {
   console.log(
     'No filesSrc provided. Using the ones in the application (if any).'
   );
-}
-
-if(config.beforeProtection) {
-  config.beforeProtection = validateBeforeProtection(config.beforeProtection, globSrc);
 }
 
 const {
