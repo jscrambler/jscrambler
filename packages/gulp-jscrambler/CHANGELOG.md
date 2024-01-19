@@ -1,5 +1,13 @@
 # gulp-jscrambler
 
+## 6.4.28
+
+### Patch Changes
+
+- [3d3cfc6]: Possibility to append or prepend scripts to specific files
+- [3d3cfc6]: Updated dependencies
+  - jscrambler@6.4.28
+
 ## 6.4.27
 
 ### Patch Changes
