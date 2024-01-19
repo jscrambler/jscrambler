@@ -30,7 +30,8 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm changeset publish
-          commit: "chore: version packages"
+          commit: "chore(changeset): bump versions"
+          title: "[Changeset] Bump Versions"
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
