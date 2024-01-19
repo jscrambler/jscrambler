@@ -1,5 +1,11 @@
 # jscrambler
 
+## 6.4.25
+
+### Patch Changes
+
+- [a9fe25b]: Improve release process
+
 ## 6.4.24
 
 ### Patch Changes
