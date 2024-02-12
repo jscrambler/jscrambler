@@ -6,7 +6,8 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscrambler/jscrambler.git"
+    "url": "https://github.com/jscrambler/jscrambler.git",
+    "directory": "packages/jscrambler-cli"
   },
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"

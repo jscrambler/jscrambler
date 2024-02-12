@@ -29,6 +29,11 @@
   ],
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jscrambler/jscrambler.git",
+    "directory": "packages/jscrambler-metro-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
