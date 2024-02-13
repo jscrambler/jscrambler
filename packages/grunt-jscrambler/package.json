@@ -14,7 +14,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscrambler/jscrambler.git"
+    "url": "https://github.com/jscrambler/jscrambler.git",
+    "directory": "packages/grunt-jscrambler"
   },
   "bugs": {
     "url": "https://github.com/jscrambler/jscrambler/issues"
