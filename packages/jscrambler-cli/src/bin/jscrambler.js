@@ -202,6 +202,11 @@ commander
     '-n <number>',
     `(version 7.2 and above) Create multiple protections at once.`
   )
+  .option(
+    '--delete-protection-on-success <bool>',
+    'Deletes the protection files after they have been protected and downloaded (default: false)',
+    validateBool('--delete-protection-on-success')
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -309,6 +314,10 @@ if(config.beforeProtection) {
   config.beforeProtection = validateBeforeProtection(config.beforeProtection);
 }
 
+if (commander.deleteProtectionOnSuccess) {
+  config.deleteProtectionOnSuccess = commander.deleteProtectionOnSuccess === 'true';
+}
+
 globSrc = config.filesSrc;
 // If src paths have been provided
 if (commander.args.length > 0) {
@@ -399,7 +408,8 @@ const {
   numberOfProtections,
   ensureCodeAnnotation,
   forceAppEnvironment,
-  beforeProtection
+  beforeProtection,
+  deleteProtectionOnSuccess,
 } = config;
 
 const params = config.params;
@@ -536,7 +546,8 @@ if (commander.sourceMaps) {
       ensureCodeAnnotation,
       numberOfProtections,
       forceAppEnvironment,
-      beforeProtection
+      beforeProtection,
+      deleteProtectionOnSuccess,
     };
     try {
       if (typeof werror !== 'undefined') {
