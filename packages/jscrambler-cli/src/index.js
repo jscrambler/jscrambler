@@ -292,7 +292,8 @@ export default {
       excludeList,
       numberOfProtections,
       ensureCodeAnnotation,
-      forceAppEnvironment
+      forceAppEnvironment,
+      deleteProtectionOnSuccess,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -573,6 +574,17 @@ export default {
 
       if (printProtectionId) {
         console.log(protection._id);
+      }
+
+      // change this to have the variable that checks if the protection is to be removed
+      if(deleteProtectionOnSuccess) {
+        this.removeProtection(client, protection._id, applicationId)
+          .then(() => {
+            if(debug) {
+              console.log('Protection has been successful and will now be deleted')
+            }
+          })
+          .catch((error) => console.error(error));
       }
 
       return protection._id;
