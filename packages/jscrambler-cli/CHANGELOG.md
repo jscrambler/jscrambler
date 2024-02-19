@@ -1,5 +1,18 @@
 # jscrambler
 
+## 7.0.0
+
+### Major Changes
+
+- [26fdf6e]: Addition of a new flag `--delete-protection-on-success` that allows for the deletion of a protection after it has been run and was successful.
+  By default `--delete-protection-on-success` is set to `false` and must be explicitly set to `true`.
+
+  This flag was added in order to delete successful protections after the files were downloaded: protections might not be needed anymore after being used one single time and will take up space unnecessarily.
+
+### Patch Changes
+
+- [6758a7f]: Better package metadata. This may assist tooling like Renovate bot.
+
 ## 6.4.28
 
 ### Patch Changes
