@@ -1,5 +1,13 @@
 # jscrambler-webpack-plugin
 
+## 6.4.29
+
+### Patch Changes
+
+- [6758a7f]: Better package metadata. This may assist tooling like Renovate bot.
+- [26fdf6e,6758a7f]: Updated dependencies
+  - jscrambler@7.0.0
+
 ## 6.4.28
 
 ### Patch Changes
