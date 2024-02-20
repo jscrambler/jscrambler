@@ -127,6 +127,7 @@ Options:
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
   --input-symbol-table <file>             (version 6.3 and above) Protection should use symbol table when protecting. (default: no file)
   --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
+  --delete-protection-on-success <bool>   Delete a protection when it was successful (default: false)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
   --skip-sources                          Prevent source files from being updated
