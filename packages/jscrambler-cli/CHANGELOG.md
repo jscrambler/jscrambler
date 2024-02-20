@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.0.0
+
+### Major Changes
+
+- [542cef9]: Added the newly developed `--delete-protection-on-success` flag to the README.
+
 ## 7.0.0
 
 ### Major Changes
