@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.0.1
+
+### Patch Changes
+
+- [56e65d9]: Added async behaviour to delete protection on success.
+
 ## 8.0.0
 
 ### Major Changes
