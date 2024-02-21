@@ -577,8 +577,8 @@ export default {
       }
 
       // change this to have the variable that checks if the protection is to be removed
-      if(deleteProtectionOnSuccess) {
-        this.removeProtection(client, protection._id, applicationId)
+      if (deleteProtectionOnSuccess) {
+        await this.removeProtection(client, protection._id, applicationId)
           .then(() => {
             if(debug) {
               console.log('Protection has been successful and will now be deleted')
