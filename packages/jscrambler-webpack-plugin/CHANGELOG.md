@@ -1,5 +1,11 @@
 # jscrambler-webpack-plugin
 
+## 6.4.32
+
+### Patch Changes
+
+- [447974c]: Add support for source-maps with obfuscationHook=processAssets
+
 ## 6.4.31
 
 ### Patch Changes
