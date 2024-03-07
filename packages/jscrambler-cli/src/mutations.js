@@ -338,25 +338,6 @@ export function createApplicationProtection(
 
   [options, fragments] = cleanupInputFields(args, fragments, options);
 
-  if (!args.some(f => f.name === 'options')) {
-    const {bail, randomizationSeed} = options;
-
-    return {
-      query: `
-      mutation ${mutationName} ($applicationId: String!, $bail: Boolean, $randomizationSeed: String) {
-        ${mutationName} (applicationId: $applicationId, bail: $bail, randomizationSeed: $randomizationSeed) {
-          ${fragments}
-        }
-      }
-    `,
-      params: {
-        applicationId,
-        bail,
-        randomizationSeed
-      }
-    };
-  }
-
   // Check if createApplicationProtection supports "data" argument
   if (args.some(arg => arg.name === 'data')) {
     return {
