@@ -338,34 +338,17 @@ export function createApplicationProtection(
 
   [options, fragments] = cleanupInputFields(args, fragments, options);
 
-  // Check if createApplicationProtection supports "data" argument
-  if (args.some(arg => arg.name === 'data')) {
-    return {
-      query: `
-        mutation ${mutationName} ($applicationId: String!, $data: ${mutationInputType}) {
-          ${mutationName} (applicationId: $applicationId, data: $data) {
-            ${fragments}
-          }
-        }
-      `,
-      params: {
-        applicationId,
-        data: options
-      }
-    };
-  }
-
   return {
     query: `
-      mutation ${mutationName} ($applicationId: String!, $options: JSON) {
-        ${mutationName} (applicationId: $applicationId, options: $options) {
+      mutation ${mutationName} ($applicationId: String!, $data: ${mutationInputType}) {
+        ${mutationName} (applicationId: $applicationId, data: $data) {
           ${fragments}
         }
       }
     `,
     params: {
       applicationId,
-      options
+      data: options
     }
   };
 }
