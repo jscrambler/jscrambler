@@ -10,7 +10,7 @@ import JscramblerClient from './client';
 import * as mutations from './mutations';
 import * as queries from './queries';
 import {HTTP_STATUS_CODES} from './constants';
-import {zip, zipSources, unzip, outputFileSync} from './zip';
+import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
 import {getMatchedFiles} from './utils';
 
@@ -912,7 +912,7 @@ export default {
     if (typeof destCallback === 'function') {
       destCallback(download, filesDest);
     } else {
-      outputFileSync(
+      await fsPromises.writeFile(
         path.join(filesDest, `${protectionId}_symbolTable.json`),
         download
       );
