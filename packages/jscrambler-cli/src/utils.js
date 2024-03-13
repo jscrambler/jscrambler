@@ -1,6 +1,5 @@
 import glob from 'glob';
 import fs from 'fs';
-import { existsSync, readFileSync } from 'fs-extra'
 import { extname, join, normalize } from 'path';
 
 /**
@@ -79,12 +78,12 @@ export function concatenate (scriptObject, cwd, path, buffer) {
   if(target === path) {
     const { source, type } = scriptObject;
 
-    if(!existsSync(source)) {
+    if(!fs.existsSync(source)) {
       throw new Error('Provided script file does not exist');
     }
 
-    const fileContent = readFileSync(target);
-    const scriptContent = readFileSync(source);
+    const fileContent = fs.readFileSync(target);
+    const scriptContent = fs.readFileSync(source);
 
     const concatContent = type === APPEND_JS_TYPE 
       ? handleScriptConcatenation(fileContent, scriptContent)
