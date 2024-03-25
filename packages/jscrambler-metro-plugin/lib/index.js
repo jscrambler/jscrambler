@@ -30,6 +30,8 @@ const {
   handleExcludeList,
   injectTolerateBegninPoisoning,
   handleAntiTampering,
+  addHermesShowSourceDirective,
+  handleHermesIncompatibilities,
   wrapCodeWithTags
 } = require('./utils');
 
@@ -155,7 +157,16 @@ async function obfuscateBundle(
     process.exit(-1);
   }
 
-  const {addShowSource, requireStartAtFirstColumn} = handleAntiTampering(config, processedMetroBundle);
+  const requireStartAtFirstColumn = handleAntiTampering(
+    config,
+    processedMetroBundle,
+  );
+
+  const addShowSource = addHermesShowSourceDirective(config);
+
+  if (addShowSource) {
+    console.log(`info Jscrambler 'show source' directive added`);
+  }
 
   const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
 
@@ -284,8 +295,16 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
       console.log(
         instrument
           ? 'info Jscrambler Instrumenting Code'
-          : 'info Jscrambler Obfuscating Code'
+          : `info Jscrambler Obfuscating Code ${
+              config.enabledHermes
+                ? "(Using Hermes Engine)"
+                : "(If you are using Hermes Engine set enabledHermes=true)"
+            }`,
       );
+
+      // check for incompatible transformations and turn off code hardening
+      handleHermesIncompatibilities(config);
+
       // start obfuscation
       await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);
     } catch(err) {
