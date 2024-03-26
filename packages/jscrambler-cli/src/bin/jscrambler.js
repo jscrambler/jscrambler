@@ -248,6 +248,7 @@ config.inputSymbolTable = commander.inputSymbolTable || config.inputSymbolTable;
 config.removeProfilingData = commander.removeProfilingData;
 config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
+config.instrument = commander.instrument || config.instrument;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -471,7 +472,7 @@ if (commander.sourceMaps) {
       process.exit(1);
     }
   })();
-} else if (commander.instrument) {
+} else if (config.instrument) {
   jscrambler
     .instrumentAndDownload({
       ...clientSettings,
