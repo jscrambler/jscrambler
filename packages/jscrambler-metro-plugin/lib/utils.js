@@ -9,6 +9,8 @@ const {
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_SELF_DEFENDING,
   JSCRAMBLER_ANTI_TAMPERING,
+  JSCRAMBLER_HERMES_INCOMPATIBILITIES,
+  JSCRAMBLER_HERMES_ADD_SHOW_SOURCE_DIRECTIVE,
   JSCRAMBLER_ANTI_TAMPERING_MODE_SKL,
   JSCRAMBLER_ANTI_TAMPERING_MODE_RCK,
   JSCRAMBLER_TOLERATE_BENIGN_POISONING,
@@ -285,10 +287,9 @@ function injectTolerateBegninPoisoning(config) {
 /**
  * @param {object} config
  * @param {string} processedMetroBundle
- * @returns {{addShowSource: boolean, requireStartAtFirstColumn: boolean}}
+ * @returns {boolean} if true the code must start in the first column
  */
 function handleAntiTampering(config, processedMetroBundle) {
-  let addShowSource = false;
   let requireStartAtFirstColumn = false
   if (Array.isArray(config.params)) {
     const antiTampering = config.params.find(
@@ -298,7 +299,6 @@ function handleAntiTampering(config, processedMetroBundle) {
       antiTampering.options = antiTampering.options || {};
       antiTampering.options.mode = antiTampering.options.mode || [JSCRAMBLER_ANTI_TAMPERING_MODE_RCK, JSCRAMBLER_ANTI_TAMPERING_MODE_SKL];
       if (config.enabledHermes) {
-        addShowSource = true;
         if (
           Array.isArray(antiTampering.options.mode) &&
           antiTampering.options.mode.includes(JSCRAMBLER_ANTI_TAMPERING_MODE_SKL)
@@ -316,7 +316,53 @@ function handleAntiTampering(config, processedMetroBundle) {
       }
     }
   }
-  return {addShowSource, requireStartAtFirstColumn};
+  return requireStartAtFirstColumn;
+}
+
+/**
+ * @param {object} config
+ * @returns {boolean} if true 'show source' directive is added
+ */
+function addHermesShowSourceDirective(config) {
+  if (!config.enabledHermes) {
+    return false;
+  }
+
+  for (const slugName of JSCRAMBLER_HERMES_ADD_SHOW_SOURCE_DIRECTIVE) {
+    if (Array.isArray(config.params)) {
+      const showSource = config.params.find((param) => param.name === slugName);
+      if (showSource) {
+        return true;
+      }
+    }
+  }
+
+  // if the user does not have the code hardening threshold, we need to add 'show source'
+  return !config.codeHardeningThreshold;
+}
+
+/**
+ * @param config
+ * @exception {Error} If an incompatible transformation was selected
+ */
+function handleHermesIncompatibilities(config) {
+  if (!config.enabledHermes) {
+    return;
+  }
+
+  for (const {
+    slugName,
+    errorMessage,
+  } of JSCRAMBLER_HERMES_INCOMPATIBILITIES) {
+    if (Array.isArray(config.params)) {
+      const usingIncompatible = config.params.find(
+        (param) => param.name === slugName,
+      );
+      if (usingIncompatible) {
+        throw new Error(errorMessage);
+      }
+    }
+  }
 }
 
 module.exports = {
@@ -332,5 +378,7 @@ module.exports = {
   handleExcludeList,
   injectTolerateBegninPoisoning,
   handleAntiTampering,
+  addHermesShowSourceDirective,
+  handleHermesIncompatibilities,
   wrapCodeWithTags
 };
