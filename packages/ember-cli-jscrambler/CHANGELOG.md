@@ -1,5 +1,16 @@
 # ember-cli-jscrambler
 
+## 6.5.0
+
+### Minor Changes
+
+- [4752980]: Add the ability to instrument the app from the config file - instrument: true
+
+### Patch Changes
+
+- [4752980]: Updated dependencies
+  - jscrambler@8.1.0
+
 ## 6.4.32
 
 ### Patch Changes
