@@ -2,7 +2,7 @@
   "name": "gulp-jscrambler",
   "description": "Obfuscate your source files using the Jscrambler API.",
   "version": "6.5.0",
-  "main": "index.js",
+  "exports": "./index.js",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
@@ -24,7 +24,7 @@
     "eslint:fix": "pnpm run eslint --fix"
   },
   "engines": {
-    "node": ">= 0.1"
+    "node": ">= 12.17.0"
   },
   "devDependencies": {
     "del": "^0.1.3",

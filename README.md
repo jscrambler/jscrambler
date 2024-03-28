@@ -47,7 +47,10 @@ Please make sure you install the right version, otherwise some functionalities m
 | _Jscrambler Version_   |      _Client and Integrations_      |
 |:----------:|:-------------:|
 | _<= 7.1_ |  _<= 5.0.0_ |
-| _\>= 7.2_ |   _\>= 6.0.0_ |
+| _7.2 ... 8.2_ |   _\>= 6.0.0_ |
+| _\>= 8.3_ | _\>= 9.0.0_ |
+
+Note: CLI 9.0.0 still supports older versions of Jscrambler (>= 7.2).
 
 ## Jscrambler JavaScript Framework/Library Integrations
 

@@ -26,7 +26,7 @@
     "eslint:fix": "eslint src/ --fix"
   },
   "engines": {
-    "node": ">= 6.10.0"
+    "node": ">= 12.17.0"
   },
   "dependencies": {
     "@jscrambler/https-proxy-agent": "^5.0.1",
@@ -34,7 +34,6 @@
     "commander": "^2.8.1",
     "core-js": "^3.16.4",
     "filesize-parser": "1.5.0",
-    "fs-extra": "^10.1.0",
     "glob": "^8.1.0",
     "http-proxy-agent": "^4.0.1",
     "jszip": "^3.7.1",
@@ -57,7 +56,7 @@
     "dist",
     "CHANGELOG.md"
   ],
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
   },
