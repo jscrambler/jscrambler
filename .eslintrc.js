@@ -21,7 +21,13 @@ module.exports = {
         destructuredArrayIgnorePattern: '^_',
       },
     ],
-    'prettier/prettier': ['error'],
+    'prettier/prettier': [
+      'error',
+      {
+        singleQuote: true,
+        semi: true,
+      },
+    ],
   },
   plugins: ['prettier'],
 };
