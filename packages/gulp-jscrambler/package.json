@@ -24,7 +24,7 @@
     "eslint:fix": "pnpm run eslint --fix"
   },
   "engines": {
-    "node": ">= 0.1"
+    "node": ">= 12.17.0"
   },
   "devDependencies": {
     "del": "^0.1.3",
