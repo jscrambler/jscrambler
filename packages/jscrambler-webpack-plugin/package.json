@@ -2,7 +2,7 @@
   "name": "jscrambler-webpack-plugin",
   "version": "6.5.2",
   "description": "A webpack plugin to protect your generated bundle using Jscrambler",
-  "main": "lib/index.js",
+  "exports": "./lib/index.js",
   "types": "index.d.ts",
   "scripts": {
     "prepare": "npm run build",

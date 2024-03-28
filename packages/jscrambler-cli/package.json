@@ -56,7 +56,7 @@
     "dist",
     "CHANGELOG.md"
   ],
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "bin": {
     "jscrambler": "dist/bin/jscrambler.js"
   },
