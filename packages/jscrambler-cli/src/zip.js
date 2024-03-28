@@ -138,7 +138,7 @@ export async function unzip(zipFile, dest, stream = true) {
           await fs.mkdir(dest, { recursive: true });
           destPath = join(dest, _file);
         }
-        await fs.outputFile(destPath, buffer);
+        await fs.writeFile(destPath, buffer);
       }
     }
   }
