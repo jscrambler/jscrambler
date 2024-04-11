@@ -350,7 +350,7 @@ function handleHermesIncompatibilities(config) {
   }
 
   if (config.codeHardeningThreshold === undefined) {
-    console.log(`info Jscrambler Code Hardening Threshold ignored, as it is incompatible with hermes engine.`);
+    console.log(`info Jscrambler Code Hardening ignored, as it is incompatible with hermes engine.`);
   }
   config.codeHardeningThreshold = 999999999;
 
