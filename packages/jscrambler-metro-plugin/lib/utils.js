@@ -303,7 +303,7 @@ function handleAntiTampering(config, processedMetroBundle) {
           Array.isArray(antiTampering.options.mode) &&
           antiTampering.options.mode.includes(JSCRAMBLER_ANTI_TAMPERING_MODE_SKL)
         ) {
-          console.log(`info Jscrambler Anti-Tampering Mode SKL can not be use in hermes engine. RCK mode was SET.`);
+          console.log(`info Jscrambler Anti-Tampering Mode SKL can not be used in hermes engine. RCK mode was SET.`);
           antiTampering.options.mode = [JSCRAMBLER_ANTI_TAMPERING_MODE_RCK];
         }
       }
@@ -337,8 +337,7 @@ function addHermesShowSourceDirective(config) {
     }
   }
 
-  // if the user does not have the code hardening threshold, we need to add 'show source'
-  return !config.codeHardeningThreshold;
+  return false;
 }
 
 /**
@@ -348,6 +347,11 @@ function addHermesShowSourceDirective(config) {
 function handleHermesIncompatibilities(config) {
   if (!config.enabledHermes) {
     return;
+  }
+
+  if (!config.codeHardeningThreshold) {
+    console.log(`info Jscrambler Code Hardening can not be used in hermes engine.`);
+    config.codeHardeningThreshold = 999999999;
   }
 
   for (const {
