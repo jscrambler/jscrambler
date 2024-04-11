@@ -349,10 +349,10 @@ function handleHermesIncompatibilities(config) {
     return;
   }
 
-  if (!config.codeHardeningThreshold) {
-    console.log(`info Jscrambler Code Hardening can not be used in hermes engine.`);
-    config.codeHardeningThreshold = 999999999;
+  if (config.codeHardeningThreshold === undefined) {
+    console.log(`info Jscrambler Code Hardening Threshold ignored, as it is incompatible with hermes engine.`);
   }
+  config.codeHardeningThreshold = 999999999;
 
   for (const {
     slugName,
