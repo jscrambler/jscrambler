@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 6.5.1
+
+### Patch Changes
+
+- [97ad6b9]: Better handling of hermes engine
+
 ## 6.5.0
 
 ### Minor Changes
