@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.1.1
+
+### Patch Changes
+
+- [5bb3289]: Added proxy protocol option
+
 ## 8.1.0
 
 ### Minor Changes
