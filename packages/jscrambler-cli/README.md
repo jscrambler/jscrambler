@@ -284,6 +284,7 @@ If your requests need to go through a proxy, there is an option where you can sp
 ```
 {
   proxy: {
+    protocol: '', // 'http' by default
     host: '',
     port: 1234,
     auth: {

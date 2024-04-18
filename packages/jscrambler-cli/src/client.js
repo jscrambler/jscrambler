@@ -210,19 +210,14 @@ JScramblerClient.prototype.request = function(
       formattedAuth = `${username}:${password}`;
     }
 
-      /**
-       * Monkey-patch to inject a custom Cert CA into TLS.connect
-       * options.
-       */
-      if (agentOptions.ca) {
-        const oriCallback = HttpsProxyAgent.prototype.callback;
-        HttpsProxyAgent.prototype.callback = function(req, opts) {
-          return oriCallback.call(this, req, {...opts, ...agentOptions})
-        }
-      }
-
     settings.proxy = false;
-    const proxyConfig = {host, port, auth: formattedAuth, ...agentOptions};
+    const proxyConfig = {
+      host,
+      port,
+      auth: formattedAuth,
+      protocol: proxy.protocol || "http",
+      ...agentOptions,
+    };
     settings.httpsAgent = new HttpsProxyAgent(proxyConfig);
     settings.httpAgent = new HttpProxyAgent(proxyConfig);
   } else if(agentOptions) {
