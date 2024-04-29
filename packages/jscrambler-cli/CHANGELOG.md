@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.1.2
+
+### Patch Changes
+
+- [be8825b]: Make fs promises compatible with older node versions
+
 ## 8.1.1
 
 ### Patch Changes
