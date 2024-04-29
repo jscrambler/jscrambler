@@ -2,7 +2,7 @@
 import path from 'path';
 import request from 'axios';
 import defaults from 'lodash.defaults';
-import fsPromises from 'fs/promises';
+import fs from 'fs';
 
 import config from './config';
 import generateSignedParams from './generate-signed-params';
@@ -165,7 +165,7 @@ export default {
         runBeforeProtection.map((element) => {
           if(!_filesSrc.includes(element.target)) {
             console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
-            process.exit(1); 
+            process.exit(1);
           }
         });
       }
@@ -452,7 +452,7 @@ export default {
     };
 
     if (finalConfig.inputSymbolTable) {
-      const inputSymbolTableContents = await fsPromises.readFile(
+      const inputSymbolTableContents = await fs.promises.readFile(
         finalConfig.inputSymbolTable,
         'utf-8',
       );
