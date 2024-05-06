@@ -1,5 +1,5 @@
 ---
-"jscrambler": major
+"jscrambler": minor
 ---
 
 Remove reference to unnecessary lib fs-extra in cli.
