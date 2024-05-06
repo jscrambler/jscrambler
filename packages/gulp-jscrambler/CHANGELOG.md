@@ -1,5 +1,16 @@
 # gulp-jscrambler
 
+## 8.4.0
+
+### Minor Changes
+
+- [73d973b]: Make CLI compatible with newer API, drop compatibility with older ones.
+
+### Patch Changes
+
+- [033fd40,691d53b,73d973b]: Updated dependencies
+  - jscrambler@8.4.0
+
 ## 6.5.2
 
 ### Patch Changes

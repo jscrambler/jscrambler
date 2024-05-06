@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-jscrambler",
-  "version": "8.3.0",
+  "version": "8.4.0",
   "description": "Jscrambler JavaScript protection for Ember-CLI",
   "exports": "./index.js",
   "keywords": [
