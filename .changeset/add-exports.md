@@ -1,5 +1,5 @@
 ---
-"jscrambler": major
+"jscrambler": minor
 ---
 
 Prevents accidental breakage due to changes in internal files.
