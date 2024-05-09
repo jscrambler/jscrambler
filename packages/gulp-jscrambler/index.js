@@ -7,6 +7,7 @@ var PluginError = require('plugin-error');
 var through = require('through2');
 
 module.exports = function (options) {
+  const emptyFiles = [];
   options = defaults(options || {}, {
     cwd: process.cwd(),
     filesSrc: [],
@@ -21,7 +22,11 @@ module.exports = function (options) {
 
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
-      options.filesSrc.push(file);
+      if (file.stat.size === 0) {
+        emptyFiles.push(file);
+      } else {
+        options.filesSrc.push(file);
+      }
     }
     if (file.isStream()) {
       // streaming is not supported because jscrambler-cli/src/zip.js cannot handle content streams
@@ -32,6 +37,8 @@ module.exports = function (options) {
   };
   var scramble = function (done) {
     var self = this;
+    // Empty files should not be protected
+    self.push(...emptyFiles);
     var dest = function (buffer, filename) {
       var file = null;
 
