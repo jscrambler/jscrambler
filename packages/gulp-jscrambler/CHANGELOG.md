@@ -1,5 +1,11 @@
 # gulp-jscrambler
 
+## 8.4.1
+
+### Patch Changes
+
+- [be3f6e4]: Empty files are now skipped on gulp-jscrambler
+
 ## 8.4.0
 
 ### Minor Changes
