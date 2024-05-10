@@ -1,5 +1,11 @@
 # gulp-jscrambler
 
+## 8.4.2
+
+### Patch Changes
+
+- [d5b7969]: There is no need to push the empty files array if empty files were not found
+
 ## 8.4.1
 
 ### Patch Changes
