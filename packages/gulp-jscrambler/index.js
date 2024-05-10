@@ -38,7 +38,9 @@ module.exports = function (options) {
   var scramble = function (done) {
     var self = this;
     // Empty files should not be protected
-    self.push(...emptyFiles);
+    if (emptyFiles.length > 0) {
+      self.push(...emptyFiles);
+    }
     var dest = function (buffer, filename) {
       var file = null;
 
