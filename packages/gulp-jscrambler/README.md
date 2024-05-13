@@ -33,8 +33,16 @@ In order to start using gulp-jscrambler you will need to add a new task to your 
 Here's an example of how Jscrambler task should look like:
 
 ```js
-var gulp = require('gulp');
-var jscrambler = require('gulp-jscrambler');
+const gulp = require('gulp');
+const jscrambler = require('gulp-jscrambler');
+
+function enable(filesSrc) {
+  if (filesSrc.length === 0) {
+    return false;
+  }
+
+  return true;
+}
 
 gulp.task('default', function (done) {
   gulp
@@ -45,6 +53,7 @@ gulp.task('default', function (done) {
         secretKey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
       },
       applicationId: 'XXXXXXXXXXXX',
+      enable,
       params: [
         {
           name: 'whitespaceRemoval'
@@ -71,6 +80,8 @@ You can also grab your current configuration on your application page. This will
 ![download config file location](https://blog.jscrambler.com/content/images/2018/08/jscrambler-101-first-use-download-json.png)
 
 Keep in mind that the `params` object is optional and if it is not provided we will use your previous configuration.
+
+The `enable` object is an optional function (returns true by default) that will allow to manipulate the files sources and decide if you want to protect them (returning true) or skip (returning false). The example provided before is a use case that will skip the Jscrambler protection when there isn't any files on source.
 
 ### Usage Example
 

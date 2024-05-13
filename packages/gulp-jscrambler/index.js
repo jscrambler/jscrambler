@@ -12,6 +12,7 @@ module.exports = function (options) {
     cwd: process.cwd(),
     filesSrc: [],
     keys: {},
+    enable: () => true,
     clientId: 3
   });
 
@@ -22,7 +23,7 @@ module.exports = function (options) {
 
   var aggregate = function (file, enc, next) {
     if (file.isBuffer()) {
-      if (file.stat.size === 0) {
+      if (file.contents.length === 0) {
         emptyFiles.push(file);
       } else {
         options.filesSrc.push(file);
@@ -39,7 +40,20 @@ module.exports = function (options) {
     var self = this;
     // Empty files should not be protected
     if (emptyFiles.length > 0) {
-      self.push(...emptyFiles);
+      emptyFiles.forEach((file) => {
+        file.base = null;
+        self.push(file)
+      })
+    }
+    if (!options.enable(options.filesSrc)) {
+      if (options.filesSrc.length > 0) {
+        options.filesSrc.forEach((file) => {
+          file.base = null;
+          self.push(file);
+        });
+      }
+      console.log('Skipping Jscrambler protection...');
+      return done(null);
     }
     var dest = function (buffer, filename) {
       var file = null;
