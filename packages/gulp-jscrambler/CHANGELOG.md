@@ -1,5 +1,11 @@
 # gulp-jscrambler
 
+## 8.5.0
+
+### Minor Changes
+
+- [30ab833]: Added enable option
+
 ## 8.4.2
 
 ### Patch Changes
