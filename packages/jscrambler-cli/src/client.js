@@ -6,8 +6,8 @@ import {gzipSync} from 'zlib';
 import url from 'url';
 import https from 'https';
 import http from 'http';
-import HttpsProxyAgent from '@jscrambler/https-proxy-agent';
-import HttpProxyAgent from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import { HttpProxyAgent } from 'http-proxy-agent';
 
 import cfg from './config';
 import generateSignedParams from './generate-signed-params';
@@ -158,7 +158,7 @@ JScramblerClient.prototype.request = function(
     signedData = params;
   }
 
-  let {protocol, port, proxy} = this.options;
+  let { protocol, port, proxy } = this.options;
 
   if (!port && !protocol) {
     port = 443;
@@ -193,34 +193,35 @@ JScramblerClient.prototype.request = function(
   }
 
   if (proxy || typeof proxy === 'object') {
-    const {host, port = 8080, auth} = proxy;
+    const { host, port = 8080, auth } = proxy;
 
-    if(!host) {
+    if (!host) {
       throw new Error('Required *proxy.host* not provided');
     }
 
-    let formattedAuth = undefined;
+    let username;
+    let password;
     if (auth) {
-      const {username, password} = auth;
+      ({ username, password } = auth);
 
-      if(!username || !password) {
-        throw new Error('Required *proxy.auth* username or/and password not provided');
+      if (!username || !password) {
+        throw new Error(
+          'Required *proxy.auth* username or/and password not provided',
+        );
       }
-
-      formattedAuth = `${username}:${password}`;
     }
 
     settings.proxy = false;
     const proxyConfig = {
       host,
       port,
-      auth: formattedAuth,
-      protocol: proxy.protocol || "http",
-      ...agentOptions,
+      username,
+      password,
+      protocol: `${proxy.protocol || 'http'}:`,
     };
-    settings.httpsAgent = new HttpsProxyAgent(proxyConfig);
-    settings.httpAgent = new HttpProxyAgent(proxyConfig);
-  } else if(agentOptions) {
+    settings.httpsAgent = new HttpsProxyAgent(proxyConfig, agentOptions);
+    settings.httpAgent = new HttpProxyAgent(proxyConfig, agentOptions);
+  } else if (agentOptions) {
     settings.httpsAgent = new https.Agent(agentOptions);
     settings.httpAgent = new http.Agent(agentOptions);
   }
@@ -236,7 +237,11 @@ JScramblerClient.prototype.request = function(
     promise = this.axiosInstance[method.toLowerCase()](formattedUrl, settings);
   } else {
     data = signedData;
-    promise = this.axiosInstance[method.toLowerCase()](formattedUrl, data, settings);
+    promise = this.axiosInstance[method.toLowerCase()](
+      formattedUrl,
+      data,
+      settings,
+    );
   }
 
   const start = Date.now();
