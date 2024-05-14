@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.4.1
+
+### Patch Changes
+
+- [4db3431]: Fix folder creation bug
+
 ## 8.4.0
 
 ### Minor Changes
