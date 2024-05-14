@@ -135,8 +135,8 @@ export async function unzip(zipFile, dest, stream = true) {
           if (isWinAbsolutePath(_file)) {
             _file = parseWinAbsolutePath(_file).path;
           }
-          await fs.mkdir(dest, { recursive: true });
           destPath = join(dest, _file);
+          await fs.mkdir(dirname(destPath), { recursive: true });
         }
         await fs.writeFile(destPath, buffer);
       }
