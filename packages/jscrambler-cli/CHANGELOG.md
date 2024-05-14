@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.4.2
+
+### Patch Changes
+
+- [8e2ec8d]: bump http&https-proxy-agent libs
+
 ## 8.4.1
 
 ### Patch Changes
