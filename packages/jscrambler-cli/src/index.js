@@ -448,7 +448,7 @@ export default {
       source,
       tolerateMinification,
       numberOfProtections,
-      forceAppEnvironment
+      forceAppEnvironment,
     };
 
     if (finalConfig.inputSymbolTable) {
@@ -457,6 +457,10 @@ export default {
         'utf-8',
       );
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
+    }
+
+    if (finalConfig.experimentalOptions) {
+      protectionOptions.experimentalOptions = finalConfig.experimentalOptions;
     }
 
     const createApplicationProtectionRes = await this.createApplicationProtections(

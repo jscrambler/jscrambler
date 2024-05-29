@@ -411,6 +411,7 @@ const {
   forceAppEnvironment,
   beforeProtection,
   deleteProtectionOnSuccess,
+  experimentalOptions,
 } = config;
 
 const params = config.params;
@@ -549,6 +550,7 @@ if (commander.sourceMaps) {
       forceAppEnvironment,
       beforeProtection,
       deleteProtectionOnSuccess,
+      experimentalOptions,
     };
     try {
       if (typeof werror !== 'undefined') {
