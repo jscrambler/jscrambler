@@ -294,6 +294,7 @@ export default {
       ensureCodeAnnotation,
       forceAppEnvironment,
       deleteProtectionOnSuccess,
+      mode,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -448,7 +449,8 @@ export default {
       source,
       tolerateMinification,
       numberOfProtections,
-      forceAppEnvironment
+      forceAppEnvironment,
+      mode,
     };
 
     if (finalConfig.inputSymbolTable) {
