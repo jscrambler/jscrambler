@@ -271,6 +271,7 @@ config.removeProfilingData = commander.removeProfilingData;
 config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 config.instrument = commander.instrument || config.instrument;
+config.mode = commander.mode || config.mode;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -433,6 +434,7 @@ const {
   forceAppEnvironment,
   beforeProtection,
   deleteProtectionOnSuccess,
+  mode,
 } = config;
 
 const params = config.params;
@@ -581,6 +583,7 @@ if (commander.sourceMaps) {
       forceAppEnvironment,
       beforeProtection,
       deleteProtectionOnSuccess,
+      mode,
     };
     try {
       if (typeof werror !== 'undefined') {
