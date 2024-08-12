@@ -385,7 +385,6 @@ export default {
       updateData.areSubscribersOrdered = Array.isArray(params);
     }
 
-
     const dataToValidate = {
       applicationTypes,
       areSubscribersOrdered,
@@ -396,7 +395,8 @@ export default {
       useAppClassification,
       ensureCodeAnnotation,
       useProfilingData,
-      useRecommendedOrder
+      useRecommendedOrder,
+      mode,
     };
 
     for (const prop in dataToValidate) {
