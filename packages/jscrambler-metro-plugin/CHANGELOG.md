@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.3
+
+### Patch Changes
+
+- [5d71731]: Properly handle sourcemap generation when there are excluded files
+
 ## 8.4.2
 
 ### Patch Changes
