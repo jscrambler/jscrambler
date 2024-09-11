@@ -192,12 +192,24 @@ async function obfuscateBundle(
       return [`${chunks[0]}${globalThisPolyfill}`, ...chunks.slice(1)].join('\n');
     }
 
+    let showSource = addShowSource;
+    let startAtFirstColumn = requireStartAtFirstColumn;
+
     const obfuscatedCode = obfusctedUserFiles[i - 1];
+    const sourceFileIgnored = metroUserFilesOnly[i - 1] === obfuscatedCode;
+
+    if (sourceFileIgnored) {
+      // restore excluded files
+      showSource = false;
+      startAtFirstColumn = false;
+      debug && console.log(`debug Jscrambler File ${fileNames[i - 1]} was excluded`);
+    }
+
     const tillCodeEnd = c.substr(
       c.indexOf(JSCRAMBLER_END_ANNOTATION),
       c.length
     );
-    return `${acc}${JSCRAMBLER_BEG_ANNOTATION}${addShowSource ? '"show source";' : ''}${requireStartAtFirstColumn ? '\n' : ''}${obfuscatedCode}${tillCodeEnd}`;
+    return `${acc}${JSCRAMBLER_BEG_ANNOTATION}${showSource ? '"show source";' : ''}${startAtFirstColumn ? '\n' : ''}${obfuscatedCode}${tillCodeEnd}`;
   }, '');
 
   await writeFile(bundlePath, stripJscramblerTags(finalBundle));

@@ -36,9 +36,20 @@ module.exports = async function generateSourceMaps(payload) {
   await jscrambler.downloadSourceMaps(Object.assign({protectionId}, config));
 
   // read obfuscated source-map from filesystem
-  const obfuscatedSourceMaps = await Promise.all(metroUserFilesOnly.map((c, i) =>
-    readFile(`${JSCRAMBLER_SOURCE_MAPS_TEMP_FOLDER}/${fileNames[i]}.map`, 'utf8')
-  ));
+  const obfuscatedSourceMaps = await Promise.all(
+    metroUserFilesOnly.map((c, i) =>
+      readFile(
+        `${JSCRAMBLER_SOURCE_MAPS_TEMP_FOLDER}/${fileNames[i]}.map`,
+        'utf8',
+      ).catch((e) => {
+        if (e.code === 'ENOENT') {
+          // when a source file is excluded, the sourcemap is not produced
+          return null;
+        }
+        throw e;
+      }),
+    ),
+  );
 
   // read metro source-map
   const metroSourceMap = await readFile(bundleSourceMapPath, 'utf8');
@@ -46,7 +57,10 @@ module.exports = async function generateSourceMaps(payload) {
 
   const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(metroSourceMap);
   const finalSourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath});
-  const ofuscatedSourceMapConsumers = obfuscatedSourceMaps.map(map => new sourceMap.SourceMapConsumer(map));
+  const ofuscatedSourceMapConsumers = obfuscatedSourceMaps.map((map) =>
+    // when a source file is excluded, the sourcemap is not produced
+    map ? new sourceMap.SourceMapConsumer(map) : null,
+  );
 
   // add all original sources and sourceContents
   metroSourceMapConsumer.sources.forEach(function (sourceFile) {
@@ -80,7 +94,11 @@ module.exports = async function generateSourceMaps(payload) {
       shiftLines = tmpShiftLine;
     }
 
-    if (fileNamesIndex !== -1) {
+    if (
+      fileNamesIndex !== -1 &&
+      /* check if sourceMap was loaded */
+      ofuscatedSourceMapConsumers[fileNamesIndex]
+    ) {
       /* jscrambler obfuscated files */
       const {lineStart, lineEnd, columnStart} = metroBundleLocs[fileNamesIndex];
       const {lineStart: finalLineStart, lineEnd: finalLineEnd} = finalBundleLocs[fileNamesIndex];
