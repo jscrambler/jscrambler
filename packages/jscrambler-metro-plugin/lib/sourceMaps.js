@@ -105,7 +105,11 @@ module.exports = async function generateSourceMaps(payload) {
       const allGeneratedPositionsFor = ofuscatedSourceMapConsumers[fileNamesIndex].allGeneratedPositionsFor({
         source: normalizePath,
         line: mapping.generatedLine - lineStart + 1 /* avoid line=0 */,
-        column: mapping.generatedColumn - columnStart
+        column:
+          mapping.generatedColumn -
+          (mapping.generatedLine === lineStart
+            ? columnStart /* column start should be applied only to the first line */
+            : 0),
       });
 
       if (allGeneratedPositionsFor.length === 0) {
