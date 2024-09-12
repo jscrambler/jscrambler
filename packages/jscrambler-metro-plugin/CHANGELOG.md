@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.4
+
+### Patch Changes
+
+- [26476fa]: Metro-Plugin SourceMaps: apply columnStart only to the first line
+
 ## 8.4.3
 
 ### Patch Changes
