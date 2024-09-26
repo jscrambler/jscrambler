@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.5.0
+
+### Minor Changes
+
+- [188894f]: Add new Mode option, validations and send it to mutations
+
 ## 8.4.2
 
 ### Patch Changes
