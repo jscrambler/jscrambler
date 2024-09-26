@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.5.1
+
+### Patch Changes
+
+- [ae6b6fb]: Update README
+
 ## 8.5.0
 
 ### Minor Changes
