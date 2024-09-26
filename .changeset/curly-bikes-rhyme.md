@@ -1,5 +1,0 @@
----
-"jscrambler": patch
----
-
-Update README
