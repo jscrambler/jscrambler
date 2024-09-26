@@ -106,7 +106,7 @@ Options:
   -i, --application-id <id>               Application ID
   -o, --output-dir <dir>                  Output directory
   -p, --port <port>                       Port
-  --basePath <path>                       Base Path
+  --base-path <path>                      Base Path
   --protocol <protocol>                   Protocol (http or https)
   --cafile <path>                         Internal certificate authority
   -C, --cwd <dir>                         Current Working Directory
@@ -126,14 +126,15 @@ Options:
   --remove-profiling-data                 Removes the current application profiling information
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
   --input-symbol-table <file>             (version 6.3 and above) Protection should use symbol table when protecting. (default: no file)
-  --output-symbol-table <id>              (version 6.3 and above) Download symbol table (json)
-  --delete-protection-on-success <bool>   Delete a protection when it was successful (default: false)
+  --output-symbol-table <id>              (version 6.3 and above) Download output symbol table (json)
   --jscramblerVersion <version>           Use a specific Jscrambler version
   --debugMode                             Protect in debug mode
   --skip-sources                          Prevent source files from being updated
   --force-app-environment <environment>   (version 7.1 and above) Override application's environment detected automatically. Possible values: node,browser,isomorphic,automatic
-  --ensure-code-annotation <bool>         Fail protection if no annotations are found on the source code (default: false)
+  --ensure-code-annotation <bool>         (version 7.3 and above) Fail protection if no annotations are found on the source code (default: false)
   -n <number>                             (version 7.2 and above) Create multiple protections at once.
+  --delete-protection-on-success <bool>   Deletes the protection files after they have been protected and downloaded (default: false)
+  --mode <mode>                           (version 8.4 and above) Define protection mode. Possible values: automatic, manual (default: manual)
   -h, --help                              output usage information
 ```
 
