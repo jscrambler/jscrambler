@@ -60,6 +60,23 @@ const validateForceAppEnvironment = env => {
   return normalizeEnvironment;
 };
 
+const validateMode = (mode) => {
+  const availableModes = ['automatic', 'manual'];
+
+  const normalizedMode = mode.toLowerCase();
+
+  if (!availableModes.includes(normalizedMode)) {
+    console.error(
+      `*mode* requires one of the following modes: {${availableModes.toString()}}. Example: --mode ${
+        availableModes[0]
+      }`,
+    );
+    process.exit(1);
+  }
+
+  return normalizedMode;
+};
+
 const validateBeforeProtection = (beforeProtectionArray = []) => {
   if(beforeProtectionArray.length === 0) {
     return;
@@ -207,6 +224,11 @@ commander
     'Deletes the protection files after they have been protected and downloaded (default: false)',
     validateBool('--delete-protection-on-success')
   )
+  .option(
+    '--mode <mode>',
+    `(version 8.4 and above) Define protection mode. Possible values: automatic, manual (default: manual)`,
+    validateMode,
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -249,6 +271,7 @@ config.removeProfilingData = commander.removeProfilingData;
 config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 config.instrument = commander.instrument || config.instrument;
+config.mode = commander.mode || config.mode;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -411,6 +434,7 @@ const {
   forceAppEnvironment,
   beforeProtection,
   deleteProtectionOnSuccess,
+  mode,
 } = config;
 
 const params = config.params;
@@ -424,6 +448,16 @@ for (const incompatibleOption of incompatibleOptions) {
 }
 if (usedIncompatibleOptions.length > 1) {
   console.error('Using mutually exclusive options:', usedIncompatibleOptions);
+  process.exit(1);
+}
+
+if (
+  (commander.mode === 'automatic' || config.mode === 'automatic') &&
+  config.params
+) {
+  console.error(
+    'Cannot submit a Jscrambler configuration file in automatic mode with parameters.',
+  );
   process.exit(1);
 }
 
@@ -549,6 +583,7 @@ if (commander.sourceMaps) {
       forceAppEnvironment,
       beforeProtection,
       deleteProtectionOnSuccess,
+      mode,
     };
     try {
       if (typeof werror !== 'undefined') {

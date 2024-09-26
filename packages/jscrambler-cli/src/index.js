@@ -294,6 +294,7 @@ export default {
       ensureCodeAnnotation,
       forceAppEnvironment,
       deleteProtectionOnSuccess,
+      mode,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -384,7 +385,6 @@ export default {
       updateData.areSubscribersOrdered = Array.isArray(params);
     }
 
-
     const dataToValidate = {
       applicationTypes,
       areSubscribersOrdered,
@@ -395,7 +395,8 @@ export default {
       useAppClassification,
       ensureCodeAnnotation,
       useProfilingData,
-      useRecommendedOrder
+      useRecommendedOrder,
+      mode,
     };
 
     for (const prop in dataToValidate) {
@@ -448,7 +449,8 @@ export default {
       source,
       tolerateMinification,
       numberOfProtections,
-      forceAppEnvironment
+      forceAppEnvironment,
+      mode,
     };
 
     if (finalConfig.inputSymbolTable) {
