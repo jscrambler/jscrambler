@@ -117,15 +117,16 @@ export default {
    *  sources: Array.<{filename: string, content: string}>,
    *  filesSrc: Array.<string>,
    *  cwd: string,
+   *  saveSrc: boolean,
    *  appProfiling: ?object,
-   * runBeforeProtection?: Array<{type: string, target: string, source: string }>
+   *  runBeforeProtection?: Array<{type: string, target: string, source: string }>
    * }} opts
    * @returns {Promise<{extension: string, filename: string, content: *}>}
    */
   async updateApplicationSources(
     client,
     applicationId,
-    {sources, filesSrc, cwd, appProfiling, runBeforeProtection = []}
+    { sources, filesSrc, cwd, appProfiling, saveSrc, runBeforeProtection = [] },
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
@@ -200,9 +201,11 @@ export default {
         extension: 'zip'
       };
 
-      errorHandler(
-        await this.addApplicationSource(client, applicationId, source)
-      );
+      if (saveSrc) {
+        errorHandler(
+          await this.addApplicationSource(client, applicationId, source)
+        );
+      }
     }
 
     return source;
@@ -295,6 +298,7 @@ export default {
       forceAppEnvironment,
       deleteProtectionOnSuccess,
       mode,
+      saveSrc,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -368,7 +372,8 @@ export default {
         filesSrc,
         cwd,
         appProfiling,
-        runBeforeProtection
+        runBeforeProtection,
+        saveSrc,
       });
     } else {
       console.log('Update source files SKIPPED');
@@ -587,7 +592,9 @@ export default {
             }
           })
           .catch((error) => console.error(error));
+      }
 
+      if (!saveSrc) {
         await this.removeSourceFromApplication(client, '', applicationId)
           .then(() => {
             if (debug) {

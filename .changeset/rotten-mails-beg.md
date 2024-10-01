@@ -2,4 +2,4 @@
 "jscrambler": patch
 ---
 
-Delete protection on success flag should delete app sources
+Added --save-src flag to control sources storage behavior. 

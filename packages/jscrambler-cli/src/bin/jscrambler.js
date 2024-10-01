@@ -229,6 +229,11 @@ commander
     `(version 8.4 and above) Define protection mode. Possible values: automatic, manual (default: manual)`,
     validateMode,
   )
+  .option(
+    '--save-src <bool>',
+    'Protection should save application sources (default: true)',
+    validateBool('--save-src'),
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -272,6 +277,7 @@ config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 config.instrument = commander.instrument || config.instrument;
 config.mode = commander.mode || config.mode;
+config.saveSrc = commander.saveSrc || config.saveSrc;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -340,6 +346,12 @@ if(config.beforeProtection) {
 
 if (commander.deleteProtectionOnSuccess) {
   config.deleteProtectionOnSuccess = commander.deleteProtectionOnSuccess === 'true';
+}
+
+if (commander.saveSrc) {
+  config.saveSrc = config.saveSrc !== 'false';
+} else {
+  config.saveSrc = config.saveSrc !== false;
 }
 
 globSrc = config.filesSrc;
@@ -435,6 +447,7 @@ const {
   beforeProtection,
   deleteProtectionOnSuccess,
   mode,
+  saveSrc,
 } = config;
 
 const params = config.params;
@@ -584,6 +597,7 @@ if (commander.sourceMaps) {
       beforeProtection,
       deleteProtectionOnSuccess,
       mode,
+      saveSrc,
     };
     try {
       if (typeof werror !== 'undefined') {
