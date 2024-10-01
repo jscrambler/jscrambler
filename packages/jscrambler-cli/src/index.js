@@ -594,16 +594,6 @@ export default {
           .catch((error) => console.error(error));
       }
 
-      if (!saveSrc) {
-        await this.removeSourceFromApplication(client, '', applicationId)
-          .then(() => {
-            if (debug) {
-              console.log('Application sources will now be deleted');
-            }
-          })
-          .catch((error) => console.error(error));
-      }
-
       return protection._id;
     }
 
