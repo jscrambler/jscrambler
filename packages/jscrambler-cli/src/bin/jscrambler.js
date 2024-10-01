@@ -277,7 +277,6 @@ config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 config.instrument = commander.instrument || config.instrument;
 config.mode = commander.mode || config.mode;
-config.saveSrc = commander.saveSrc || config.saveSrc;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -349,7 +348,7 @@ if (commander.deleteProtectionOnSuccess) {
 }
 
 if (commander.saveSrc) {
-  config.saveSrc = config.saveSrc !== 'false';
+  config.saveSrc = commander.saveSrc !== 'false';
 } else {
   config.saveSrc = config.saveSrc !== false;
 }
