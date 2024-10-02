@@ -13,7 +13,8 @@ const config = rc(
     werror: true,
     clientId: CLIENT_IDS.CLI,
     utc: true,
-    maxRetries: 5
+    maxRetries: 5,
+    saveSrc: true,
   },
   []
 );
