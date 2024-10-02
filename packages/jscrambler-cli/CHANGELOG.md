@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.0
+
+### Minor Changes
+
+- [051fda1]: Added --save-src flag to control sources storage behavior.
+
 ## 8.5.1
 
 ### Patch Changes
