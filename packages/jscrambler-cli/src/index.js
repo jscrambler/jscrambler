@@ -379,6 +379,10 @@ export default {
       console.log('Update source files SKIPPED');
     }
 
+    if (saveSrc) {
+
+    }
+
     const updateData = {
       debugMode: !!debugMode,
       tolerateMinification,
@@ -412,11 +416,12 @@ export default {
     }
 
     if (
-      updateData.parameters ||
-      updateData.applicationTypes ||
-      updateData.languageSpecifications ||
-      updateData.browsers ||
-      typeof updateData.areSubscribersOrdered !== 'undefined'
+      (updateData.parameters ||
+        updateData.applicationTypes ||
+        updateData.languageSpecifications ||
+        updateData.browsers ||
+        typeof updateData.areSubscribersOrdered !== 'undefined') &&
+      saveSrc
     ) {
       if (debug) {
         console.log('Updating parameters of protection');
