@@ -126,7 +126,14 @@ export default {
   async updateApplicationSources(
     client,
     applicationId,
-    { sources, filesSrc, cwd, appProfiling, saveSrc, runBeforeProtection = [] },
+    {
+      sources,
+      filesSrc,
+      cwd,
+      appProfiling,
+      saveSrc = true,
+      runBeforeProtection = [],
+    },
   ) {
     if (sources || (filesSrc && filesSrc.length)) {
       // prevent removing sources if profiling state is READY
