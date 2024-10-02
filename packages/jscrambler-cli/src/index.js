@@ -298,7 +298,7 @@ export default {
       forceAppEnvironment,
       deleteProtectionOnSuccess,
       mode,
-      saveSrc,
+      saveSrc = true,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
