@@ -139,7 +139,7 @@ export default {
       const removeSourceRes = await this.removeSourceFromApplication(
         client,
         '',
-        applicationId
+        applicationId,
       );
 
       errorHandler(removeSourceRes);
@@ -298,7 +298,7 @@ export default {
       forceAppEnvironment,
       deleteProtectionOnSuccess,
       mode,
-      saveSrc = true,
+      saveSrc,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -377,10 +377,6 @@ export default {
       });
     } else {
       console.log('Update source files SKIPPED');
-    }
-
-    if (saveSrc) {
-
     }
 
     const updateData = {
