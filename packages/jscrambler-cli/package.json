@@ -31,7 +31,6 @@
   "dependencies": {
     "axios": "^1.4.0",
     "commander": "^2.8.1",
-    "core-js": "^3.16.4",
     "filesize-parser": "1.5.0",
     "glob": "^8.1.0",
     "http-proxy-agent": "7.0.2",
@@ -42,10 +41,7 @@
     "lodash.defaults": "^4.0.1",
     "lodash.keys": "^4.0.1",
     "lodash.size": "^4.0.1",
-    "q": "^1.4.1",
-    "rc": "^1.1.0",
-    "snake-case": "^2.1.0",
-    "temp": "^0.8.3"
+    "rc": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
