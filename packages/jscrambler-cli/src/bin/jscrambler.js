@@ -463,11 +463,6 @@ if (usedIncompatibleOptions.length > 1) {
   process.exit(1);
 }
 
-if ((commander.mode || config.mode) && Number(jscramblerVersion) < 8.4) {
-  console.error('Mode setting is only available from version 8.4 on.');
-  process.exit(1);
-}
-
 if (
   (commander.mode === 'automatic' || config.mode === 'automatic') &&
   config.params
