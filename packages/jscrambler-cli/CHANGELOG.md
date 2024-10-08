@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.1
+
+### Patch Changes
+
+- [dadea38]: remove unused dependencies, and bump others, specially due to vulnerabilites
+
 ## 8.6.0
 
 ### Minor Changes
