@@ -1,4 +1,4 @@
-import glob from 'glob';
+import { glob } from 'glob';
 import fs from 'fs';
 import { extname, join, normalize } from 'path';
 
@@ -8,8 +8,15 @@ import { extname, join, normalize } from 'path';
  * @returns {string[]}
  */
 export function getMatchedFiles(pattern) {
+  console.log({
+    pattern,
+    matchedFiles: glob.sync(pattern, {
+      dot: true,
+    }),
+  });
+
   let matchedFiles = glob.sync(pattern, {
-    dot: true
+    dot: true,
   });
 
   // special case when the real file name contains a minimatch expression (f.e [id]-1234.js)
@@ -42,7 +49,7 @@ export const APPEND_JS_TYPE = 'append-js';
 export const PREPEND_JS_TYPE = 'prepend-js';
 
 /**
- * 
+ *
  * @param {*} firstFile if prepending: script file; if appending: target file.
  * @param {*} secondFile if prepending: target file; if appending: script file.
  * @returns first and second files concatenated
@@ -51,16 +58,16 @@ function handleScriptConcatenation (firstFile, secondFile) {
   const firstFileContent = firstFile.toString('utf-8');
   const secondFileContent = secondFile.toString('utf-8');
 
-  const concatenatedContent = 
+  const concatenatedContent =
     firstFileContent +
-    "\n" + 
+    "\n" +
     secondFileContent;
 
     return concatenatedContent;
 }
 
 /**
- * 
+ *
  * @param {*} scriptObject the object with the script content: { target: '/path/to/target/file', source: '/path/to/script/file', type: 'append-js' | 'prepend-js' }. Its used for both appending and prepending.
  * @param {*} cwd current working directory, passed by argument
  * @param {*} path file path (file being parsed)
@@ -68,11 +75,11 @@ function handleScriptConcatenation (firstFile, secondFile) {
  */
 export function concatenate (scriptObject, cwd, path, buffer) {
   let { target } = scriptObject;
-  
+
   if(cwd) {
     target = join(cwd, target);
   }
-  
+
   target = normalize(target);
 
   if(target === path) {
@@ -85,9 +92,9 @@ export function concatenate (scriptObject, cwd, path, buffer) {
     const fileContent = fs.readFileSync(target);
     const scriptContent = fs.readFileSync(source);
 
-    const concatContent = type === APPEND_JS_TYPE 
+    const concatContent = type === APPEND_JS_TYPE
       ? handleScriptConcatenation(fileContent, scriptContent)
-      : handleScriptConcatenation(scriptContent, fileContent); 
+      : handleScriptConcatenation(scriptContent, fileContent);
 
     buffer = Buffer.from(concatContent, 'utf-8');
   }
