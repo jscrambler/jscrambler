@@ -8,13 +8,6 @@ import { extname, join, normalize } from 'path';
  * @returns {string[]}
  */
 export function getMatchedFiles(pattern) {
-  console.log({
-    pattern,
-    matchedFiles: glob.sync(pattern, {
-      dot: true,
-    }),
-  });
-
   let matchedFiles = glob.sync(pattern, {
     dot: true,
   });
