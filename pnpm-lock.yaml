@@ -131,8 +131,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       glob:
-        specifier: ^8.1.0
-        version: 8.1.0
+        specifier: 10.4.5
+        version: 10.4.5
       http-proxy-agent:
         specifier: 7.0.2
         version: 7.0.2
