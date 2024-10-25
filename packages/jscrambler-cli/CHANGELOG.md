@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.2
+
+### Patch Changes
+
+- [ab4eb68]: added core-js dependency as it was wrongfully removed previously
+
 ## 8.6.1
 
 ### Patch Changes
