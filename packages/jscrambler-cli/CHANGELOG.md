@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.3
+
+### Patch Changes
+
+- [294d182]: Fix axios vulnerability
+
 ## 8.6.2
 
 ### Patch Changes
