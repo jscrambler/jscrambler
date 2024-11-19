@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.4
+
+### Patch Changes
+
+- [c2aada1]: it was necessary to override the version of the package cross-spawn to fix its vulnerability
+
 ## 8.6.3
 
 ### Patch Changes
