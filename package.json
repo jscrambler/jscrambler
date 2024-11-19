@@ -30,5 +30,10 @@
       "@commitlint/config-conventional"
     ]
   },
+  "pnpm": {
+    "overrides": {
+      "cross-spawn": "7.0.6"
+    }
+  },
   "private": true
 }
