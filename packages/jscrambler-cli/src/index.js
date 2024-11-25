@@ -1405,7 +1405,88 @@ export default {
     const isFieldSupported = dataArg && dataArg.type.inputFields.some(e => e.name === field);
 
     return isFieldSupported;
-  }
+  },
+  async getProtectionMetadata(conf, protectionId) {
+    const INVALID_PARAMETERS = ['original', 'initialCleanup', 'wrapUp'];
+    const finalConfig = buildFinalConfig(conf);
+
+    const {
+      applicationId,
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      keys,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    } = finalConfig;
+
+    const { accessKey, secretKey } = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    });
+
+    const response = await this.getApplicationProtection(
+      client,
+      applicationId,
+      protectionId,
+      {
+        application: '_id',
+        applicationProtection:
+          '_id, applicationId, parameters, version, areSubscribersOrdered, useRecommendedOrder, tolerateMinification, profilingDataMode, useAppClassification, browsers, sourceMaps, sources { filename, transformedContentHash, metrics { transformation } }',
+      },
+    );
+
+    const sourcesInfo = response.data.applicationProtection.sources.map(
+      (source) => {
+        const parameters = source.metrics.filter(
+          (metric) => !INVALID_PARAMETERS.includes(metric.transformation),
+        );
+
+        return {
+          filename: source.filename,
+          checksum: source.transformedContentHash,
+          parameters: parameters.map((param) => param.transformation),
+        };
+      },
+    );
+
+    const metadataJson = {
+      applicationId: response.data.applicationProtection.applicationId,
+      // eslint-disable-next-line no-underscore-dangle
+      protectionId: response.data.applicationProtection._id,
+      jscramblerVersion: response.data.applicationProtection.version,
+      areSubscribersOrdered:
+        response.data.applicationProtection.areSubscribersOrdered,
+      useRecommendedOrder:
+        response.data.applicationProtection.useRecommendedOrder,
+      tolerateMinification:
+        response.data.applicationProtection.tolerateMinification,
+      profilingDataMode: response.data.applicationProtection.profilingDataMode,
+      useAppClassification:
+        response.data.applicationProtection.useAppClassification,
+      browsers: response.data.applicationProtection.browsers,
+      sourceMaps: response.data.applicationProtection.sourceMaps,
+      parameters: response.data.applicationProtection.parameters,
+      sources: sourcesInfo,
+    };
+
+    console.log(JSON.stringify(metadataJson, null, 2));
+  },
 };
 
 function getFileFromUrl(client, url) {
