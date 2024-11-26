@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.5
+
+### Patch Changes
+
+- [a50925a]: Downgrade glob to allow support node.js v14
+
 ## 8.6.4
 
 ### Patch Changes
