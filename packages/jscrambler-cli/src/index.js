@@ -1406,7 +1406,7 @@ export default {
 
     return isFieldSupported;
   },
-  async getProtectionMetadata(conf, protectionId) {
+  async getProtectionMetadata(conf, protectionId, outputDir) {
     const INVALID_PARAMETERS = ['original', 'initialCleanup', 'wrapUp'];
     const finalConfig = buildFinalConfig(conf);
 
@@ -1459,33 +1459,47 @@ export default {
 
         return {
           filename: source.filename,
-          checksum: source.transformedContentHash,
+          md5Checksum: source.transformedContentHash,
           parameters: parameters.map((param) => param.transformation),
         };
       },
     );
 
-    const metadataJson = {
-      applicationId: response.data.applicationProtection.applicationId,
-      // eslint-disable-next-line no-underscore-dangle
-      protectionId: response.data.applicationProtection._id,
-      jscramblerVersion: response.data.applicationProtection.version,
-      areSubscribersOrdered:
-        response.data.applicationProtection.areSubscribersOrdered,
-      useRecommendedOrder:
-        response.data.applicationProtection.useRecommendedOrder,
-      tolerateMinification:
-        response.data.applicationProtection.tolerateMinification,
-      profilingDataMode: response.data.applicationProtection.profilingDataMode,
-      useAppClassification:
-        response.data.applicationProtection.useAppClassification,
-      browsers: response.data.applicationProtection.browsers,
-      sourceMaps: response.data.applicationProtection.sourceMaps,
-      parameters: response.data.applicationProtection.parameters,
-      sources: sourcesInfo,
-    };
+    const metadataJson = JSON.stringify(
+      {
+        applicationId: response.data.applicationProtection.applicationId,
+        // eslint-disable-next-line no-underscore-dangle
+        protectionId: response.data.applicationProtection._id,
+        jscramblerVersion: response.data.applicationProtection.version,
+        areSubscribersOrdered:
+          response.data.applicationProtection.areSubscribersOrdered,
+        useRecommendedOrder:
+          response.data.applicationProtection.useRecommendedOrder,
+        tolerateMinification:
+          response.data.applicationProtection.tolerateMinification,
+        profilingDataMode:
+          response.data.applicationProtection.profilingDataMode,
+        useAppClassification:
+          response.data.applicationProtection.useAppClassification,
+        browsers: response.data.applicationProtection.browsers,
+        sourceMaps: response.data.applicationProtection.sourceMaps,
+        parameters: response.data.applicationProtection.parameters,
+        sources: sourcesInfo,
+      },
+      null,
+      2,
+    );
 
-    console.log(JSON.stringify(metadataJson, null, 2));
+    if (outputDir) {
+      fs.writeFile(outputDir, metadataJson, (error) => {
+        if (error) {
+          throw error;
+        }
+        console.log('JSON file has been created');
+      });
+    } else {
+      console.log(metadataJson);
+    }
   },
 };
 
