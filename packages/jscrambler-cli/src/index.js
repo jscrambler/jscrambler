@@ -927,7 +927,7 @@ export default {
     if (typeof destCallback === 'function') {
       destCallback(download, filesDest);
     } else {
-      await fsPromises.writeFile(
+      await fs.promises.writeFile(
         path.join(filesDest, `${protectionId}_symbolTable.json`),
         download
       );
@@ -1451,6 +1451,8 @@ export default {
       },
     );
 
+    errorHandler(response);
+
     const sourcesInfo = response.data.applicationProtection.sources.map(
       (source) => {
         const parameters = source.metrics.filter(
@@ -1491,12 +1493,8 @@ export default {
     );
 
     if (outputDir) {
-      fs.writeFile(outputDir, metadataJson, (error) => {
-        if (error) {
-          throw error;
-        }
-        console.log('JSON file has been created');
-      });
+      await fs.promises.writeFile(outputDir, metadataJson);
+      console.log(`Protection Report ${protectionId} saved in ${outputDir}`);
     } else {
       console.log(metadataJson);
     }

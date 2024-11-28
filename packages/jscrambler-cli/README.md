@@ -135,6 +135,8 @@ Options:
   -n <number>                             (version 7.2 and above) Create multiple protections at once.
   --delete-protection-on-success <bool>   Deletes the protection files after they have been protected and downloaded (default: false)
   --mode <mode>                           (version 8.4 and above) Define protection mode. Possible values: automatic, manual (default: manual)
+  --save-src <bool>                       Protection should save application sources (default: true)
+  --protection-report <string>            Protection id for the metadata report
   -h, --help                              output usage information
 ```
 
