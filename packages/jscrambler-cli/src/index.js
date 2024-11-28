@@ -1461,7 +1461,7 @@ export default {
 
         return {
           filename: source.filename,
-          md5Checksum: source.transformedContentHash,
+          sha256Checksum: source.transformedContentHash,
           parameters: parameters.map((param) => param.transformation),
         };
       },
