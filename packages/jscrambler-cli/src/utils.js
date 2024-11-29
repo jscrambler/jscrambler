@@ -69,10 +69,6 @@ function handleScriptConcatenation (firstFile, secondFile) {
 export function concatenate (scriptObject, cwd, path, buffer) {
   let { target } = scriptObject;
 
-  if(cwd) {
-    target = join(cwd, target);
-  }
-
   target = normalize(target);
 
   if(target === path) {
