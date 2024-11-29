@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.7.0
+
+### Minor Changes
+
+- [d0b95d7]: Added metadata report feature on cli
+
 ## 8.6.6
 
 ### Patch Changes
