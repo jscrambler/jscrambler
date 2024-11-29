@@ -234,6 +234,10 @@ commander
     'Protection should save application sources (default: true)',
     validateBool('--save-src'),
   )
+  .option(
+    '--protection-report <string>',
+    '(version 8.4 and above) Protection id for the metadata report',
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -562,6 +566,19 @@ if (commander.sourceMaps) {
       console.error(debug ? error : error.message || error);
       process.exit(1);
     });
+} else if (commander.protectionReport) {
+  (async () => {
+    try {
+      await jscrambler.getProtectionMetadata(
+        clientSettings,
+        commander.protectionReport,
+        commander.outputDir,
+      );
+    } catch (error) {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    }
+  })();
 } else {
   // Go, go, go
   (async () => {

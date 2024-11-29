@@ -14,7 +14,9 @@ import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
 import {getMatchedFiles} from './utils';
 
-import getProtectionDefaultFragments from './get-protection-default-fragments';
+import getProtectionDefaultFragments, {
+  getIntrospection,
+} from './get-protection-default-fragments';
 
 const {intoObjectType} = introspection;
 
@@ -927,7 +929,7 @@ export default {
     if (typeof destCallback === 'function') {
       destCallback(download, filesDest);
     } else {
-      await fsPromises.writeFile(
+      await fs.promises.writeFile(
         path.join(filesDest, `${protectionId}_symbolTable.json`),
         download
       );
@@ -1405,7 +1407,111 @@ export default {
     const isFieldSupported = dataArg && dataArg.type.inputFields.some(e => e.name === field);
 
     return isFieldSupported;
-  }
+  },
+  async getProtectionMetadata(conf, protectionId, outputDir) {
+    const INVALID_PARAMETERS = ['original', 'initialCleanup', 'wrapUp'];
+    const finalConfig = buildFinalConfig(conf);
+
+    const {
+      applicationId,
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      keys,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    } = finalConfig;
+
+    const { accessKey, secretKey } = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    });
+
+    const appSource = await getIntrospection(client, 'ApplicationSource');
+
+    if (
+      !appSource.fields.some(({ name }) => name === 'transformedContentHash')
+    ) {
+      console.error(
+        `"Protection report" it's only available on Jscrambler version 8.4 and above.`,
+      );
+      process.exit(1);
+    }
+
+    const response = await this.getApplicationProtection(
+      client,
+      applicationId,
+      protectionId,
+      {
+        application: '_id',
+        applicationProtection:
+          '_id, applicationId, parameters, version, areSubscribersOrdered, useRecommendedOrder, tolerateMinification, profilingDataMode, useAppClassification, browsers, sourceMaps, sources { filename, transformedContentHash, metrics { transformation } }',
+      },
+    );
+
+    errorHandler(response);
+
+    const sourcesInfo = response.data.applicationProtection.sources.map(
+      (source) => {
+        const parameters = source.metrics.filter(
+          (metric) => !INVALID_PARAMETERS.includes(metric.transformation),
+        );
+
+        return {
+          filename: source.filename,
+          sha256Checksum: source.transformedContentHash,
+          parameters: parameters.map((param) => param.transformation),
+        };
+      },
+    );
+
+    const metadataJson = JSON.stringify(
+      {
+        applicationId: response.data.applicationProtection.applicationId,
+        // eslint-disable-next-line no-underscore-dangle
+        protectionId: response.data.applicationProtection._id,
+        jscramblerVersion: response.data.applicationProtection.version,
+        areSubscribersOrdered:
+          response.data.applicationProtection.areSubscribersOrdered,
+        useRecommendedOrder:
+          response.data.applicationProtection.useRecommendedOrder,
+        tolerateMinification:
+          response.data.applicationProtection.tolerateMinification,
+        profilingDataMode:
+          response.data.applicationProtection.profilingDataMode,
+        useAppClassification:
+          response.data.applicationProtection.useAppClassification,
+        browsers: response.data.applicationProtection.browsers,
+        sourceMaps: response.data.applicationProtection.sourceMaps,
+        parameters: response.data.applicationProtection.parameters,
+        sources: sourcesInfo,
+      },
+      null,
+      2,
+    );
+
+    if (outputDir) {
+      await fs.promises.writeFile(outputDir, metadataJson);
+      console.log(`Protection Report ${protectionId} saved in ${outputDir}`);
+    } else {
+      console.log(metadataJson);
+    }
+  },
 };
 
 function getFileFromUrl(client, url) {

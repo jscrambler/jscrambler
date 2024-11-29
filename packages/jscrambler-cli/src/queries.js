@@ -190,20 +190,23 @@ export function getProtection(
   protectionId,
   fragments = getProtectionDefaultFragments
 ) {
+  const params = {protectionId};
+  if (applicationId) {
+    params.applicationId = applicationId;
+  }
   return {
     query: `
-      query getProtection ($applicationId: String!, $protectionId: String!) {
-        application (_id: $applicationId) {
-          ${fragments.application}
+      query getProtection (${applicationId ? '$applicationId: String!,' : ''}$protectionId: String!) {
+        ${applicationId ? `
+          application (_id: $applicationId) {
+            ${fragments.application}
+          }` : ''
         }
         applicationProtection (_id: $protectionId) {
           ${fragments.applicationProtection}
         }
       }
     `,
-    params: JSON.stringify({
-      applicationId,
-      protectionId
-    })
+    params: JSON.stringify(params)
   };
 }

@@ -1,6 +1,6 @@
 import * as introspection from './introspection';
 
-async function getIntrospection(client, typeName) {
+export async function getIntrospection(client, typeName) {
   let _introspection;
   try {
     _introspection = await introspection.type(
