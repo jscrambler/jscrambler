@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.6.6
+
+### Patch Changes
+
+- [57d7550]: fix compatibility of cwd and beforeProtection options
+
 ## 8.6.5
 
 ### Patch Changes
