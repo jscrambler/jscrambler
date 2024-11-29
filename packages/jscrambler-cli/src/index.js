@@ -14,7 +14,9 @@ import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
 import {getMatchedFiles} from './utils';
 
-import getProtectionDefaultFragments from './get-protection-default-fragments';
+import getProtectionDefaultFragments, {
+  getIntrospection,
+} from './get-protection-default-fragments';
 
 const {intoObjectType} = introspection;
 
@@ -1439,6 +1441,17 @@ export default {
       utc,
       clientId,
     });
+
+    const appSource = await getIntrospection(client, 'ApplicationSource');
+
+    if (
+      !appSource.fields.some(({ name }) => name === 'transformedContentHash')
+    ) {
+      console.error(
+        `"Protection report" it's only available on Jscrambler version 8.4 and above.`,
+      );
+      process.exit(1);
+    }
 
     const response = await this.getApplicationProtection(
       client,

@@ -234,7 +234,10 @@ commander
     'Protection should save application sources (default: true)',
     validateBool('--save-src'),
   )
-  .option('--protection-report <string>', 'Protection id for the metadata report')
+  .option(
+    '--protection-report <string>',
+    '(version 8.4 and above) Protection id for the metadata report',
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
