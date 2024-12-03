@@ -396,7 +396,7 @@ class JscramblerPlugin {
   downloadAndProcessSourceMaps(protectionId, compilation, callback) {
     console.log(`${PLUGIN_NAME}: downloading source-maps`);
     client.downloadSourceMaps(
-      Object.assign({}, client.config, {stream: false, protectionId}),
+      Object.assign({}, client.config, this.options, {stream: false, protectionId}),
       res => this.processSourceMaps(res, compilation, callback)
     );
   }
