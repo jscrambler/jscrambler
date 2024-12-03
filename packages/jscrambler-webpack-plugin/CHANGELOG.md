@@ -1,5 +1,11 @@
 # jscrambler-webpack-plugin
 
+## 8.4.13
+
+### Patch Changes
+
+- [3e5c84b]: Fix: merge jscrambler config with plugin options for sourcemaps download
+
 ## 8.4.12
 
 ### Patch Changes
