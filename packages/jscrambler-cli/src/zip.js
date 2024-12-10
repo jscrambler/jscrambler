@@ -5,7 +5,13 @@ import JSZip from 'jszip';
 import * as fs from 'fs/promises';
 import {normalize, resolve, relative, join, isAbsolute, dirname} from 'path';
 import {inspect} from 'util';
-import { concatenate } from './utils';
+import {
+  concatenate,
+  APPEND_JS_TYPE,
+  PREPEND_JS_TYPE,
+  WEBPACK_IGNORE_VENDORS,
+  webpackAttachDisableAnnotations,
+} from './utils';
 
 const debug = !!process.env.DEBUG;
 
@@ -56,10 +62,18 @@ export async function zip(files, cwd, runBeforeProtection) {
       } else {
         name = files[i];
       }
-      buffer = fs.readFile(sPath);
+      buffer = await fs.readFile(sPath);
 
       runBeforeProtection.map((element) => {
-        buffer = concatenate(element, cwd, sPath, buffer);
+        switch(element.type) {
+          case APPEND_JS_TYPE:
+          case PREPEND_JS_TYPE:
+            buffer = concatenate(element, cwd, sPath, buffer);
+            break;
+          case WEBPACK_IGNORE_VENDORS:
+            buffer = webpackAttachDisableAnnotations(element, cwd, sPath, buffer);
+            break;
+        }
       });
     } else {
       // Else if it's a directory path
