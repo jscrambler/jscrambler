@@ -59,8 +59,9 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
 
   const sourceCode = buffer.toString('utf-8');
 
+  let tree;
   try {
-    const tree = acorn.parse(sourceCode, {
+    tree = acorn.parse(sourceCode, {
       ecmaVersion: 'latest',
       range: true
     });
