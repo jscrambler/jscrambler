@@ -57,8 +57,6 @@ export const WEBPACK_IGNORE_VENDORS = 'webpack-ignore-vendors';
 export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buffer) {
   const { excludeModules } = beforeProtection;
 
-  console.log(excludeModules);
-
   const sourceCode = buffer.toString('utf-8');
 
   try {
@@ -76,7 +74,7 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
     Property(node) {
       if (node.computed === false && node.shorthand === false) {
         let moduleId;
-        if (node.key.type === 'LIteral') {
+        if (node.key.type === 'Literal') {
           moduleId = node.key.value;
         } else  if (node.key.type === 'Identifier') {
           moduleId = node.key.name;
@@ -112,7 +110,7 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
       process.exit(1);
     }
 
-    return Buffer.from(s.toString(), 'utf8');
+    buffer = Buffer.from(s.toString(), 'utf8');
   }
 
   console.log(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ${appendDisableAnnotationAt.length} module(s) ignored`);

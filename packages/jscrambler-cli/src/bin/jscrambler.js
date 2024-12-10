@@ -139,7 +139,7 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
         break;
       case WEBPACK_IGNORE_VENDORS:
         if(!("report" in element)) {
-          console.error(`Invalid structure on beforeProtection (${type}): each element must have the following structure { type: "type", report: "/path/to/stats.json"}`);
+          console.error(`Invalid structure on beforeProtection (${type}): "report" property is mandatory for this type`);
           process.exit(1);
         }
         if (!fs.existsSync(element.report)) {
