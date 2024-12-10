@@ -1,6 +1,11 @@
 import { glob } from 'glob';
 import fs from 'fs';
 import { extname, join, normalize } from 'path';
+import acorn from "acorn";
+import walk from "acorn-walk";
+import MagicString from "magic-string";
+
+const debug = !!process.env.DEBUG;
 
 /**
  * Return the list of matched files for minimatch patterns.
@@ -40,6 +45,81 @@ export function validateNProtections(n) {
 
 export const APPEND_JS_TYPE = 'append-js';
 export const PREPEND_JS_TYPE = 'prepend-js';
+export const WEBPACK_IGNORE_VENDORS = 'webpack-ignore-vendors';
+
+/**
+ *
+ * @param {source: string} beforeProtection
+ * @param {string} cwd current working directory, passed by argument
+ * @param {string} path file path (file being parsed)
+ * @param {Buffer} buffer file contents
+ */
+export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buffer) {
+  const { excludeModules } = beforeProtection;
+
+  console.log(excludeModules);
+
+  const sourceCode = buffer.toString('utf-8');
+
+  try {
+    const tree = acorn.parse(sourceCode, {
+      ecmaVersion: 'latest',
+      range: true
+    });
+  } catch (e) {
+    console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): invalid source file.`);
+    process.exit(1);
+  }
+
+  const appendDisableAnnotationAt = [];
+  walk.recursive(tree, null, {
+    Property(node) {
+      if (node.computed === false && node.shorthand === false) {
+        let moduleId;
+        if (node.key.type === 'LIteral') {
+          moduleId = node.key.value;
+        } else  if (node.key.type === 'Identifier') {
+          moduleId = node.key.name;
+        }
+
+        if (moduleId && excludeModules.has(moduleId)) {
+          appendDisableAnnotationAt.push(node.value.start);
+          if (debug) {
+            console.debug(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ignoring ${excludeModules.get(moduleId)}`);
+          }
+          return null;
+        }
+      }
+    }
+  });
+
+  if (appendDisableAnnotationAt.length > 0) {
+    const s = new MagicString(sourceCode);
+    for (const appendIndex of appendDisableAnnotationAt) {
+      s.appendLeft(appendIndex, '/* @jscrambler disable * */');
+    }
+
+    const sourceCodeWithDisableAnnotations = s.toString();
+
+    try {
+      // syntax check
+      acorn.parse(sourceCodeWithDisableAnnotations, {
+        ecmaVersion: 'latest',
+        range: true
+      })
+    } catch (e) {
+      console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): ignoring webpack vendors produced an invalid javascript file.`);
+      process.exit(1);
+    }
+
+    return Buffer.from(s.toString(), 'utf8');
+  }
+
+  console.log(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ${appendDisableAnnotationAt.length} module(s) ignored`);
+
+  return buffer;
+}
+
 
 /**
  *

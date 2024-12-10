@@ -7,7 +7,15 @@ import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {APPEND_JS_TYPE, PREPEND_JS_TYPE, getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
+import {
+  APPEND_JS_TYPE,
+  PREPEND_JS_TYPE,
+  getMatchedFiles,
+  isJavascriptFile,
+  validateNProtections,
+  WEBPACK_IGNORE_VENDORS
+} from '../utils';
+import fs from "fs";
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -82,53 +90,82 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
     return;
   }
 
-  const mandatoryKeys = ['type', 'target', 'source'];
-  const usedTargets = new Set();
-  const usedSources = new Set();
-
   beforeProtectionArray.filter((element) => {
-    // Check if every array element has a type, a target and a source
-    const validateMandatoryKeys = mandatoryKeys.every((key) => key in element);
+    const { type } = element;
 
-    if(!validateMandatoryKeys) {
-      console.error('Invalid structure on beforeProtection: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
-      process.exit(1);
+    switch (type) {
+      case APPEND_JS_TYPE:
+      case PREPEND_JS_TYPE:
+        const mandatoryKeys = ['type', 'target', 'source'];
+        const usedTargets = new Set();
+        const usedSources = new Set();
+
+        // Check if every array element has a type, a target and a source
+        const validateMandatoryKeys = mandatoryKeys.every((key) => key in element);
+
+        if(!validateMandatoryKeys) {
+          console.error('Invalid structure on beforeProtection: each element must have the following structure { type: "type", target: "/path/to/target", source: "/path/to/script"}');
+          process.exit(1);
+        }
+
+        const { target, source } = element;
+
+        // Check if the provided files are js, mjs or cjs files
+        if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
+          console.error(`Invalid extension for beforeProtection (${type}) target or source files: only *js, mjs and cjs* files can be used to append or prepend.`);
+          process.exit(1);
+        }
+
+        // Check if the target has already been used as a source
+        if (usedTargets.has(source)) {
+          console.error(`Error on beforeProtection (${type}): file "${source}" has already been used as target and can't be used as source.`);
+          process.exit(1);
+        }
+
+        if(usedSources.has(target)) {
+          console.error(`Error on beforeProtection (${type}): file "${target}" has already been used as source and can't be used as target.`);
+          process.exit(1);
+        }
+
+        // Check if the target and source are the same
+        if (target === source) {
+          console.error(`Error on beforeProtection (${type}): File "${target}" can't be used as both a target and a source.`);
+          process.exit(1);
+        }
+
+        // Add the target and the source to the corresponding sets
+        usedTargets.add(target);
+        usedSources.add(source);
+        break;
+      case WEBPACK_IGNORE_VENDORS:
+        if(!("report" in element)) {
+          console.error(`Invalid structure on beforeProtection (${type}): each element must have the following structure { type: "type", report: "/path/to/stats.json"}`);
+          process.exit(1);
+        }
+        if (!fs.existsSync(element.report)) {
+          console.error(`Error on beforeProtection (${type}): source webpack report does not exist.`);
+          process.exit(1);
+        }
+        const content = fs.readFileSync(element.report, 'utf8');
+        let report;
+        try {
+          report = JSON.parse(content);
+        } catch(e) {
+          console.error(`Error on beforeProtection (${type}): invalid source webpack report. Reason: ${e.message}`);
+          process.exit(1);
+        }
+        element.excludeModules = new Map();
+        for (let module of report.modules) {
+          if (module.identifier && module.identifier.includes('/node_modules/')) {
+            element.excludeModules.set(module.id, module.identifier);
+          }
+        }
+        console.log(`beforeProtection (${type}): Webpack report "${path.basename(element.report)}" was loaded`);
+        break;
+      default:
+        console.error(`Invalid type on beforeProtection (${type}): only "${APPEND_JS_TYPE}", "${PREPEND_JS_TYPE}" or "${WEBPACK_IGNORE_VENDORS}" are allowed.`);
+        process.exit(1);
     }
-
-    const { target, source, type } = element;
-
-    // Check if only valid types are being used
-    if(type !== APPEND_JS_TYPE && type !== PREPEND_JS_TYPE) {
-      console.error(`Invalid type on beforeProtection: only "${APPEND_JS_TYPE}" or "${PREPEND_JS_TYPE}" are allowed.`);
-      process.exit(1);
-    }
-
-    // Check if the provided files are js, mjs or cjs files
-    if(!isJavascriptFile(target) || !isJavascriptFile(source)) {
-      console.error('Invalid extension for beforeProtection target or source files: only *js, mjs and cjs* files can be used to append or prepend.');
-      process.exit(1);
-    }
-
-    // Check if the target has already been used as a source
-    if (usedTargets.has(source)) {
-      console.error(`Error on beforeProtection: file "${source}" has already been used as target and can't be used as source.`);
-      process.exit(1);
-    }
-
-    if(usedSources.has(target)) {
-      console.error(`Error on beforeProtection: file "${target}" has already been used as source and can't be used as target.`);
-      process.exit(1);
-    }
-
-    // Check if the target and source are the same
-    if (target === source) {
-      console.error(`Error on beforeProtection: File "${target}" can't be used as both a target and a source.`);
-      process.exit(1);
-    }
-
-    // Add the target and the source to the corresponding sets
-    usedTargets.add(target);
-    usedSources.add(source);
   });
 
   return beforeProtectionArray;
