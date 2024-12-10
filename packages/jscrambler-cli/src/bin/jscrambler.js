@@ -156,8 +156,8 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
         }
         element.excludeModules = new Map();
         for (let module of report.modules) {
-          if (module.identifier && module.identifier.includes('/node_modules/')) {
-            element.excludeModules.set(module.id, module.identifier);
+          if (module.name && module.name.includes('/node_modules/')) {
+            element.excludeModules.set(module.id, module.name);
           }
         }
         console.log(`beforeProtection (${type}): Webpack report "${path.basename(element.report)}" was loaded`);
