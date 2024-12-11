@@ -29,6 +29,9 @@
     "node": ">= 12.17.0"
   },
   "dependencies": {
+    "acorn": "8.14.0",
+    "acorn-walk": "8.3.4",
+    "magic-string": "0.30.15",
     "axios": "^1.7.7",
     "commander": "^2.8.1",
     "core-js": "3.38.1",

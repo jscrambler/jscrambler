@@ -354,6 +354,10 @@ The concatenation of files can result in max file size errors - even though the 
       "type": "prepend-js",
       "target": "/path/to/target/file.js",
       "source": "/path/to/script/file.js"
+    },
+    {
+      "type": "webpack-ignore-vendors",
+      "report": "/path/to/webpack/stats.json"
     }
   ]
 }
