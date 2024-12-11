@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.7.1-next.1
+
+### Patch Changes
+
+- [ecba0c7]: new beforeProtection type: webpack-ignore-vendors
+
 ## 8.7.0
 
 ### Minor Changes
