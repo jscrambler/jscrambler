@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "ember-cli-jscrambler": "8.4.12",
+    "grunt-jscrambler": "8.4.12",
+    "gulp-jscrambler": "8.5.12",
+    "jscrambler": "8.7.0",
+    "jscrambler-metro-plugin": "8.4.14",
+    "jscrambler-webpack-plugin": "8.4.13"
+  },
+  "changesets": [
+    "olive-rules-sing"
+  ]
+}
