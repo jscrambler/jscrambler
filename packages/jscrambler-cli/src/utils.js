@@ -53,8 +53,9 @@ export const WEBPACK_IGNORE_VENDORS = 'webpack-ignore-vendors';
  * @param {string} cwd current working directory, passed by argument
  * @param {string} path file path (file being parsed)
  * @param {Buffer} buffer file contents
+ * @param {string} fileName file name
  */
-export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buffer) {
+export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buffer, fileName) {
   const { excludeModules } = beforeProtection;
 
   const sourceCode = buffer.toString('utf-8');
@@ -66,7 +67,7 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
       range: true
     });
   } catch (e) {
-    console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): invalid source file.`);
+    console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): "${fileName}" could not be parsed.`);
     process.exit(1);
   }
 
@@ -84,7 +85,7 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
         if (moduleId && excludeModules.has(moduleId)) {
           appendDisableAnnotationAt.push(node.value.start);
           if (debug) {
-            console.debug(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ignoring ${excludeModules.get(moduleId)}`);
+            console.debug(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ignoring ${excludeModules.get(moduleId)} module on "${fileName}"`);
           }
           return null;
         }
@@ -107,14 +108,14 @@ export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buf
         range: true
       })
     } catch (e) {
-      console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): ignoring webpack vendors produced an invalid javascript file.`);
+      console.log(`Error on beforeProtection (${WEBPACK_IGNORE_VENDORS}): unsupported structure on "${fileName}".`);
       process.exit(1);
     }
 
     buffer = Buffer.from(s.toString(), 'utf8');
   }
 
-  console.log(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ${appendDisableAnnotationAt.length} module(s) ignored`);
+  console.log(`beforeProtection (${WEBPACK_IGNORE_VENDORS}): ${appendDisableAnnotationAt.length} module(s) ignored for "${fileName}"`);
 
   return buffer;
 }

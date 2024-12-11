@@ -68,10 +68,10 @@ export async function zip(files, cwd, runBeforeProtection) {
         switch(element.type) {
           case APPEND_JS_TYPE:
           case PREPEND_JS_TYPE:
-            buffer = concatenate(element, cwd, sPath, buffer);
+            buffer = concatenate(element, cwd, sPath, buffer, name);
             break;
           case WEBPACK_IGNORE_VENDORS:
-            buffer = webpackAttachDisableAnnotations(element, cwd, sPath, buffer);
+            buffer = webpackAttachDisableAnnotations(element, cwd, sPath, buffer, name);
             break;
         }
       });
