@@ -56,6 +56,10 @@ export const WEBPACK_IGNORE_VENDORS = 'webpack-ignore-vendors';
  * @param {string} fileName file name
  */
 export function webpackAttachDisableAnnotations(beforeProtection, cwd, path, buffer, fileName) {
+  if (!isJavascriptFile(fileName)) {
+    return buffer;
+  }
+
   const { excludeModules } = beforeProtection;
 
   const sourceCode = buffer.toString('utf-8');
