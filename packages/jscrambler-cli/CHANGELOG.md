@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.7.1-next.2
+
+### Patch Changes
+
+- []: Add filename on webpack-ignore-vendors
+
 ## 8.7.1-next.1
 
 ### Patch Changes

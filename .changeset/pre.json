@@ -10,6 +10,7 @@
     "jscrambler-webpack-plugin": "8.4.13"
   },
   "changesets": [
-    "olive-rules-sing"
+    "olive-rules-sing",
+    "wise-hats-shave"
   ]
 }
