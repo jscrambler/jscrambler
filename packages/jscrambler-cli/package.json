@@ -1,6 +1,6 @@
 {
   "name": "jscrambler",
-  "description": "Jscrambler API client.",
+  "description": "Jscrambler Code Integrity API client.",
   "version": "8.7.0",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": "Jscrambler <support@jscrambler.com>",

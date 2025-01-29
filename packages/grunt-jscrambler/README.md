@@ -1,13 +1,12 @@
 # ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
-[grunt](https://github.com/gruntjs/grunt)-jscrambler
+Jscrambler Code Integrity from Grunt
 --------------------
 
-Add obfuscation to your build process with [grunt](https://github.com/gruntjs/grunt) and grunt-jscrambler.
+Jscrambler [Code Integrity](https://jscrambler.com/code-integrity) is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
-## How to Use
-If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins.
+If you're looking to gain control over third-party tags and achieve PCI DSS compliance please refer to Jscrambler [Webpage Integrity](https://jscrambler.com/webpage-integrity).
 
-### Version Compatibility
+Version Compatibility
 ------------------------------------------------------------------------------
 
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Grunt Client.
@@ -17,6 +16,12 @@ Please make sure you install the right version, otherwise some functionalities m
 |:----------:|:-------------:|
 | _<= 7.1_ |  _<= 5.x.x_ |
 | _\>= 7.2_ |   _\>= 6.0.0_ |
+
+## How to Use
+
+Add obfuscation to your build process with [grunt](https://github.com/gruntjs/grunt) and grunt-jscrambler.
+
+If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins.
 
 ### Install
 Once you're familiar with that process, you may install this plugin:
