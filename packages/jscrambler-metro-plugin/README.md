@@ -1,8 +1,11 @@
-# Jscrambler Metro Plugin
+# ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
+# Jscrambler Code Integrity for React-Native (Metro Bundler)
 
-This metro plugin protects your **React Native** bundle using Jscrambler.
+Jscrambler [Code Integrity](https://jscrambler.com/code-integrity) is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
-# Version Compatibility
+If you're looking to gain control over third-party tags and achieve PCI DSS compliance please refer to Jscrambler [Webpage Integrity](https://jscrambler.com/webpage-integrity).
+
+Version Compatibility
 ------------------------------------------------------------------------------
 
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Metro Plugin.
@@ -14,6 +17,8 @@ Please make sure you install the right version, otherwise some functionalities m
 | _\>= 7.2_ |   _\>= 6.0.0_ |
 
 # Usage
+
+This metro plugin protects your **React Native** bundle using Jscrambler.
 
 Include the plugin in your `metro.config.js` and add the following code:
 

@@ -1,7 +1,7 @@
 {
   "name": "jscrambler-metro-plugin",
   "version": "8.4.14",
-  "description": "A plugin to use metro with Jscrambler",
+  "description": "A plugin to use metro with Jscrambler Code Integrity",
   "exports": "./lib/index.js",
   "scripts": {
     "eslint": "eslint lib/",

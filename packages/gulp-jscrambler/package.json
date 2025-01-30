@@ -1,6 +1,6 @@
 {
   "name": "gulp-jscrambler",
-  "description": "Obfuscate your source files using the Jscrambler API.",
+  "description": "Obfuscate your source files using the Jscrambler Code Integrity API.",
   "version": "8.5.12",
   "exports": "./index.js",
   "homepage": "https://github.com/jscrambler/jscrambler",

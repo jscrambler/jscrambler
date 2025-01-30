@@ -1,8 +1,11 @@
-# Jscrambler Webpack Plugin
+# ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
+# Jscrambler Code Integrity for Webpack
 
-This plugin protects your webpack output using Jscrambler.
+Jscrambler [Code Integrity](https://jscrambler.com/code-integrity) is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
-# Version Compatibility
+If you're looking to gain control over third-party tags and achieve PCI DSS compliance please refer to Jscrambler [Webpage Integrity](https://jscrambler.com/webpage-integrity).
+
+Version Compatibility
 ------------------------------------------------------------------------------
 
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Webpack Plugin.
@@ -14,6 +17,8 @@ Please make sure you install the right version, otherwise some functionalities m
 | _\>= 7.2_ |   _\>= 6.0.0_ |
 
 # Usage
+
+This plugin protects your **webpack output** using Jscrambler.
 
 Simply add the plugin to your configuration. We recommend placing it after every other plugin that also modifies your code. It will automatically gather all JavaScript and HTML files and protect them.
 
