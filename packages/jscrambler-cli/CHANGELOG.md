@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.7.1
+
+### Patch Changes
+
+- [3ef818f]: Update readme.md
+
 ## 8.7.0
 
 ### Minor Changes
