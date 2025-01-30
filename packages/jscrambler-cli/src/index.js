@@ -12,7 +12,7 @@ import * as queries from './queries';
 import {HTTP_STATUS_CODES} from './constants';
 import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
-import {getMatchedFiles} from './utils';
+import {APPEND_JS_TYPE, getMatchedFiles, PREPEND_JS_TYPE} from './utils';
 
 import getProtectionDefaultFragments, {
   getIntrospection,
@@ -173,7 +173,7 @@ export default {
 
       if(runBeforeProtection.length > 0) {
         runBeforeProtection.map((element) => {
-          if(!_filesSrc.includes(element.target)) {
+          if((element.type === PREPEND_JS_TYPE || element.type === APPEND_JS_TYPE) &&  !_filesSrc.includes(element.target)) {
             console.error('Error on beforeProtection: Target files need to be in the files to protect list (or filesSrc).');
             process.exit(1);
           }
