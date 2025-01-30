@@ -1,6 +1,6 @@
 {
-  "name": "jscrambler-github-monorepo",
-  "description": "Jscrambler public monorepo for CLI and Plugins",
+  "name": "jscrambler-code-integrity-github-monorepo",
+  "description": "Jscrambler Code Integrity public monorepo for CLI and Plugins",
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
