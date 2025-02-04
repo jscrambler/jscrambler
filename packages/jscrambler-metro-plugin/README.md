@@ -58,4 +58,4 @@ In order to activate source map generation effectively, you will need to enable 
 "sourceMaps": true,
 ...
 
-and in the react native app, which can be done following this step (https://reactnative.dev/docs/debugging-release-builds?platform=android#enabling-source-maps).
+and in the [React Native app](https://reactnative.dev/docs/debugging-release-builds?platform=android#enabling-source-maps).
