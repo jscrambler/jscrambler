@@ -50,4 +50,12 @@ the usual `.jscramblerrc` file.
 If you use a different location for the `.jscramblerignore` file, you can use the `ignoreFile` option to tell Jscrambler the path to the file.
 Otherwise, if a `.jscramblerignore` file is found in a project root folder, it will be considered. You can find more information and examples in Ignoring Files.
 
-By default, Jscrambler protection is **ignored** when bundle mode is set for **Development**. You can override this behavior by setting env variable `JSCRAMBLER_METRO_DEV=true` 
+By default, Jscrambler protection is **ignored** when bundle mode is set for **Development**. You can override this behavior by setting env variable `JSCRAMBLER_METRO_DEV=true`
+
+In order to activate source map generation effectively, you will need to enable source maps both in the Jscrambler configuration file, by adding the following parameter to said file:
+
+...
+"sourceMaps": true,
+...
+
+and in the [React Native app](https://reactnative.dev/docs/debugging-release-builds?platform=android#enabling-source-maps).
