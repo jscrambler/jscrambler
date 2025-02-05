@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.16
+
+### Patch Changes
+
+- [6410ffb]: improve metro plugin readme description for source maps
+
 ## 8.4.15
 
 ### Patch Changes
