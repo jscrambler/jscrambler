@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.17
+
+### Patch Changes
+
+- [a3652f0]: Fix sourcemaps generation on win32 platform
+
 ## 8.4.16
 
 ### Patch Changes
