@@ -138,9 +138,9 @@ module.exports = async function generateSourceMaps(payload) {
       /* vendor code */
       newMappings[0].generated.line += shiftLines;
 
-      // code inserted with no real source file associated,
-      // so we need to clean the invalid source value (f.e. ".")
-      if (normalizePath.length === 0) {
+      // when the original line/column can't be found, it means that there isn't a real source file associated.
+      // Thus, if source file name exists it must be cleaned (f.e ".") to avoid an invalid mapping error
+      if (newMappings[0].original === null && newMappings[0].source) {
         newMappings[0].source = null;
       }
     }
