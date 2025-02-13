@@ -168,7 +168,7 @@ module.exports = async function generateSourceMaps(payload) {
   // eslint-disable-next-line camelcase
   if (debug_id) {
     // eslint-disable-next-line camelcase
-    finalSourceMapsJson.debugId = debug_id;
+    finalSourceMapsJson.debug_id = debug_id;
   }
 
   return JSON.stringify(finalSourceMapsJson);
