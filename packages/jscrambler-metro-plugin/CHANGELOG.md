@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.18
+
+### Patch Changes
+
+- [9d136a4]: allow for source maps to keep debug ids (necessary for sentry upload)
+
 ## 8.4.17
 
 ### Patch Changes
