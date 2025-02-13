@@ -53,6 +53,9 @@ module.exports = async function generateSourceMaps(payload) {
 
   // read metro source-map
   const metroSourceMap = await readFile(bundleSourceMapPath, 'utf8');
+  const { debugId } = JSON.parse(metroSourceMap);
+  // eslint-disable-next-line camelcase
+  const { debug_id } = JSON.parse(metroSourceMap);
   const finalBundleLocs = await extractLocs(finalBundle);
 
   const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(metroSourceMap);
@@ -148,5 +151,20 @@ module.exports = async function generateSourceMaps(payload) {
     newMappings.forEach((newMapping) => finalSourceMapGenerator.addMapping(newMapping));
   })
 
-  return finalSourceMapGenerator.toString();
-}
+  let finalSourceMaps = finalSourceMapGenerator.toString();
+
+  // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
+  // needs to be added in the end since the debugIds are not in SourceMapGenerator type
+  // eslint-disable-next-line camelcase
+  if (debugId || debug_id) {
+    const JSONFinalSource = {
+      ...JSON.parse(finalSourceMaps),
+      ...(debugId && { debugId }),
+      // eslint-disable-next-line camelcase
+      ...(debug_id && { debug_id }),
+    };
+    finalSourceMaps = JSON.stringify(JSONFinalSource);
+  }
+
+  return finalSourceMaps;
+};
