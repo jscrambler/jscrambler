@@ -53,9 +53,8 @@ module.exports = async function generateSourceMaps(payload) {
 
   // read metro source-map
   const metroSourceMap = await readFile(bundleSourceMapPath, 'utf8');
-  const { debugId } = JSON.parse(metroSourceMap);
   // eslint-disable-next-line camelcase
-  const { debug_id } = JSON.parse(metroSourceMap);
+  const { debugId, debug_id } = JSON.parse(metroSourceMap);
   const finalBundleLocs = await extractLocs(finalBundle);
 
   const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(metroSourceMap);
