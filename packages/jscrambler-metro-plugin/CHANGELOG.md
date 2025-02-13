@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.19
+
+### Patch Changes
+
+- [14cb05c]: adding debug_id to debugId instead of debug_id
+
 ## 8.4.18
 
 ### Patch Changes
