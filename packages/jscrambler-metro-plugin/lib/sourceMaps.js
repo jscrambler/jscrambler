@@ -60,7 +60,7 @@ module.exports = async function generateSourceMaps(payload) {
   );
   // retrieve debug ids after the validation by the sourcemap package
   // eslint-disable-next-line camelcase
-  const { debugId, debug_id } = JSON.parse(metroSourceMap);
+  const { debugId, debug_id, x_facebook_sources } = JSON.parse(metroSourceMap);
   const finalSourceMapGenerator = new sourceMap.SourceMapGenerator({
     file: bundlePath,
   });
@@ -162,6 +162,10 @@ module.exports = async function generateSourceMaps(payload) {
   // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
   // needs to be added in the end since the debugIds are not in SourceMapGenerator type
   const finalSourceMapsJson = JSON.parse(finalSourceMaps);
+
+  // to prevent the sources to come back with null values
+  // eslint-disable-next-line camelcase
+  finalSourceMapsJson.x_facebook_sources = x_facebook_sources;
   if (debugId) {
     finalSourceMapsJson.debugId = debugId;
   }
