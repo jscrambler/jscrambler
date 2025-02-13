@@ -53,12 +53,17 @@ module.exports = async function generateSourceMaps(payload) {
 
   // read metro source-map
   const metroSourceMap = await readFile(bundleSourceMapPath, 'utf8');
-  // eslint-disable-next-line camelcase
-  const { debugId, debug_id } = JSON.parse(metroSourceMap);
   const finalBundleLocs = await extractLocs(finalBundle);
 
-  const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(metroSourceMap);
-  const finalSourceMapGenerator = new sourceMap.SourceMapGenerator({file: bundlePath});
+  const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(
+    metroSourceMap,
+  );
+  // retrieve debug ids after the validation by the sourcemap package
+  // eslint-disable-next-line camelcase
+  const { debugId, debug_id } = JSON.parse(metroSourceMap);
+  const finalSourceMapGenerator = new sourceMap.SourceMapGenerator({
+    file: bundlePath,
+  });
   const ofuscatedSourceMapConsumers = obfuscatedSourceMaps.map((map) =>
     // when a source file is excluded, the sourcemap is not produced
     map ? new sourceMap.SourceMapConsumer(map) : null,
@@ -147,23 +152,24 @@ module.exports = async function generateSourceMaps(payload) {
       }
     }
 
-    newMappings.forEach((newMapping) => finalSourceMapGenerator.addMapping(newMapping));
+    newMappings.forEach((newMapping) =>
+      finalSourceMapGenerator.addMapping(newMapping),
+    );
   })
 
-  let finalSourceMaps = finalSourceMapGenerator.toString();
+  const finalSourceMaps = finalSourceMapGenerator.toString();
 
   // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
   // needs to be added in the end since the debugIds are not in SourceMapGenerator type
+  const finalSourceMapsJson = JSON.parse(finalSourceMaps);
+  if (debugId) {
+    finalSourceMapsJson.debugId = debugId;
+  }
   // eslint-disable-next-line camelcase
-  if (debugId || debug_id) {
-    const JSONFinalSource = {
-      ...JSON.parse(finalSourceMaps),
-      ...(debugId && { debugId }),
-      // eslint-disable-next-line camelcase
-      ...(debug_id && { debug_id }),
-    };
-    finalSourceMaps = JSON.stringify(JSONFinalSource);
+  if (debug_id) {
+    // eslint-disable-next-line camelcase
+    finalSourceMapsJson.debugId = debug_id;
   }
 
-  return finalSourceMaps;
+  return JSON.stringify(finalSourceMapsJson);
 };
