@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.20
+
+### Patch Changes
+
+- [f3651b4]: prevent x_facebook_sources from being null
+
 ## 8.4.19
 
 ### Patch Changes
