@@ -58,9 +58,16 @@ module.exports = async function generateSourceMaps(payload) {
   const metroSourceMapConsumer = new sourceMap.SourceMapConsumer(
     metroSourceMap,
   );
-  // retrieve debug ids after the validation by the sourcemap package
-  // eslint-disable-next-line camelcase
-  const { debugId, debug_id } = JSON.parse(metroSourceMap);
+  // extra source map params that are not processed by the source-map package
+  const metroSourceMapExtraParams = [
+    'x_facebook_sources', // added x_facebook_sources to prevent the third party sources to come back with null values
+    // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
+    // needs to be added at the end of this file since the debugIds are not in SourceMapGenerator type
+    'debugId',
+    'debug_id',
+  ];
+  // retrieve debug ids and facebook sources after the validation by the sourcemap package
+  const JSONMetroSourceMap = JSON.parse(metroSourceMap);
   const finalSourceMapGenerator = new sourceMap.SourceMapGenerator({
     file: bundlePath,
   });
@@ -158,17 +165,10 @@ module.exports = async function generateSourceMaps(payload) {
   })
 
   const finalSourceMaps = finalSourceMapGenerator.toString();
-
-  // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
-  // needs to be added in the end since the debugIds are not in SourceMapGenerator type
   const finalSourceMapsJson = JSON.parse(finalSourceMaps);
-  if (debugId) {
-    finalSourceMapsJson.debugId = debugId;
-  }
-  // eslint-disable-next-line camelcase
-  if (debug_id) {
-    // eslint-disable-next-line camelcase
-    finalSourceMapsJson.debug_id = debug_id;
+
+  for (const param of metroSourceMapExtraParams) {
+    finalSourceMapsJson[param] = JSONMetroSourceMap[param];
   }
 
   return JSON.stringify(finalSourceMapsJson);
