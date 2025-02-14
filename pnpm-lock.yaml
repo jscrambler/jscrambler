@@ -121,6 +121,12 @@ importers:
 
   packages/jscrambler-cli:
     dependencies:
+      acorn:
+        specifier: 8.14.0
+        version: 8.14.0
+      acorn-walk:
+        specifier: 8.3.4
+        version: 8.3.4
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -160,6 +166,9 @@ importers:
       lodash.size:
         specifier: ^4.0.1
         version: 4.2.0
+      magic-string:
+        specifier: 0.30.15
+        version: 0.30.15
       rc:
         specifier: ^1.1.0
         version: 1.2.8
@@ -2979,6 +2988,9 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
+
+  magic-string@0.30.15:
+    resolution: {integrity: sha512-zXeaYRgZ6ldS1RJJUrMrYgNJ4fdwnyI6tVqoiIhyCyv5IVTK9BU8Ic2l253GGETQHxI4HNUwhJ3fjDhKqEoaAw==}
 
   make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
@@ -7647,6 +7659,10 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
+
+  magic-string@0.30.15:
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.5.0
 
   make-dir@2.1.0:
     dependencies:
