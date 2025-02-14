@@ -62,7 +62,7 @@ module.exports = async function generateSourceMaps(payload) {
   const metroSourceMapExtraParams = [
     'x_facebook_sources', // added x_facebook_sources to prevent the third party sources to come back with null values
     // for when react native debugIds are necessary in the sourcemaps (upload to sentry for example)
-    // needs to be added in the end since the debugIds are not in SourceMapGenerator type
+    // needs to be added at the end of this file since the debugIds are not in SourceMapGenerator type
     'debugId',
     'debug_id',
   ];
