@@ -281,6 +281,8 @@ config.skipSources = commander.skipSources;
 config.debugMode = commander.debugMode || config.debugMode;
 config.instrument = commander.instrument || config.instrument;
 config.mode = commander.mode || config.mode;
+config.globalNamesPrefix =
+  commander.globalNamesPrefix || config.globalNamesPrefix;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -451,6 +453,7 @@ const {
   deleteProtectionOnSuccess,
   mode,
   saveSrc,
+  globalNamesPrefix,
 } = config;
 
 const params = config.params;
@@ -614,6 +617,7 @@ if (commander.sourceMaps) {
       deleteProtectionOnSuccess,
       mode,
       saveSrc,
+      globalNamesPrefix,
     };
     try {
       if (typeof werror !== 'undefined') {

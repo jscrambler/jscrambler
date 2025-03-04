@@ -4,7 +4,7 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
-    "pnpm": "^9.1.1",
+    "pnpm": ">=9.1.1",
     "node": ">=18.0.0"
   },
   "scripts": {
