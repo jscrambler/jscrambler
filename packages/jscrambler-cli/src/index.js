@@ -308,6 +308,7 @@ export default {
       deleteProtectionOnSuccess,
       mode,
       saveSrc,
+      globalNamesPrefix,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -466,6 +467,7 @@ export default {
       numberOfProtections,
       forceAppEnvironment,
       mode,
+      globalNamesPrefix,
     };
 
     if (finalConfig.inputSymbolTable) {
