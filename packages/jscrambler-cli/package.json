@@ -1,7 +1,7 @@
 {
   "name": "jscrambler",
   "description": "Jscrambler Code Integrity API client.",
-  "version": "8.7.1",
+  "version": "8.8.0",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
