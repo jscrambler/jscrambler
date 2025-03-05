@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.0
+
+### Minor Changes
+
+- [477066b]: Added globalNamesPrefix config option to cli
+
 ## 8.7.1
 
 ### Patch Changes
