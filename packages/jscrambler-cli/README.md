@@ -395,7 +395,7 @@ Similarly, the resulting symbol table can be obtained using the `--output-symbol
 
 ## Global Names Prefix
 
-if you need to make **separate obfuscation requests** for source code that belong to the same application instance, there is a small chance that you will encounter a **naming collision** on the generate global names.
+If you need to make **separate obfuscation requests** for source code that belong to the same application instance, there is a small chance that you will encounter a **naming collision** on the generate global names.
 
 To prevent **global naming collisions**, you can set the `globalNamesPrefix` parameter on each protection request:
 
