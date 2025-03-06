@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.1
+
+### Patch Changes
+
+- [a5f9ae7]: Document globalNamesPrefix parameter
+
 ## 8.8.0
 
 ### Minor Changes
