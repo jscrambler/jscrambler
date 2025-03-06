@@ -25,6 +25,7 @@ If you're looking to gain control over third-party tags and achieve PCI DSS comp
     - [Profiling Data Mode (default: **automatic**)](#profiling-data-mode-default-automatic)
     - [Instrument (`--instrument`)](#instrument---instrument)
   - [Symbol Table](#symbol-table)
+  - [Global Names Prefix](#global-names-prefix)
   - [API](#api)
     - [Quick example](#quick-example)
   - [Jscrambler Parameters](#jscrambler-parameters)
