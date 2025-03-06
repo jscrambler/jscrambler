@@ -413,7 +413,7 @@ To prevent **global naming collisions**, you can set the `globalNamesPrefix` par
 
 If apply the previous configuration, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
 
-***Note***: The `globalNamesPrefix` parameter must **short** and **unintelligible** to avoid code size increase and automated attacks
+***Note***: The `globalNamesPrefix` parameter must be **short** and **unintelligible** to avoid code size increase and automated attacks
 
 ## API
 ```bash
