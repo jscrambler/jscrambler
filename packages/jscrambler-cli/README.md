@@ -25,6 +25,7 @@ If you're looking to gain control over third-party tags and achieve PCI DSS comp
     - [Profiling Data Mode (default: **automatic**)](#profiling-data-mode-default-automatic)
     - [Instrument (`--instrument`)](#instrument---instrument)
   - [Symbol Table](#symbol-table)
+  - [Global Names Prefix](#global-names-prefix)
   - [API](#api)
     - [Quick example](#quick-example)
   - [Jscrambler Parameters](#jscrambler-parameters)
@@ -391,6 +392,28 @@ These files follow the schema used by `uglifyjs@^3`:
 Similarly, the resulting symbol table can be obtained using the `--output-symbol-table <protectionId>` option.
 
 **NOTE**: It only makes sense to use symbol tables on protections that use the identifiers renaming parameter.
+
+## Global Names Prefix
+
+If you need to make **separate obfuscation requests** for source code that belong to the same application instance, there is a small chance that you will encounter a **naming collision** on the generate global names.
+
+To prevent **global naming collisions**, you can set the `globalNamesPrefix` parameter on each protection request:
+
+```json
+// jscrambler.json to protect micro-frontend 1
+{
+  "globalNamesPrefix": "p1"
+}
+
+// jscrambler.json to protect micro-frontend 2
+{
+  "globalNamesPrefix": "p2"
+}
+```
+
+If apply the previous configuration, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
+
+***Note***: The `globalNamesPrefix` parameter must be **short** and **unintelligible** to avoid code size increase and automated attacks
 
 ## API
 ```bash
