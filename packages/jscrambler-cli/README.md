@@ -392,6 +392,22 @@ Similarly, the resulting symbol table can be obtained using the `--output-symbol
 
 **NOTE**: It only makes sense to use symbol tables on protections that use the identifiers renaming parameter.
 
+## Global Names Prefix
+
+if you need to make **separate obfuscation requests** for source code that belong to the same application instance, there is a small chance that you will encounter a **naming collision** on the generate global names.
+
+To prevent **global naming collisions**, you can set a `globalNamesPrefix` on each protection request:
+
+```json
+{
+  "globalNamesPrefix": "p1"
+}
+```
+
+If you set the previous configuration in your Jscrambler configuration file, all generated global variable names will start with the letters *p1*.
+
+***Note***: The `globalNamesPrefix` parameter must **short** and **unintelligible** to avoid code size increase and automated attacks
+
 ## API
 ```bash
 npm install jscrambler
