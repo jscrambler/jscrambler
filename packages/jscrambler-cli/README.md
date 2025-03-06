@@ -399,12 +399,18 @@ if you need to make **separate obfuscation requests** for source code that belon
 To prevent **global naming collisions**, you can set the `globalNamesPrefix` parameter on each protection request:
 
 ```json
+// jscrambler.json to protect micro-frontend 1
 {
   "globalNamesPrefix": "p1"
 }
+
+// jscrambler.json to protect micro-frontend 2
+{
+  "globalNamesPrefix": "p2"
+}
 ```
 
-If you set the previous configuration in your Jscrambler configuration file, all generated global variable names will start with the letters *p1*.
+If apply the previous configuration in your `jscrambler.json` file, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
 
 ***Note***: The `globalNamesPrefix` parameter must **short** and **unintelligible** to avoid code size increase and automated attacks
 
