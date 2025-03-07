@@ -399,7 +399,7 @@ If you need to make **separate obfuscation requests** for source code that belon
 
 To prevent **global naming collisions**, you can set the `globalNamesPrefix` parameter on each protection request:
 
-```json
+```javascript
 // jscrambler.json to protect micro-frontend 1
 {
   "globalNamesPrefix": "p1"
