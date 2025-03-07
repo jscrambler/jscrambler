@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.2
+
+### Patch Changes
+
+- [34adf8d]: Change Example language
+
 ## 8.8.1
 
 ### Patch Changes
