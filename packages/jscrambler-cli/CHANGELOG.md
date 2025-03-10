@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.3
+
+### Patch Changes
+
+- [5a5c256]: Bump axios due to vuln
+
 ## 8.8.2
 
 ### Patch Changes
