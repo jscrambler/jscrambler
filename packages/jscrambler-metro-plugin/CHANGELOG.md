@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.25
+
+### Patch Changes
+
+- [2382015]: Adjust react-native column locs with there is Anti-Tampering RCK
+
 ## 8.4.24
 
 ### Patch Changes
