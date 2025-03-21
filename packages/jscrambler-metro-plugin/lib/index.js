@@ -15,6 +15,7 @@ const {
   JSCRAMBLER_BEG_ANNOTATION,
   JSCRAMBLER_END_ANNOTATION,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
+  HERMES_SHOW_SOURCE_DIRECTIVE,
   JSCRAMBLER_EXTS
 } = require('./constants');
 const {
@@ -165,7 +166,9 @@ async function obfuscateBundle(
   const addShowSource = addHermesShowSourceDirective(config);
 
   if (addShowSource) {
-    console.log(`info Jscrambler 'show source' directive added`);
+    console.log(
+      `info Jscrambler ${HERMES_SHOW_SOURCE_DIRECTIVE} directive added`,
+    );
   }
 
   const shouldGenerateSourceMaps = config.sourceMaps && bundleSourceMapPath;
@@ -209,7 +212,9 @@ async function obfuscateBundle(
       c.indexOf(JSCRAMBLER_END_ANNOTATION),
       c.length
     );
-    return `${acc}${JSCRAMBLER_BEG_ANNOTATION}${showSource ? '"show source";' : ''}${startAtFirstColumn ? '\n' : ''}${obfuscatedCode}${tillCodeEnd}`;
+    return `${acc}${JSCRAMBLER_BEG_ANNOTATION}${
+      showSource ? HERMES_SHOW_SOURCE_DIRECTIVE : ''
+    }${startAtFirstColumn ? '\n' : ''}${obfuscatedCode}${tillCodeEnd}`;
   }, '');
 
   await writeFile(bundlePath, stripJscramblerTags(finalBundle));
