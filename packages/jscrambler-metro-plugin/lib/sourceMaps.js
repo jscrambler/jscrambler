@@ -115,7 +115,11 @@ module.exports = async function generateSourceMaps(payload) {
     ) {
       /* jscrambler obfuscated files */
       const {lineStart, lineEnd, columnStart} = metroBundleLocs[fileNamesIndex];
-      const {lineStart: finalLineStart, lineEnd: finalLineEnd} = finalBundleLocs[fileNamesIndex];
+      const {
+        lineStart: finalLineStart,
+        lineEnd: finalLineEnd,
+        columnStart: finalColumnStart,
+      } = finalBundleLocs[fileNamesIndex];
       const allGeneratedPositionsFor = ofuscatedSourceMapConsumers[fileNamesIndex].allGeneratedPositionsFor({
         source: normalizePath,
         line: mapping.generatedLine - lineStart + 1 /* avoid line=0 */,
@@ -134,7 +138,7 @@ module.exports = async function generateSourceMaps(payload) {
       newMappings = allGeneratedPositionsFor.map(({line: obfLine, column: obfColumn}) => {
         const calcFinalLine = finalLineStart + obfLine - 1;
         // add columnStart only on the first line
-        const calcFinalColumn = obfLine === 1 ? columnStart + obfColumn : obfColumn;
+        const calcFinalColumn = obfLine === 1 ? finalColumnStart + obfColumn : obfColumn;
 
         debug && console.log('original', original, '->', 'final', {line: calcFinalLine, column: calcFinalColumn});
 

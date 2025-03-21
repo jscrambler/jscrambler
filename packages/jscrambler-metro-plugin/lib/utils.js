@@ -18,6 +18,7 @@ const {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
+  HERMES_SHOW_SOURCE_DIRECTIVE,
   BUNDLE_CMD
 } = require('./constants');
 
@@ -99,9 +100,20 @@ function extractLocs(inputStr) {
         lines++;
         const startTagIndex = line.indexOf(JSCRAMBLER_BEG_ANNOTATION);
         if (startTagIndex !== -1) {
+          const columnStart = line.includes(
+            `${JSCRAMBLER_BEG_ANNOTATION}${HERMES_SHOW_SOURCE_DIRECTIVE}`,
+          )
+            ? HERMES_SHOW_SOURCE_DIRECTIVE.length + startTagIndex
+            : startTagIndex;
+          // occurs with Anti-tampering SKL mode
+          const startAtFirstColumn = line.includes(
+            `${JSCRAMBLER_BEG_ANNOTATION}\n`,
+          );
+
           locs.push({
             lineStart: lines,
-            columnStart: startTagIndex
+            columnStart,
+            startAtFirstColumn,
           });
         }
 
