@@ -78,7 +78,7 @@ export function concatenate (scriptObject, cwd, path, buffer) {
       throw new Error('Provided script file does not exist');
     }
 
-    const fileContent = fs.readFileSync(target);
+    const fileContent = buffer.toString('utf-8');
     const scriptContent = fs.readFileSync(source);
 
     const concatContent = type === APPEND_JS_TYPE
