@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.4
+
+### Patch Changes
+
+- [7415ef5]: Prepend multiple file in jscrambler-cli
+
 ## 8.8.3
 
 ### Patch Changes
