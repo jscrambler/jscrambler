@@ -56,9 +56,9 @@ export async function zip(files, cwd, runBeforeProtection) {
       } else {
         name = files[i];
       }
-      buffer = fs.readFile(sPath);
+      buffer = await fs.readFile(sPath);
 
-      runBeforeProtection.map((element) => {
+      runBeforeProtection.reverse().map((element) => {
         buffer = concatenate(element, cwd, sPath, buffer);
       });
     } else {
