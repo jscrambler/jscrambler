@@ -210,11 +210,11 @@ function buildNormalizePath(path, projectRoot) {
     return;
   }
   const relativePath = path.replace(projectRoot, '');
-  const relativePathWithLeadingSlash = relativePath.replace(JSCRAMBLER_EXTS, '.js');
+  let relativePathWithLeadingSlash = relativePath.replace(JSCRAMBLER_EXTS, '.js');
   if (relativePathWithLeadingSlash.startsWith(sep)) {
-    return relativePathWithLeadingSlash.substring(1 /* remove leading separator */);
+    relativePathWithLeadingSlash = relativePathWithLeadingSlash.substring(1 /* remove leading separator */);
   }
-  return relativePathWithLeadingSlash;
+  return relativePathWithLeadingSlash.replace(/\\/g, '/'); // replace win32 separator by linux one
 }
 
 function getCodeBody(code) {
@@ -265,7 +265,7 @@ function handleExcludeList(config, {supportsExcludeList, excludeList}) {
     // add excludeList to gvi in case the api does not support global excludeList
     if (Array.isArray(config.params)) {
       const gvi = config.params.find(
-          (param) => param.name === JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION
+        (param) => param.name === JSCRAMBLER_GLOBAL_VARIABLE_INDIRECTION
       );
       if (gvi) {
         gvi.options = gvi.options || {};
@@ -281,14 +281,14 @@ function handleExcludeList(config, {supportsExcludeList, excludeList}) {
 function injectTolerateBegninPoisoning(config) {
   if (Array.isArray(config.params)) {
     const sd = config.params.find(
-        (param) => param.name === JSCRAMBLER_SELF_DEFENDING
+      (param) => param.name === JSCRAMBLER_SELF_DEFENDING
     );
     if (sd) {
       sd.options = sd.options || {};
       sd.options.options = sd.options.options || [];
       if (
-          Array.isArray(sd.options.options) &&
-          !sd.options.options.includes(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
+        Array.isArray(sd.options.options) &&
+        !sd.options.options.includes(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
       ) {
         console.log(`info Jscrambler Tolerate benign poisoning option was automatically added to Self-Defending.`);
         sd.options.options.push(JSCRAMBLER_TOLERATE_BENIGN_POISONING)
