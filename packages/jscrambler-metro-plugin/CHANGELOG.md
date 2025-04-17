@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.27
+
+### Patch Changes
+
+- [465d5ed]: Fix sourcemaps file path on windows
+
 ## 8.4.26
 
 ### Patch Changes
