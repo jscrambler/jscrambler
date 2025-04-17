@@ -2,6 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const {Command} = require('commander');
 const {Readable} = require('stream');
+const { sep } = require('path');
 const metroSourceMap = require('metro-source-map');
 const {
   JSCRAMBLER_EXTS,
@@ -210,10 +211,10 @@ function buildNormalizePath(path, projectRoot) {
   }
   const relativePath = path.replace(projectRoot, '');
   const relativePathWithLeadingSlash = relativePath.replace(JSCRAMBLER_EXTS, '.js');
-  if (process.platform === 'win32') {
-    return relativePathWithLeadingSlash;
+  if (relativePathWithLeadingSlash.startsWith(sep)) {
+    return relativePathWithLeadingSlash.substring(1 /* remove leading separator */);
   }
-  return relativePathWithLeadingSlash.substring(1 /* remove '/' */);
+  return relativePathWithLeadingSlash;
 }
 
 function getCodeBody(code) {
