@@ -3,11 +3,17 @@
 import commander from 'commander';
 import defaults from 'lodash.defaults';
 import path from 'path';
-import filesizeParser from 'filesize-parser';
 
 import _config from '../config';
 import jscrambler from '../';
-import {APPEND_JS_TYPE, PREPEND_JS_TYPE, getMatchedFiles, isJavascriptFile, validateNProtections} from '../utils';
+import {
+  APPEND_JS_TYPE,
+  PREPEND_JS_TYPE,
+  getMatchedFiles,
+  isJavascriptFile,
+  validateNProtections,
+  validateFileSizeThresholdFn,
+} from '../utils';
 
 const debug = !!process.env.DEBUG;
 const validateBool = option => val => {
@@ -17,19 +23,9 @@ const validateBool = option => val => {
   }
   return val.toLowerCase();
 };
-
-const validateCodeHardeningThreshold = val => {
-  let inBytes;
-  try {
-    inBytes = filesizeParser(val);
-  } catch (e) {
-    console.error(
-      '*code-hardening-threshold* requires a valid <threshold> value. Format: {number}{unit="b,kb,mb"}. Example: --code-hardening-threshold 200kb'
-    );
-    process.exit(1);
-  }
-  return inBytes;
-};
+const validateCodeHardeningThreshold = validateFileSizeThresholdFn(
+  'code-hardening-threshold',
+);
 
 const validateProfilingDataMode = mode => {
   const availableModes = ['automatic', 'annotations', 'off'];
