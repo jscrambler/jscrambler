@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.5
+
+### Patch Changes
+
+- [c4e79f4]: Add support for file size threshold with string value
+
 ## 8.8.4
 
 ### Patch Changes
