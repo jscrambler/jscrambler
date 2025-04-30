@@ -1,6 +1,7 @@
 import { glob } from 'glob';
 import fs from 'fs';
 import { extname, join, normalize } from 'path';
+import filesizeParser from 'filesize-parser';
 
 /**
  * Return the list of matched files for minimatch patterns.
@@ -97,3 +98,16 @@ export function isJavascriptFile (filename) {
 
   return validJsFileExtensions.includes(fileExtension);
 }
+
+export const validateThresholdFn = (optionName) => (val) => {
+  let inBytes;
+  try {
+    inBytes = filesizeParser(val);
+  } catch (e) {
+    console.error(
+      `*${optionName}* requires a valid <threshold> value. Format: {number}{unit="b,kb,mb"}. Example: 200kb`,
+    );
+    process.exit(1);
+  }
+  return inBytes;
+};
