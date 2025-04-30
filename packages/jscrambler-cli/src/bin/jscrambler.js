@@ -12,7 +12,7 @@ import {
   getMatchedFiles,
   isJavascriptFile,
   validateNProtections,
-  validateFileSizeThresholdFn,
+  validateThresholdFn,
 } from '../utils';
 
 const debug = !!process.env.DEBUG;
@@ -23,7 +23,7 @@ const validateBool = option => val => {
   }
   return val.toLowerCase();
 };
-const validateCodeHardeningThreshold = validateFileSizeThresholdFn(
+const validateCodeHardeningThreshold = validateThresholdFn(
   'code-hardening-threshold',
 );
 

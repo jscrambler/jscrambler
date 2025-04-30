@@ -99,7 +99,7 @@ export function isJavascriptFile (filename) {
   return validJsFileExtensions.includes(fileExtension);
 }
 
-export const validateFileSizeThresholdFn = (optionName) => (val) => {
+export const validateThresholdFn = (optionName) => (val) => {
   let inBytes;
   try {
     inBytes = filesizeParser(val);

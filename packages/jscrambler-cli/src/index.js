@@ -12,7 +12,7 @@ import * as queries from './queries';
 import {HTTP_STATUS_CODES} from './constants';
 import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
-import {getMatchedFiles, validateFileSizeThresholdFn} from './utils';
+import { getMatchedFiles, validateThresholdFn } from './utils';
 
 import getProtectionDefaultFragments, {
   getIntrospection,
@@ -94,8 +94,7 @@ function normalizeParameters(parameters) {
     result = parameters;
   }
 
-  const validateFileSizeThreshold =
-    validateFileSizeThresholdFn('fileSizeThreshold');
+  const validateFileSizeThreshold = validateThresholdFn('fileSizeThreshold');
 
   result
     .filter(({ fileSizeThreshold }) => typeof fileSizeThreshold === 'string')
