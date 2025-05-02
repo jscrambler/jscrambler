@@ -234,6 +234,7 @@ commander
     '--protection-report <string>',
     '(version 8.4 and above) Protection id for the metadata report',
   )
+  .option('--balance', '(version 8.4 and above) Gets the balance of the user')
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -491,7 +492,17 @@ const clientSettings = {
   jscramblerVersion
 };
 
-if (commander.sourceMaps) {
+if (commander.balance) {
+  (async () => {
+    try {
+      await jscrambler.getBalance(clientSettings);
+      process.exit(0);
+    } catch (error) {
+      console.error(debug ? error : error.message || error);
+      process.exit(1);
+    }
+  })();
+} else if (commander.sourceMaps) {
   // Go, go, go download
   (async () => {
     try {

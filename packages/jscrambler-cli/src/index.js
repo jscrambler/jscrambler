@@ -1527,6 +1527,48 @@ export default {
       console.log(metadataJson);
     }
   },
+
+  async getBalance(conf) {
+    const finalConfig = buildFinalConfig(conf);
+
+    const {
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      keys,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    } = finalConfig;
+
+    const { accessKey, secretKey } = keys;
+
+    const client = new this.Client({
+      accessKey,
+      secretKey,
+      host,
+      port,
+      basePath,
+      protocol,
+      cafile,
+      jscramblerVersion,
+      proxy,
+      utc,
+      clientId,
+    });
+
+    const query = queries.getBalance();
+    const {
+      data: { balance },
+    } = await client.post('/application', query);
+
+    console.log(balance);
+
+    return balance;
+  },
 };
 
 function getFileFromUrl(client, url) {
