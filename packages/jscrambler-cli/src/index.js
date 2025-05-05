@@ -78,6 +78,21 @@ function printSourcesErrors(errors) {
   console.error();
 }
 
+function normalizeFileSizeFilter(parameters, fileSizeOption) {
+  const validateFileSizeThreshold = validateThresholdFn(fileSizeOption);
+
+  parameters
+    .filter((parameter) => typeof parameter[fileSizeOption] === 'string')
+    .forEach((parameter) => {
+      // change from "1kb" to 1024 bytes
+
+      // eslint-disable-next-line no-param-reassign
+      parameter[fileSizeOption] = validateFileSizeThreshold(
+        parameter[fileSizeOption],
+      );
+    });
+}
+
 
 function normalizeParameters(parameters) {
   let result;
@@ -94,18 +109,9 @@ function normalizeParameters(parameters) {
     result = parameters;
   }
 
-  const validateFileSizeThreshold = validateThresholdFn('fileSizeThreshold');
+  normalizeFileSizeFilter(result, 'minFileSize');
 
-  result
-    .filter(({ fileSizeThreshold }) => typeof fileSizeThreshold === 'string')
-    .forEach((parameter) => {
-      // change from "1kb" to 1024 bytes
-
-      // eslint-disable-next-line no-param-reassign
-      parameter.fileSizeThreshold = validateFileSizeThreshold(
-        parameter.fileSizeThreshold,
-      );
-    });
+  normalizeFileSizeFilter(result, 'maxFileSize');
 
   return result;
 }
