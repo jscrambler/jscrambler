@@ -495,9 +495,6 @@ const clientSettings = {
 if (commander.balance) {
   (async () => {
     try {
-      if (jscramblerVersion < 8.4) {
-        throw new Error('Error: Jscrambler version must be 8.4 or higher!');
-      }
       await jscrambler.getBalance(clientSettings);
       process.exit(0);
     } catch (error) {
