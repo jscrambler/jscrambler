@@ -1559,11 +1559,7 @@ export default {
       utc,
       clientId,
     });
-
-    const query = queries.getBalance();
-    const {
-      data: { balance },
-    } = await client.post('/application', query);
+    const balance = await client.get('/balance');
 
     console.log(balance);
 
