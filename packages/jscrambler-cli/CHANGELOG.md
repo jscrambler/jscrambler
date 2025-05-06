@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.8.6
+
+### Patch Changes
+
+- [8818c8e]: Use max/min file size instead ao file size threshold
+
 ## 8.8.5
 
 ### Patch Changes
