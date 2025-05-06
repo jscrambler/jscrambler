@@ -498,7 +498,11 @@ if (commander.balance) {
       await jscrambler.getBalance(clientSettings);
       process.exit(0);
     } catch (error) {
-      console.error(debug ? error : error.message || error);
+      if (error.statusCode === 404) {
+        console.error('Error: Jscrambler version must be 8.4 or higher!');
+      } else {
+        console.error(debug ? error : error.message || error);
+      }
       process.exit(1);
     }
   })();
