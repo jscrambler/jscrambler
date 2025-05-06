@@ -499,7 +499,7 @@ if (commander.balance) {
       process.exit(0);
     } catch (error) {
       if (error.statusCode === 404) {
-        console.error('Error: Jscrambler version must be 8.4 or higher!');
+        console.error('Not found: Ensure you are using version 8.4 or above.');
       } else {
         console.error(debug ? error : error.message || error);
       }
