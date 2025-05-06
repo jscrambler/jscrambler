@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.9.0
+
+### Minor Changes
+
+- [f1f886e]: Option to retrieve the balance of the user
+
 ## 8.8.6
 
 ### Patch Changes
