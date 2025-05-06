@@ -210,12 +210,3 @@ export function getProtection(
     params: JSON.stringify(params)
   };
 }
-
-export function getBalance() {
-  return {
-    query: `
-      query { balance }
-    `,
-    params: {},
-  };
-}
