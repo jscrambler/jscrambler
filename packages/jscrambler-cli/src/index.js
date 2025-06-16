@@ -328,6 +328,7 @@ export default {
       mode,
       saveSrc,
       globalNamesPrefix,
+      useGlobalNamesOnModules,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -487,6 +488,7 @@ export default {
       forceAppEnvironment,
       mode,
       globalNamesPrefix,
+      useGlobalNamesOnModules,
     };
 
     if (finalConfig.inputSymbolTable) {

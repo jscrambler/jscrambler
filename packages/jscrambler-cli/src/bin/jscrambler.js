@@ -280,6 +280,8 @@ config.instrument = commander.instrument || config.instrument;
 config.mode = commander.mode || config.mode;
 config.globalNamesPrefix =
   commander.globalNamesPrefix || config.globalNamesPrefix;
+config.useGlobalNamesOnModules =
+  commander.useGlobalNamesOnModules || config.useGlobalNamesOnModules;
 
 // handle codeHardening = 0
 if (typeof commander.codeHardeningThreshold === 'undefined') {
@@ -451,6 +453,7 @@ const {
   mode,
   saveSrc,
   globalNamesPrefix,
+  useGlobalNamesOnModules,
 } = config;
 
 const params = config.params;
@@ -629,6 +632,7 @@ if (commander.balance) {
       mode,
       saveSrc,
       globalNamesPrefix,
+      useGlobalNamesOnModules,
     };
     try {
       if (typeof werror !== 'undefined') {
