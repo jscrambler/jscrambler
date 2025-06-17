@@ -1,9 +1,6 @@
 name: Release Code Integrity Github Actions
 
 on:
-  push:
-    tags:
-      - 'jscrambler@*'
   workflow_dispatch:
 
 jobs:
