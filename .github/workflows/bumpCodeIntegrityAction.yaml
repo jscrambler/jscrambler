@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'jscrambler@*'
+  workflow_dispatch:
 
 jobs:
   tag_code_integrity_github_action:
