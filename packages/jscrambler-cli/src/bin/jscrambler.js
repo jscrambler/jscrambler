@@ -234,6 +234,10 @@ commander
     '--protection-report <string>',
     '(version 8.4 and above) Protection id for the metadata report',
   )
+  .option(
+    '--use-global-names-on-modules <bool>',
+    '(version 8.4 and above) Force the usage of more complex names on modules'
+  )
   .option('--balance', '(version 8.4 and above) Gets the balance of the user')
   .parse(process.argv);
 

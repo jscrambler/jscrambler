@@ -144,6 +144,7 @@ Options:
   --mode <mode>                           (version 8.4 and above) Define protection mode. Possible values: automatic, manual (default: manual)
   --save-src <bool>                       Protection should save application sources (default: true)
   --protection-report <string>            (version 8.4 and above) Protection id for the metadata report
+  --use-global-names-on-modules <bool>    (version 8.4 and above) Force the usage of more complex names on modules (default: false)
   -h, --help                              output usage information
 ```
 
@@ -393,6 +394,19 @@ Similarly, the resulting symbol table can be obtained using the `--output-symbol
 
 **NOTE**: It only makes sense to use symbol tables on protections that use the identifiers renaming parameter.
 
+## Use Global Names On Modules
+
+When we detect we're protecting a module, we may add some code that will have single character identifiers for code size purposes. If, in your use case, you're expecting to transpile this module into a script, having single character identifiers may lead to some collision, especially if you're doing this with multiple obfuscated modules.
+
+To reduce the chance of collisions, you can set the `useGlobalNamesOnModules` option on your protection request:
+
+// jscrambler.json
+{
+  "useGlobalNamesOnModules": true
+}
+
+If you apply the previous configuration, all generated global variable names will follow the same principle as global variables (not on modules), and have at least 5 characters, thus reducing the chance of collisions.
+
 ## Global Names Prefix
 
 If you need to make **separate obfuscation requests** for source code that belong to the same application instance, there is a small chance that you will encounter a **naming collision** on the generate global names.
@@ -411,7 +425,7 @@ To prevent **global naming collisions**, you can set the `globalNamesPrefix` par
 }
 ```
 
-If apply the previous configuration, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
+If you apply the previous configuration, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
 
 ***Note***: The `globalNamesPrefix` parameter must be **short** and **unintelligible** to avoid code size increase and automated attacks
 
