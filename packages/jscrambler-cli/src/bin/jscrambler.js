@@ -236,7 +236,7 @@ commander
   )
   .option(
     '--use-global-names-on-modules <bool>',
-    '(version 8.4 and above) Force the usage of more complex names on modules'
+    '(version 8.5 and above) Force the usage of more complex names on modules'
   )
   .option('--balance', '(version 8.4 and above) Gets the balance of the user')
   .parse(process.argv);
