@@ -22,7 +22,7 @@ jobs:
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
