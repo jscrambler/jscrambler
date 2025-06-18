@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Get Jscrambler Version
         id: get_version
-        uses: johngeorgewright/parse-version-action
+        uses: johngeorgewright/parse-version-action@v2.0.0
         with:
           ref: ${{ github.ref }}
           trim-start: jscrambler@
