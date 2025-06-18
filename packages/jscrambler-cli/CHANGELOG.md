@@ -1,5 +1,12 @@
 # jscrambler
 
+## 8.9.1
+
+### Patch Changes
+
+- [18409eb]: Change the minimum version of the new useNamesOnModules option to 8.5
+- [64ba5a3]: added new flag for forcing global names on modules or iifes
+
 ## 8.9.0
 
 ### Minor Changes

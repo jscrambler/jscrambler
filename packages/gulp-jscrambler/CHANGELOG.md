@@ -1,5 +1,12 @@
 # gulp-jscrambler
 
+## 8.5.22
+
+### Patch Changes
+
+- [18409eb,64ba5a3]: Updated dependencies
+  - jscrambler@8.9.1
+
 ## 8.5.21
 
 ### Patch Changes
