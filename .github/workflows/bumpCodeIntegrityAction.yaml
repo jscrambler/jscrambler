@@ -1,7 +1,9 @@
 name: Release Code Integrity Github Actions
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - fix/cd-9827
 
 jobs:
   tag_code_integrity_github_action:
