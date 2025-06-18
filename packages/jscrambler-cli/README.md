@@ -396,8 +396,7 @@ Similarly, the resulting symbol table can be obtained using the `--output-symbol
 
 ## Use Global Names On Modules
 
-When we detect we're protecting a module, we may add some code that will have single character identifiers for code size purposes. If, in your use case, you're expecting to transpile this module into a script, having single character identifiers may lead to some collision, especially if you're doing this with multiple obfuscated modules.
-
+When we detect we're protecting an ES module, we may generate top-level single-character identifiers for code size purposes. If, in your use case, you expect to transpile this module into a script using a tool that cannot guarantee ES Module isolation (as it should), this may lead to collisions, especially if you're doing this with multiple obfuscated modules.
 To reduce the chance of collisions, you can set the `useGlobalNamesOnModules` option on your protection request:
 
 // jscrambler.json
