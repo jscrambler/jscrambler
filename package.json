@@ -9,7 +9,8 @@
   },
   "scripts": {
     "preinstall": "only-allow pnpm",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "ci:publish": "pnpm changeset publish && ./scripts/push-new-tags.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
