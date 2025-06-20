@@ -43,16 +43,18 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm changeset publish
-          version: HUSKY=0 pnpm changeset version --snapshot dev
+          version: pnpm changeset version --snapshot dev
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
-          commitMode: git-cli
+          setupGitUser: true  # Required for proper git operations
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           NPM_TOKEN: "fake-token"
+          HUSKY: 0  # Disable husky here
       
       - name: Push Tags
         run: git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
+          HUSKY: 0  # Disable husky here too
