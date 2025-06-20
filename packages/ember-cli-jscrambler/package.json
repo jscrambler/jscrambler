@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-jscrambler",
-  "version": "8.4.22",
+  "version": "0.0.0-bulbasaur-20250620144942",
   "description": "Jscrambler Code Integrity protection for Ember-CLI",
   "exports": "./index.js",
   "keywords": [
