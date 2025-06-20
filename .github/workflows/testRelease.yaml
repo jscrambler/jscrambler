@@ -37,7 +37,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm changeset tag
+          publish: pnpm ci:publish
           version: pnpm changeset version --snapshot dev --verbose
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
