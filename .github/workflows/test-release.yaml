@@ -35,10 +35,14 @@ jobs:
 
       - name: Simulate version bump and tag creation
         run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
           echo "test-package@1.0.$(date +%s)" > version.txt
           git add version.txt
           git commit -m "chore: version bump test"
           git tag v1.0.$(date +%s)
 
       - name: Push tags
-        run: git push origin --follow-tags
+        run: |
+          git remote set-url origin https://x-access-token:${{ steps.get_workflow_token.outputs.token }}@github.com/${{ github.repository }}
+          git push origin --follow-tags
