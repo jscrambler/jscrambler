@@ -1,12 +1,5 @@
 # grunt-jscrambler
 
-## 0.0.0-bulbasaur-20250620150328
-
-### Patch Changes
-
-- [f87b62b]: Updated dependencies
-  - jscrambler@0.0.0-bulbasaur-20250620150328
-
 ## 8.4.22
 
 ### Patch Changes
