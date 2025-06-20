@@ -44,10 +44,3 @@ jobs:
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          HUSKY: 0  # Disable husky here
-      
-      - name: Push Tags
-        run: git push --follow-tags
-        env:
-          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          HUSKY: 0  # Disable husky here too
