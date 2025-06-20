@@ -1,0 +1,44 @@
+name: Test GitHub App Tag Push
+
+on:
+  push:
+    branches:
+      - test-release  # Create and push to this branch to test
+
+jobs:
+  release-test:
+    name: Release Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get GitHub App Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
+          application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: true
+
+      - name: Simulate version bump and tag creation
+        run: |
+          echo "test-package@1.0.$(date +%s)" > version.txt
+          git add version.txt
+          git commit -m "chore: version bump test"
+          git tag v1.0.$(date +%s)
+
+      - name: Push tags
+        run: git push origin --follow-tags
