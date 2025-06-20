@@ -1,5 +1,12 @@
 # gulp-jscrambler
 
+## 0.0.0-dev-20250620110101
+
+### Patch Changes
+
+- [6f735c6]: Updated dependencies
+  - jscrambler@0.0.0-dev-20250620110101
+
 ## 8.5.22
 
 ### Patch Changes
