@@ -1,5 +1,12 @@
 # ember-cli-jscrambler
 
+## 0.0.0-bulbasaur-20250620165851
+
+### Patch Changes
+
+- [cd7ccf0]: Updated dependencies
+  - jscrambler@0.0.0-bulbasaur-20250620165851
+
 ## 8.4.22
 
 ### Patch Changes
