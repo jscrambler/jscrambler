@@ -1,11 +1,5 @@
 # jscrambler
 
-## 0.0.0-dev-20250620125158
-
-### Patch Changes
-
-- [2d9bcf6]: for tests
-
 ## 8.9.1
 
 ### Patch Changes
