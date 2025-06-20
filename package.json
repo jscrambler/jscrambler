@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "ci:publish": "pnpm changeset publish --tag bulbasaur && git push --follow-tags"
+    "ci:publish": "pnpm changeset publish --tag bulbasaur && ./scripts/push-new-tags.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
