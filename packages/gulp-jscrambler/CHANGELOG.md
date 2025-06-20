@@ -1,12 +1,5 @@
 # gulp-jscrambler
 
-## 0.0.0-bulbasaur-20250620144942
-
-### Patch Changes
-
-- [b6db36c]: Updated dependencies
-  - jscrambler@0.0.0-bulbasaur-20250620144942
-
 ## 8.5.22
 
 ### Patch Changes
