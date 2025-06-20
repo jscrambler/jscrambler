@@ -43,11 +43,10 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm changeset publish --verbose
-          version: pnpm changeset version --snapshot dev
+          version: pnpm changeset version --snapshot dev --verbose
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
-          setupGitUser: true  # Required for proper git operations
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           NPM_TOKEN: "fake-token"
