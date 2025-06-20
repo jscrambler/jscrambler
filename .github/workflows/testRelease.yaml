@@ -37,14 +37,13 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm changeset publish --verbose
+          publish: pnpm changeset tag
           version: pnpm changeset version --snapshot dev --verbose
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          NPM_TOKEN: "fake-token"
           HUSKY: 0  # Disable husky here
       
       - name: Push Tags
