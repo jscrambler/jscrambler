@@ -37,7 +37,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm changeset publish --tag bulbasaur
+          publish: pnpm ci:publish
           version: pnpm changeset version --snapshot bulbasaur
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
