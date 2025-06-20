@@ -1,5 +1,11 @@
 # jscrambler
 
+## 0.0.0-bulbasaur-20250620150328
+
+### Patch Changes
+
+- [f87b62b]: for tests
+
 ## 8.9.1
 
 ### Patch Changes

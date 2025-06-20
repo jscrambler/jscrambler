@@ -1,7 +1,7 @@
 {
   "name": "grunt-jscrambler",
   "description": "Obfuscate your source files using the Jscrambler Code Integrity API.",
-  "version": "8.4.22",
+  "version": "0.0.0-bulbasaur-20250620150328",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "scripts": {
     "test": "grunt",
