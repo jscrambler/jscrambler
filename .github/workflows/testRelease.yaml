@@ -37,10 +37,12 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm ci:publish
-          version: pnpm changeset version --snapshot dev --verbose
+          publish: changeset publish --tag bulbasaur
+          version: pnpm changeset version --snapshot bulbasaur
           commit: "chore(changeset): bump versions"
           title: "[Changeset] Bump Versions"
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          HUSKY: 0
