@@ -51,3 +51,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           NPM_TOKEN: "fake-token"
+          HUSKY: 0
