@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.9.2
+
+### Patch Changes
+
+- [b10a097]: When downloading the symbol table it should create the directory if it does not exists
+
 ## 8.9.1
 
 ### Patch Changes
