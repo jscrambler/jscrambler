@@ -952,6 +952,7 @@ export default {
     if (typeof destCallback === 'function') {
       destCallback(download, filesDest);
     } else {
+      await fs.promises.mkdir(filesDest, { recursive: true });
       await fs.promises.writeFile(
         path.join(filesDest, `${protectionId}_symbolTable.json`),
         download
