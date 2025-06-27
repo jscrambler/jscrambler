@@ -352,6 +352,10 @@ export default {
 
     let runBeforeProtection = finalConfig.beforeProtection;
 
+    if (finalConfig.numberOfProtections && finalConfig.numberOfProtections > 1) {
+      console.log(`Protections will be stored in ${filesDest}${filesDest.slice(-1) === '/' ? '' : '/'}[protection-id]`)
+    }
+
     if (sources) {
       filesSrc = undefined;
     }
@@ -526,16 +530,25 @@ export default {
     process.once('SIGINT', onExitCancelProtection)
       .once('SIGTERM', onExitCancelProtection);
 
+    const downloadOptions = {
+      filesDest,
+      destCallback,
+      stream,
+      multiple: protectionOptions.numberOfProtections && protectionOptions.numberOfProtections > 1,
+      deleteProtectionOnSuccess,
+    }
+
     const processedProtections = await this.pollProtections(
       client,
       applicationId,
       protectionIds,
-      await getProtectionDefaultFragments(client)
+      await getProtectionDefaultFragments(client),
+      downloadOptions,
     );
 
     process.removeListener('SIGINT', onExitCancelProtection).removeListener('SIGTERM', onExitCancelProtection);
 
-    const handleProtection = async (protection, {outPrefix = '', printProtectionId=true} = {}) => {
+    const handleProtection = async (protection) => {
       if (protection.growthWarning) {
         console.warn(`Warning: Your protected application has surpassed a reasonable file growth.\nFor more information on what might have caused this, please see the Protection Report.\nLink: ${APP_URL}.`);
       }
@@ -543,7 +556,7 @@ export default {
         console.warn(`Warning: Since your plan is a Trial, your protected files will stop working on ${protection.parameters.find(p => p.name === 'dateLock' && p.options.endDate).options.endDate}`)
       }
       if (debug) {
-        console.log('Finished protecting');
+        console.log(`Finished protecting${downloadOptions.multiple ? `: ${protection._id}` : ''}`);
       }
 
       if (protection.deprecations) {
@@ -592,54 +605,26 @@ export default {
         }
       }
 
-      if (debug) {
-        console.log('Downloading protection result');
-      }
-      const download = await this.downloadApplicationProtection(
-        client,
-        protection._id
-      );
-
-      errorHandler(download);
-
-      if (debug) {
-        console.log('Unzipping files');
-      }
-
-      await unzip(download, (filesDest ? `${filesDest}${outPrefix}` : filesDest) || destCallback, stream);
-
-      if (debug) {
-        console.log('Finished unzipping files');
-      }
-
-      if (printProtectionId) {
-        console.log(protection._id);
-      }
-
-      // change this to have the variable that checks if the protection is to be removed
-      if (deleteProtectionOnSuccess) {
-        await this.removeProtection(client, protection._id, applicationId)
-          .then(() => {
-            if(debug) {
-              console.log('Protection has been successful and will now be deleted')
-            }
-          })
-          .catch((error) => console.error(error));
+      if (!protectionOptions.numberOfProtections || protectionOptions.numberOfProtections === 1) {
+        this.handleApplicationProtectionDownload(
+          client,
+          protection._id,
+          downloadOptions,
+        );
       }
 
       return protection._id;
     }
 
+
     if (processedProtections.length === 1) {
       return handleProtection(processedProtections[0]);
     }
 
-    console.log(`Protections stored in ${filesDest}/[protection-id]`)
-
     for(let i = 0; i < processedProtections.length; i++) {
       const protection = processedProtections[i];
      try {
-       await handleProtection(protection, {outPrefix: `/${protection._id}/`, printProtectionId: false})
+       await handleProtection(protection)
      } catch(e) {
        console.error(e);
      }
@@ -648,6 +633,54 @@ export default {
     console.log(`Runtime: ${processedProtections.length} protections in ${Math.round((Date.now() - start) / 1000)}s`);
 
     return protectionIds;
+  },
+  /**
+   * Handle the download, unzipping, and possible deletion of protections
+   * @param {object} client
+   * @param {string} instrumentationId
+   * @returns {Promise<object>}
+   */
+  async handleApplicationProtectionDownload(client, protectionId, downloadOptions) {
+    const {
+      filesDest,
+      destCallback,
+      stream,
+      multiple,
+      deleteProtectionOnSuccess,
+    } = downloadOptions;
+    if (debug) {
+      console.log(`Downloading protection ${multiple ? `${protectionId} ` : ''}result`);
+    }
+    const download = await this.downloadApplicationProtection(
+      client,
+      protectionId
+    );
+
+    errorHandler(download);
+
+    if (debug) {
+      console.log(`Unzipping files${multiple ? ` from protection ${protectionId}` : ''}`);
+    }
+    await unzip(download, (filesDest ? `${filesDest}${multiple ? `/${protectionId}/` : ''}` : filesDest) || destCallback, stream);
+
+    if (debug) {
+      console.log(`Finished unzipping files for protection${multiple ? ` ${protectionId}` : ''}`);
+    }
+
+    if (!multiple) {
+      console.log(protectionId);
+    }
+
+    // change this to have the variable that checks if the protection is to be removed
+    if (deleteProtectionOnSuccess) {
+      await this.removeProtection(client, protectionId, applicationId)
+        .then(() => {
+          if(debug) {
+            console.log('Protection has been successful and will now be deleted')
+          }
+        })
+        .catch((error) => console.error(error));
+    }
   },
   /**
    * Instrument and download application sources for profiling purposes
@@ -1052,7 +1085,7 @@ export default {
 
     return poll();
   },
-  async pollProtections(client, applicationId, protectionIds, fragments) {
+  async pollProtections(client, applicationId, protectionIds, fragments, downloadOptions) {
     if (protectionIds.length === 1) {
       return [await this.pollProtection(client, applicationId, protectionIds[0], fragments)];
     }
@@ -1083,9 +1116,11 @@ export default {
           state === 'canceled'
         );
         // print progress
-        ended.filter(({_id, state}) => !seen[_id] && state !== 'canceled').forEach(({_id, startedAt, finishedAt, state}) => {
+        ended.filter(({_id, state}) => !seen[_id] && state !== 'canceled').forEach(async ({_id, startedAt, finishedAt, state}) => {
           seen[_id] = true;
           console.log(`[${Object.keys(seen).length}/${protectionIds.length}] Protection=${_id}, state=${state}, build-time=${Math.round((new Date(finishedAt) - new Date(startedAt)) / 1000)}s`);
+          await this.handleApplicationProtectionDownload(client, _id, downloadOptions);
+          console.log(`Downloaded: ${_id}`);
         })
         if (ended.length < protectionIds.length) {
           await new Promise(resolve => setTimeout(resolve, getPollingInterval(start)));
