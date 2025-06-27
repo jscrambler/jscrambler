@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.9.3
+
+### Patch Changes
+
+- [3f1a05c]: When doing multiple protections at the same time using the option -n, start downloading whenever protections finish, instead of waiting for all to finish
+
 ## 8.9.2
 
 ### Patch Changes
