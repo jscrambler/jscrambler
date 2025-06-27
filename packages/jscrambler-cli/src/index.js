@@ -534,7 +534,7 @@ export default {
       filesDest,
       destCallback,
       stream,
-      multiple: protectionOptions.numberOfProtections,
+      multiple: protectionOptions.numberOfProtections && protectionOptions.numberOfProtections > 1,
       deleteProtectionOnSuccess,
     }
 
