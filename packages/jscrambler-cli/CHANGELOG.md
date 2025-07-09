@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.9.4
+
+### Patch Changes
+
+- [5deff47]: Fixed jscrambler cli single protection
+
 ## 8.9.3
 
 ### Patch Changes

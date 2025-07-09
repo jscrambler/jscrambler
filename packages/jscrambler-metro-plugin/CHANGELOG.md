@@ -1,5 +1,12 @@
 # jscrambler-metro-plugin
 
+## 8.4.34
+
+### Patch Changes
+
+- [5deff47]: Updated dependencies
+  - jscrambler@8.9.4
+
 ## 8.4.33
 
 ### Patch Changes
