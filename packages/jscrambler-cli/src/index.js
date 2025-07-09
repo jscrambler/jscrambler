@@ -606,9 +606,10 @@ export default {
       }
 
       if (!protectionOptions.numberOfProtections || protectionOptions.numberOfProtections === 1) {
-        this.handleApplicationProtectionDownload(
+        await this.handleApplicationProtectionDownload(
           client,
           protection._id,
+          applicationId,
           downloadOptions,
         );
       }
@@ -637,10 +638,17 @@ export default {
   /**
    * Handle the download, unzipping, and possible deletion of protections
    * @param {object} client
-   * @param {string} instrumentationId
+   * @param {string} protectionId
+   * @param {string} applicationId
+   * @param {object} downloadOptions
    * @returns {Promise<object>}
    */
-  async handleApplicationProtectionDownload(client, protectionId, downloadOptions) {
+  async handleApplicationProtectionDownload(
+    client,
+    protectionId,
+    applicationId,
+    downloadOptions,
+  ) {
     const {
       filesDest,
       destCallback,
@@ -1119,7 +1127,12 @@ export default {
         ended.filter(({_id, state}) => !seen[_id] && state !== 'canceled').forEach(async ({_id, startedAt, finishedAt, state}) => {
           seen[_id] = true;
           console.log(`[${Object.keys(seen).length}/${protectionIds.length}] Protection=${_id}, state=${state}, build-time=${Math.round((new Date(finishedAt) - new Date(startedAt)) / 1000)}s`);
-          await this.handleApplicationProtectionDownload(client, _id, downloadOptions);
+            await this.handleApplicationProtectionDownload(
+              client,
+              _id,
+              applicationId,
+              downloadOptions,
+            );
           console.log(`Downloaded: ${_id}`);
         })
         if (ended.length < protectionIds.length) {
