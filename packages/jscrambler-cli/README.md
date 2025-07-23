@@ -145,6 +145,7 @@ Options:
   --save-src <bool>                       Protection should save application sources (default: true)
   --protection-report <string>            (version 8.4 and above) Protection id for the metadata report
   --use-global-names-on-modules <bool>    (version 8.5 and above) Force the usage of more complex names on modules (default: false)
+  --generate-alias <bool>                 Generate alias for the transformations (default: true)
   -h, --help                              output usage information
 ```
 

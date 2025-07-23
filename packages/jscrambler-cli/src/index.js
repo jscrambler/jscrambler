@@ -329,6 +329,7 @@ export default {
       saveSrc,
       globalNamesPrefix,
       useGlobalNamesOnModules,
+      generateAlias,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -493,6 +494,7 @@ export default {
       mode,
       globalNamesPrefix,
       useGlobalNamesOnModules,
+      generateAlias,
     };
 
     if (finalConfig.inputSymbolTable) {

@@ -239,6 +239,11 @@ commander
     '(version 8.5 and above) Force the usage of more complex names on modules'
   )
   .option('--balance', '(version 8.4 and above) Gets the balance of the user')
+  .option(
+    '--generate-alias <bool>',
+    'Generate alias for the transformations (default: true)',
+    validateBool('--generate-alias'),
+  )
   .parse(process.argv);
 
 let globSrc, filesSrc, config;
@@ -362,6 +367,12 @@ if (commander.saveSrc) {
   config.saveSrc = config.saveSrc !== false;
 }
 
+if (commander.generateAlias) {
+  config.generateAlias = commander.generateAlias !== 'false';
+} else {
+  config.generateAlias = config.generateAlias !== false;
+}
+
 globSrc = config.filesSrc;
 // If src paths have been provided
 if (commander.args.length > 0) {
@@ -458,6 +469,7 @@ const {
   saveSrc,
   globalNamesPrefix,
   useGlobalNamesOnModules,
+  generateAlias
 } = config;
 
 const params = config.params;
@@ -637,6 +649,7 @@ if (commander.balance) {
       saveSrc,
       globalNamesPrefix,
       useGlobalNamesOnModules,
+      generateAlias,
     };
     try {
       if (typeof werror !== 'undefined') {
