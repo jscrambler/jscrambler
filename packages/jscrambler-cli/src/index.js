@@ -437,6 +437,7 @@ export default {
       useProfilingData,
       useRecommendedOrder,
       mode,
+      generateAlias,
     };
 
     for (const prop in dataToValidate) {
