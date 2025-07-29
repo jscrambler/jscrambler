@@ -329,6 +329,7 @@ export default {
       saveSrc,
       globalNamesPrefix,
       useGlobalNamesOnModules,
+      generateAlias,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -436,6 +437,7 @@ export default {
       useProfilingData,
       useRecommendedOrder,
       mode,
+      generateAlias,
     };
 
     for (const prop in dataToValidate) {
@@ -493,6 +495,7 @@ export default {
       mode,
       globalNamesPrefix,
       useGlobalNamesOnModules,
+      generateAlias,
     };
 
     if (finalConfig.inputSymbolTable) {
