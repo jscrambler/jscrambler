@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.0
+
+### Minor Changes
+
+- [dd01e7b]: Added generate alias config option
+
 ## 8.9.4
 
 ### Patch Changes
