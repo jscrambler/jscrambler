@@ -15,7 +15,6 @@ const config = rc(
     utc: true,
     maxRetries: 5,
     saveSrc: true,
-    generateAlias: true,
   },
   []
 );
