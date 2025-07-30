@@ -241,7 +241,7 @@ commander
   .option('--balance', '(version 8.4 and above) Gets the balance of the user')
   .option(
     '--generate-alias <bool>',
-    'Generate alias for the transformations (default: true)',
+    '(version 8.5 and above) Generate alias for the transformations (default: true)',
     validateBool('--generate-alias'),
   )
   .parse(process.argv);
@@ -367,10 +367,13 @@ if (commander.saveSrc) {
   config.saveSrc = config.saveSrc !== false;
 }
 
-if (commander.generateAlias) {
-  config.generateAlias = commander.generateAlias !== 'false';
-} else {
-  config.generateAlias = config.generateAlias !== false;
+// ensure generateAlias is only sent on v8.5 and above
+if (Number(config.jscramblerVersion) >= 8.5) {
+  if (commander.generateAlias) {
+    config.generateAlias = commander.generateAlias !== 'false';
+  } else {
+    config.generateAlias = config.generateAlias !== false;
+  }
 }
 
 globSrc = config.filesSrc;
