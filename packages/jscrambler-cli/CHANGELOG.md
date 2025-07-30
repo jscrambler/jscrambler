@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.1
+
+### Patch Changes
+
+- [70319c8]: prevent sending generateAlias option default value to incompatible versions
+
 ## 8.10.0
 
 ### Minor Changes
