@@ -1,5 +1,12 @@
 # ember-cli-jscrambler
 
+## 8.4.27
+
+### Patch Changes
+
+- [70319c8]: Updated dependencies
+  - jscrambler@8.10.1
+
 ## 8.4.26
 
 ### Patch Changes
