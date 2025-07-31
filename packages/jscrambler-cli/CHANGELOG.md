@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.2
+
+### Patch Changes
+
+- [9a93455]: Clean up the generate alias in invalid api versions
+
 ## 8.10.1
 
 ### Patch Changes
