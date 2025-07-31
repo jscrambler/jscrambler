@@ -367,13 +367,10 @@ if (commander.saveSrc) {
   config.saveSrc = config.saveSrc !== false;
 }
 
-// ensure generateAlias is only sent on v8.5 and above
-if (Number(config.jscramblerVersion) >= 8.5) {
-  if (commander.generateAlias) {
-    config.generateAlias = commander.generateAlias !== 'false';
-  } else {
-    config.generateAlias = config.generateAlias !== false;
-  }
+if (commander.generateAlias) {
+  config.generateAlias = commander.generateAlias !== 'false';
+} else {
+  config.generateAlias = config.generateAlias !== false;
 }
 
 globSrc = config.filesSrc;
