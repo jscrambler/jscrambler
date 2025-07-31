@@ -369,8 +369,6 @@ if (commander.saveSrc) {
 
 if (commander.generateAlias) {
   config.generateAlias = commander.generateAlias !== 'false';
-} else {
-  config.generateAlias = config.generateAlias !== false;
 }
 
 globSrc = config.filesSrc;
