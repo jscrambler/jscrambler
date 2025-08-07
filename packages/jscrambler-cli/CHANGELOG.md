@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.3
+
+### Patch Changes
+
+- [fb77892]: Remove maxBodyLength flag from all axios requests
+
 ## 8.10.2
 
 ### Patch Changes
