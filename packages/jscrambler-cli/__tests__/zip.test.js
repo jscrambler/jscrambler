@@ -13,7 +13,7 @@ describe('zip utilities', () => {
     const zip = await zipSources(sources);
 
     const fileNames = Object.keys(zip.files);
-    expect(fileNames.sort()).toEqual(['a.txt', 'b/nested.txt']);
+    expect(fileNames.sort()).toEqual(['a.txt', 'b/', 'b/nested.txt']);
   });
 
   test('unzip should extract entries and provide contents when stream=false', async () => {
