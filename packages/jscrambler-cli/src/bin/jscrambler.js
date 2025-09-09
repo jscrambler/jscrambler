@@ -313,7 +313,7 @@ if (commander.utc) {
   config.utc = commander.utc !== 'false';
 }
 
-if (commander.useProfilingData) {
+if (commander.useProfilingData || config.useProfilingData) {
   console.warn(
     '[WARNING] The --use-profiling-data flag has been deprecated. Use the --profiling-data-mode flag.',
   );
