@@ -175,6 +175,11 @@ commander
     validateBool('tolerate-minification')
   )
   .option(
+    '--use-profiling-data <bool>',
+    `[DEPRECATED]`,
+    validateBool('use-profiling-data')
+  )
+  .option(
     '--profiling-data-mode <mode>',
     `(version 6.3 and above) Select profiling mode (default: automatic)`,
     validateProfilingDataMode
@@ -306,6 +311,12 @@ if (commander.profilingDataMode) {
 
 if (commander.utc) {
   config.utc = commander.utc !== 'false';
+}
+
+if (commander.useProfilingData) {
+  console.warn(
+    'The --use-profiling-data flag has been deprecated. Use the --profiling-data-mode flag.',
+  );
 }
 
 if (commander.useAppClassification) {
