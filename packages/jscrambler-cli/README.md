@@ -318,8 +318,6 @@ jscrambler --recommended-order true input1.js -o output/
 
 ### Profiling Data Mode (default: **automatic**)
 
-**Note**: This option was introduced in the version 6.3 and should be used instead of **use-profiling-data** which is deprecated.
-
 The **profiling-data-mode** option can be set to three different modes:
 * **Annotations**: considers only the profiling annotations;
 * **Automatic (default)**: ignores the existing profiling annotations and only considers the application's profiling data;
@@ -329,12 +327,6 @@ The following behaviour:
 
 ```
 jscrambler --profiling-data-mode off ...
-```
-
-Has the same effect as:
-
-```
-jscrambler --use-profiling-data false ...
 ```
 ### Instrument (`--instrument`)
 
