@@ -315,7 +315,7 @@ if (commander.utc) {
 
 if (commander.useProfilingData) {
   console.warn(
-    'The --use-profiling-data flag has been deprecated. Use the --profiling-data-mode flag.',
+    '[WARNING] The --use-profiling-data flag has been deprecated. Use the --profiling-data-mode flag.',
   );
 }
 
