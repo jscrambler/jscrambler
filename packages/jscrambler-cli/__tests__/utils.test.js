@@ -88,7 +88,6 @@ describe('utils.js', () => {
     it('exits for NaN and values < 1', () => {
       validateNProtections('abc');
       expect(process.exit).toHaveBeenCalledWith(1);
-      jest.clearAllMocks();
       validateNProtections('0');
       expect(process.exit).toHaveBeenCalledWith(1);
     });

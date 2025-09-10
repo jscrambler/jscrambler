@@ -24,7 +24,8 @@
     "prepublish": "npm run build",
     "eslint": "eslint src/",
     "eslint:fix": "eslint src/ --fix",
-    "test": "jest --config ./jest.config.js"
+    "test": "jest --config ./jest.config.js",
+    "test:coverage": "jest --config ./jest.config.js --coverage"
   },
   "engines": {
     "node": ">= 12.17.0"
