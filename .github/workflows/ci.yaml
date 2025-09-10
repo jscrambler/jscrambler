@@ -1,0 +1,188 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test jscrambler-cli
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build jscrambler-cli
+        run: |
+          cd packages/jscrambler-cli
+          pnpm run build
+
+      - name: Run unit tests
+        run: |
+          cd packages/jscrambler-cli
+          pnpm run test
+
+      - name: Generate test coverage
+        run: |
+          cd packages/jscrambler-cli
+          pnpm run test:coverage
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: matrix.node-version == 18  # Only upload once
+        with:
+          name: coverage-reports
+          path: packages/jscrambler-cli/coverage/
+          retention-days: 30
+
+      - name: Display coverage summary
+        if: matrix.node-version == 18  # Only show once
+        run: |
+          cd packages/jscrambler-cli
+          echo "## Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat coverage/lcov-report/index.html | grep -A 10 "Functions" | head -10 || echo "Coverage summary not available" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  lint:
+    name: Lint jscrambler-cli
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: |
+          cd packages/jscrambler-cli
+          pnpm run eslint
+
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: |
+          cd packages/jscrambler-cli && pnpm run build
+          cd ../jscrambler-webpack-plugin && pnpm run build
+
+      - name: Verify build outputs
+        run: |
+          echo "## Build Verification" >> $GITHUB_STEP_SUMMARY
+          echo "### jscrambler-cli" >> $GITHUB_STEP_SUMMARY
+          if [ -d "packages/jscrambler-cli/dist" ]; then
+            echo "✅ jscrambler-cli build successful" >> $GITHUB_STEP_SUMMARY
+            echo "Files in dist/:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            ls -la packages/jscrambler-cli/dist/ >> $GITHUB_STEP_SUMMARY || echo "Unable to list dist files" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ jscrambler-cli build failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          echo "### jscrambler-webpack-plugin" >> $GITHUB_STEP_SUMMARY
+          if [ -d "packages/jscrambler-webpack-plugin/lib" ]; then
+            echo "✅ jscrambler-webpack-plugin build successful" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ jscrambler-webpack-plugin build failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
