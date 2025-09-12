@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.4
+
+### Patch Changes
+
+- [af0d225]: Update axios version due to vuln
+
 ## 8.10.3
 
 ### Patch Changes
