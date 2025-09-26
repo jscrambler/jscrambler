@@ -506,6 +506,10 @@ export default {
       protectionOptions.inputSymbolTable = inputSymbolTableContents;
     }
 
+    if (debug) {
+      console.log('Parameters', JSON.stringify(updateData.parameters, null, 2));
+    }
+
     const createApplicationProtectionRes = await this.createApplicationProtections(
       client,
       applicationId,
