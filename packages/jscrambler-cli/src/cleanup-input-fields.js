@@ -20,7 +20,6 @@ export default function cleanupInputFields(args, fragments, options = {}) {
 
   [
     'tolerateMinification',
-    'useProfilingData',
     'useAppClassification',
     'inputSymbolTable',
     'entryPoint',
