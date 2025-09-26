@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.5
+
+### Patch Changes
+
+- [4dc85c0]: Log protection parametsr if debug is true
+
 ## 8.10.4
 
 ### Patch Changes
