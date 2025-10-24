@@ -1,5 +1,12 @@
 # grunt-jscrambler
 
+## 8.4.32
+
+### Patch Changes
+
+- [0260a92]: Updated dependencies
+  - jscrambler@8.10.6
+
 ## 8.4.31
 
 ### Patch Changes

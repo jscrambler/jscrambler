@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.6
+
+### Patch Changes
+
+- [0260a92]: Add warning message for the misuse of the output-symbol-table flag
+
 ## 8.10.5
 
 ### Patch Changes
