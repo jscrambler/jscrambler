@@ -994,6 +994,9 @@ export default {
     try {
       download = await this.downloadSymbolTableRequest(client, protectionId);
     } catch (e) {
+      console.warn(
+        '[Warning] The symbol table can only be output if you have Identifiers Renaming on UNSAFE mode or an includeList with global or public identifiers.',
+      );
       errorHandler(e);
     }
 
