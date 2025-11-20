@@ -15,7 +15,7 @@ If you're looking to gain control over third-party tags and achieve PCI DSS comp
     - [Required Fields](#required-fields)
     - [Output to a single file](#output-to-a-single-file)
     - [Output multiple files to a directory](#output-multiple-files-to-a-directory)
-    - [Using glob patterns](#using-minimatch)
+    - [Using glob patterns](#using-glob-patterns)
     - [Using configuration file](#using-configuration-file)
   - [Options](#options)
     - [Current working directory (--cwd)](#current-working-directory---cwd)
