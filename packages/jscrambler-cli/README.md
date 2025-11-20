@@ -15,7 +15,7 @@ If you're looking to gain control over third-party tags and achieve PCI DSS comp
     - [Required Fields](#required-fields)
     - [Output to a single file](#output-to-a-single-file)
     - [Output multiple files to a directory](#output-multiple-files-to-a-directory)
-    - [Using minimatch](#using-minimatch)
+    - [Using glob patterns](#using-minimatch)
     - [Using configuration file](#using-configuration-file)
   - [Options](#options)
     - [Current working directory (--cwd)](#current-working-directory---cwd)
@@ -163,10 +163,22 @@ jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o
 jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output/ input1.js input2.js
 ```
 
-### Using minimatch
+### Using glob patterns
+
+> Important: You should always enclose your glob patterns in quotes, otherwise the shell will prematurely expand the glob.
+
 ```bash
 jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output/ "lib/**/*.js"
 ```
+
+Some useful examples:
+- `lib/**/*.js`: Matches all `.js` files in `lib` and all its subdirectories.
+- `lib/**/priv_key.js`: Matches all `pri_key.js` files in `lib` and all its subdirectories.
+- `scripts/*.js`: Matches all `.js` files in the `scripts` directory.
+- `src/**/*.{js,html}`: Matches all `.js` and `.html` files in `src` and all its subdirectories.
+- `!(node_modules)/**`: Excludes `node_modules` directory.
+
+For additional patterns, [click here](https://github.com/isaacs/node-glob#glob-primer).
 
 ### Using configuration file
 ```bash
