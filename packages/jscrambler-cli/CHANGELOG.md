@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.7
+
+### Patch Changes
+
+- [c3e93f7]: Improve glob documentation
+
 ## 8.10.6
 
 ### Patch Changes
