@@ -165,7 +165,7 @@ jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o
 
 ### Using glob patterns
 
-> Important: You should always enclose your glob patterns in quotes, otherwise your shell might interpret them.
+> Important: You should always enclose your glob patterns in quotes, otherwise the shell will prematurely expand the glob.
 
 ```bash
 jscrambler -a _YOUR_ACCESS_KEY_ -s _YOUR_SECRET_KEY_ -i _YOUR_APPLICATION_ID_ -o output/ "lib/**/*.js"
