@@ -18,7 +18,7 @@
     "@changesets/cli": "2.27.1",
     "@commitlint/cli": "17.6.1",
     "@commitlint/config-conventional": "17.6.1",
-    "eslint": "8.56.0",
+    "eslint": "9.26.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.3",
