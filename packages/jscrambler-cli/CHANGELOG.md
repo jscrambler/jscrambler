@@ -1,5 +1,12 @@
 # jscrambler
 
+## 8.10.8
+
+### Patch Changes
+
+- [55803de]: Fix doc table contents
+- [a5ba16b]: Update axios to 1.13.5
+
 ## 8.10.7
 
 ### Patch Changes
