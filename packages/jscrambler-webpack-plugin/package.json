@@ -1,6 +1,6 @@
 {
   "name": "jscrambler-webpack-plugin",
-  "version": "8.4.34",
+  "version": "8.4.35",
   "description": "A webpack plugin to protect your generated bundle using Jscrambler Code Integrity",
   "exports": "./lib/index.js",
   "types": "index.d.ts",
