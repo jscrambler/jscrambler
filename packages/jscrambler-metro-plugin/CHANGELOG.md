@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.44
+
+### Patch Changes
+
+- [b71c6d1]: Fix duplicated metro-plugin annotation
+
 ## 8.4.43
 
 ### Patch Changes
