@@ -166,6 +166,9 @@ function shiftStartIndexOnNewLine(startIndex, code) {
  * @param {string} code
  */
 function wrapCodeWithTags(code) {
+  if (code.includes(JSCRAMBLER_BEG_ANNOTATION)) {
+    return code;
+  }
   let startIndex = code.indexOf('{');
   const endIndex = code.lastIndexOf('}');
   startIndex = shiftStartIndexOnNewLine(startIndex, code);
