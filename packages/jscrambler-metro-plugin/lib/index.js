@@ -291,7 +291,12 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   let calledByMetro = false;
   const fileNames = new Set();
   const sourceMapFiles = [];
-  const config = Object.assign({}, jscrambler.config, _config);
+  const config = Object.assign(
+    {},
+    { enabledHermes: true },
+    jscrambler.config,
+    _config,
+  );
   const instrument = !!config.instrument;
   let entryPointCode;
 
