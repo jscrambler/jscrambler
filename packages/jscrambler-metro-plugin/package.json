@@ -1,6 +1,6 @@
 {
   "name": "jscrambler-metro-plugin",
-  "version": "8.4.44",
+  "version": "8.4.45",
   "description": "A plugin to use metro with Jscrambler Code Integrity",
   "exports": "./lib/index.js",
   "scripts": {

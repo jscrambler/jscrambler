@@ -1,5 +1,11 @@
 # jscrambler-webpack-plugin
 
+## 8.4.36
+
+### Patch Changes
+
+- [409a0f2]: Merge excludeList's from both jscrambler config file and Jscrambler Webpack Plugin
+
 ## 8.4.35
 
 ### Patch Changes
