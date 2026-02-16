@@ -39,7 +39,7 @@ class JscramblerPlugin {
     if (typeof options !== 'object' || Array.isArray(options)) options = {};
 
     this.options = Object.assign({
-      excludeList: [],
+      excludeList: client.config.excludeList || [],
       obfuscationHook: 'emit',
       obfuscationLevel: OBFUSCATION_LEVELS.BUNDLE
     }, options, {
