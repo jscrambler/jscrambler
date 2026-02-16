@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 8.4.45
+
+### Patch Changes
+
+- [84382b9]: Set hermes by default in metro-plugin
+
 ## 8.4.44
 
 ### Patch Changes
