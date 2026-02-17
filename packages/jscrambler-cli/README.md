@@ -128,7 +128,6 @@ Options:
   -W, --werror <bool>                     Set werror flag value (default: true)
   --utc <bool>                            Set UTC as the request time zone. Otherwise it uses the local time zone (default: true)
   --tolerate-minification <bool>          Don't detect minification as malicious tampering (default: true)
-  --use-profiling-data <bool>             (version 6.2 only) Protection should use the existing profiling data (default: true)
   --profiling-data-mode <mode>            (version 6.3 and above) Select profiling mode (default: automatic)
   --remove-profiling-data                 Removes the current application profiling information
   --use-app-classification <bool>         (version 6.3 and above) Protection should use Application Classification metadata when protecting (default: true)
@@ -331,8 +330,6 @@ jscrambler --recommended-order true input1.js -o output/
 
 ### Profiling Data Mode (default: **automatic**)
 
-**Note**: This option was introduced in the version 6.3 and should be used instead of **use-profiling-data** which is deprecated.
-
 The **profiling-data-mode** option can be set to three different modes:
 * **Annotations**: considers only the profiling annotations;
 * **Automatic (default)**: ignores the existing profiling annotations and only considers the application's profiling data;
@@ -342,12 +339,6 @@ The following behaviour:
 
 ```
 jscrambler --profiling-data-mode off ...
-```
-
-Has the same effect as:
-
-```
-jscrambler --use-profiling-data false ...
 ```
 ### Instrument (`--instrument`)
 
