@@ -23,7 +23,8 @@
     "watch": "babel -w src --out-dir dist",
     "prepublish": "npm run build",
     "eslint": "eslint src/",
-    "eslint:fix": "eslint src/ --fix"
+    "eslint:fix": "eslint src/ --fix",
+    "test": "jest"
   },
   "engines": {
     "node": ">= 12.17.0"
@@ -47,7 +48,9 @@
   "devDependencies": {
     "@babel/cli": "^7.23.4",
     "@babel/core": "^7.23.7",
-    "@babel/preset-env": "^7.23.8"
+    "@babel/preset-env": "^7.23.8",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
   },
   "files": [
     "dist",
