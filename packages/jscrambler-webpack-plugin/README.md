@@ -54,7 +54,7 @@ module.exports = {
       ignoreFile: resolve(__dirname, '.jscramblerignore'), // OPTIONAL, defaults to no ignore file
       params: [], 
       obfuscationLevel: 'bundle', // OPTIONAL. Available options are: bundle (default) or module
-      obfuscationHook: 'emit' // OPTIONAL. Available options are: emit (default) or processAssets  
+      obfuscationHook: 'processAssets' // OPTIONAL. Available options are: processAssets (default) and emit (Webpack v4 and below)   
       // and other jscrambler configurations
     })
   ]
@@ -75,8 +75,21 @@ You can obfuscation **the entire bundle (default way)** or **the modules** insid
 
 **Note:** Ofuscation level module is not compatible with source maps.
 
-## Obfuscation Hook
+## Subresources Integrity (SRI)
 
-There are some webpack plugins, such as [webpack-subresources-integrity](https://www.npmjs.com/package/webpack-subresource-integrity), that should run after the obfuscation step. If those plugin are taking advantage of the new `processAssets` compilation hook (available on webpack 5 and onwards) to perform their tasks, that creates an incompatibility with the `jscrambler-webpack-plugin`. 
+There are some webpack plugins, such as [webpack-subresources-integrity](https://www.npmjs.com/package/webpack-subresource-integrity), that should run after the obfuscation step. 
 
-If your use case matches the one describe above, please set `obfuscationHook: processAssets` **(Only for webpack >= 5)**
+Please, make sure the [webpack-subresources-integrity](https://www.npmjs.com/package/webpack-subresource-integrity) plugin is added after the `JscramblerWebpackPlugin`. For example:
+
+```javascript
+  plugins: [
+    ...,
+    new JscramblerPlugin({
+        obfuscationHook: "processAssets"
+    }),
+    new SubresourceIntegrityPlugin({
+        hashFuncNames: ["sha384"],
+        enabled: true,
+    }),
+]
+```

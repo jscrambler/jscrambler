@@ -40,7 +40,7 @@ class JscramblerPlugin {
 
     this.options = Object.assign({
       excludeList: client.config.excludeList || [],
-      obfuscationHook: 'emit',
+      obfuscationHook: OBFUSCATION_HOOKS.PROCESS_ASSETS,
       obfuscationLevel: OBFUSCATION_LEVELS.BUNDLE
     }, options, {
       clientId: 2,
