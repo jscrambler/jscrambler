@@ -4,6 +4,7 @@
   "description": "A plugin to use metro with Jscrambler Code Integrity",
   "exports": "./lib/index.js",
   "scripts": {
+    "test": "jest",
     "eslint": "eslint lib/",
     "eslint:fix": "pnpm run eslint --fix"
   },
@@ -14,6 +15,9 @@
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
     "jscrambler": "workspace:*"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   },
   "keywords": [
     "jscrambler",
