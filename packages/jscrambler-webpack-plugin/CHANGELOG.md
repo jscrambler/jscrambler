@@ -1,5 +1,11 @@
 # jscrambler-webpack-plugin
 
+## 8.5.0
+
+### Minor Changes
+
+- [00d220b]: Prevent processAssets hooks from running before terser minifier
+
 ## 8.4.36
 
 ### Patch Changes
