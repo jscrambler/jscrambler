@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import fs from 'fs';
 import { extname, join, normalize } from 'path';
 import filesizeParser from 'filesize-parser';
@@ -9,7 +9,7 @@ import filesizeParser from 'filesize-parser';
  * @returns {string[]}
  */
 export function getMatchedFiles(pattern) {
-  let matchedFiles = glob.sync(pattern, {
+  let matchedFiles = globSync(pattern, {
     dot: true,
   });
 
