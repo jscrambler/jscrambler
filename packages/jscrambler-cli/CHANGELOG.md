@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.10.9
+
+### Patch Changes
+
+- [ef15a23]: Bump glob due to vulnerability
+
 ## 8.10.8
 
 ### Patch Changes
