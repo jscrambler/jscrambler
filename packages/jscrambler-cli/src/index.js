@@ -12,7 +12,11 @@ import * as queries from './queries';
 import {HTTP_STATUS_CODES} from './constants';
 import {zip, zipSources, unzip} from './zip';
 import * as introspection from './introspection';
-import { getMatchedFiles, validateThresholdFn } from './utils';
+import {
+  getMatchedFiles,
+  validateCustomLabels,
+  validateThresholdFn,
+} from './utils';
 
 import getProtectionDefaultFragments, {
   getIntrospection,
@@ -262,6 +266,7 @@ export default {
   // {
   //   "filesSrc": [""],
   //   "params": {},
+  //   "customLabels": { "env": "production", "version": "9.2.2" },
   //   "cwd": "",
   //   "host": "api.jscrambler.com",
   //   "port": "443",
@@ -273,6 +278,9 @@ export default {
   // entire application sources.
   //
   // `params` if provided will replace all the application transformation parameters.
+  //
+  // `customLabels` if provided attaches string key-value metadata to the protection request
+  // (API must support this field).
   //
   // `cwd` allows you to set the current working directory to resolve problems with
   // relative paths with your `filesSrc` is outside the current working directory.
@@ -330,6 +338,7 @@ export default {
       globalNamesPrefix,
       useGlobalNamesOnModules,
       generateAlias,
+      customLabels,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -497,6 +506,11 @@ export default {
       useGlobalNamesOnModules,
       generateAlias,
     };
+
+    const normalizedCustomLabels = validateCustomLabels(customLabels);
+    if (Object.keys(normalizedCustomLabels).length) {
+      protectionOptions.customLabels = normalizedCustomLabels;
+    }
 
     if (finalConfig.inputSymbolTable) {
       const inputSymbolTableContents = await fs.promises.readFile(

@@ -39,6 +39,43 @@ export function validateNProtections(n) {
   return nProtections;
 }
 
+/**
+ * Validate protection `customLabels`: a plain object with non-empty keys and string values.
+ * @param {*} customLabels From config or programmatic options; omit or pass `undefined` for none.
+ * @returns {Object.<string, string>} A shallow copy when valid; `{}` when `customLabels` is `undefined`.
+ * @throws {Error} If `customLabels` is `null`, an array, a non-object, or has invalid keys/values.
+ */
+export function validateCustomLabels(customLabels) {
+  if (typeof customLabels === 'undefined') {
+    return {};
+  }
+  if (
+    customLabels === null ||
+    typeof customLabels !== 'object' ||
+    Array.isArray(customLabels)
+  ) {
+    throw new Error(
+      'Invalid *customLabels*: expected a plain object. Eg: { "env": "production", "version": "9.2.2" }',
+    );
+  }
+  const out = {};
+  for (const key of Object.keys(customLabels)) {
+    if (!key) {
+      throw new Error(
+        'Invalid *customLabels*: keys must be non-empty strings. Eg: { "env": "production", "version": "9.2.2" }',
+      );
+    }
+    const value = customLabels[key];
+    if (typeof value !== 'string') {
+      throw new Error(
+        `Invalid *customLabels*: value for "${key}" must be a string. Eg: { "env": "production", "version": "9.2.2" }`,
+      );
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
 export const APPEND_JS_TYPE = 'append-js';
 export const PREPEND_JS_TYPE = 'prepend-js';
 
