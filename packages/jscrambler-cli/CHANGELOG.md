@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.11.0
+
+### Minor Changes
+
+- [63d90aa]: Add support for custom labels in protection requests
+
 ## 8.10.9
 
 ### Patch Changes
