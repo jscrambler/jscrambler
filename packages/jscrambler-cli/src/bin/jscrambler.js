@@ -11,6 +11,7 @@ import {
   PREPEND_JS_TYPE,
   getMatchedFiles,
   isJavascriptFile,
+  validateCustomLabels,
   validateNProtections,
   validateThresholdFn,
 } from '../utils';
@@ -130,6 +131,19 @@ const validateBeforeProtection = (beforeProtectionArray = []) => {
   return beforeProtectionArray;
 };
 
+const parseCustomLabelCommandLineOption = (val, accumulator = {}) => {
+  const idx = val.indexOf('=');
+  if (idx < 1) {
+    console.error(
+      `*--custom-label* expects key=value (for example --custom-label "env=production"), got "${val}"`,
+    );
+    process.exit(1);
+  }
+  const key = val.slice(0, idx);
+  const value = val.slice(idx + 1);
+  return { ...accumulator, [key]: value };
+};
+
 commander
   .version(require('../../package.json').version)
   .usage('[options] <file ...>')
@@ -241,8 +255,14 @@ commander
   .option('--balance', '(version 8.4 and above) Gets the balance of the user')
   .option(
     '--generate-alias <bool>',
-    '(version 8.5 and above) Generate alias for the transformations (default: true)',
+    '(version 8.5 and above) Generate alias for the transformations',
     validateBool('--generate-alias'),
+  )
+  .option(
+    '--custom-label <key=value>',
+    'Attach a custom label to the protection (repeatable). Example: --custom-label "env=production"',
+    parseCustomLabelCommandLineOption,
+    {},
   )
   .parse(process.argv);
 
@@ -256,6 +276,9 @@ if (commander.config) {
 } else {
   config = {};
 }
+
+// Merge explicit config file (specified by CLI flag `--config`) with `.jscramblerrc` (`_config` fills undefined keys)
+config = defaults(config, _config);
 
 config.accessKey =
   commander.accessKey || (config.keys ? config.keys.accessKey : undefined);
@@ -341,7 +364,22 @@ if (commander.forceAppEnvironment) {
     undefined;
 }
 
-config = defaults(config, _config);
+// Validate customLabels from file config
+try {
+  config.customLabels = validateCustomLabels(config.customLabels);
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
+// Merge file config with CLI `--custom-label` flags (CLI wins on duplicate keys)
+config.customLabels = {
+  ...config.customLabels,
+  ...(commander.customLabel || {}),
+};
+if (Object.keys(config.customLabels).length === 0) {
+  delete config.customLabels;
+}
+
 
 config.numberOfProtections = validateNProtections(commander.N);
 
@@ -467,7 +505,8 @@ const {
   saveSrc,
   globalNamesPrefix,
   useGlobalNamesOnModules,
-  generateAlias
+  generateAlias,
+  customLabels,
 } = config;
 
 const params = config.params;
@@ -648,6 +687,7 @@ if (commander.balance) {
       globalNamesPrefix,
       useGlobalNamesOnModules,
       generateAlias,
+      customLabels,
     };
     try {
       if (typeof werror !== 'undefined') {

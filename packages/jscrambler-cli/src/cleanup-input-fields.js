@@ -14,7 +14,7 @@ export default function cleanupInputFields(args, fragments, options = {}) {
         ''
       );
 
-      console.warn(`This API Version does not support the ${field} argument.`);
+      console.warn(`Warning: This API Version does not support the '${field}' argument.`);
     }
   }
 
@@ -26,6 +26,7 @@ export default function cleanupInputFields(args, fragments, options = {}) {
     'entryPoint',
     'ensureCodeAnnotation',
     'generateAlias',
+    'customLabels',
   ].forEach(fieldCleanUp);
 
   return [options, cleanedUpFragments];

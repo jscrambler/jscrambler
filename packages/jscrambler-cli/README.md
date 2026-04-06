@@ -26,6 +26,7 @@ If you're looking to gain control over third-party tags and achieve PCI DSS comp
     - [Instrument (`--instrument`)](#instrument---instrument)
   - [Symbol Table](#symbol-table)
   - [Global Names Prefix](#global-names-prefix)
+  - [Custom labels (customLabels)](#custom-labels-customlabels)
   - [API](#api)
     - [Quick example](#quick-example)
   - [Jscrambler Parameters](#jscrambler-parameters)
@@ -146,6 +147,7 @@ Options:
   --protection-report <string>            (version 8.4 and above) Protection id for the metadata report
   --use-global-names-on-modules <bool>    (version 8.5 and above) Force the usage of more complex names on modules (default: false)
   --generate-alias <bool>                 Generate alias for the transformations (default: true)
+  --custom-label <key=value>              Attach a custom label to the protection (repeatable)
   -h, --help                              output usage information
 ```
 
@@ -440,6 +442,33 @@ To prevent **global naming collisions**, you can set the `globalNamesPrefix` par
 If you apply the previous configuration, all generated global variable names will start with the letters *p1* for *micro-frontend 1* and *p2* for *micro-frontend 2*.
 
 ***Note***: The `globalNamesPrefix` parameter must be **short** and **unintelligible** to avoid code size increase and automated attacks
+
+## Custom labels (customLabels)
+
+You can attach optional **custom labels** to a protection request: a plain object of string keys and string values. They are sent to the API as **`customLabels`** (for example to record build environment, version, or CI metadata). Your Jscrambler API version must support this field; on older APIs the client may omit it and print a warning.
+
+### Configuration file
+
+Add a `customLabels` object next to your other options (for example in `.jscramblerrc` or a file passed with `-c, --config`):
+
+```json
+{
+  "customLabels": {
+    "env": "production",
+    "version": "9.2.2"
+  }
+}
+```
+
+Keys must be non-empty strings; values must be strings (use quoted JSON for numeric-looking values, e.g. `"9.2.2"`).
+
+### CLI
+
+Use **`--custom-label`** with `key=value`. You can pass it multiple times. Only the first `=` splits the key from the value (so values may contain `=`). If the same key appears in the config file and on the command line, the **CLI value wins**.
+
+```bash
+jscrambler -c config.json --custom-label env=production --custom-label version=9.2.2 -o out/ "src/**/*.js"
+```
 
 ## API
 ```bash
