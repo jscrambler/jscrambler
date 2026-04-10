@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.11.1
+
+### Patch Changes
+
+- [e473dc2]: Fix axios vulnerability
+
 ## 8.11.0
 
 ### Minor Changes
