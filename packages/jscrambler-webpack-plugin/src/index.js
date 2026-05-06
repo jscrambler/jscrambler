@@ -11,6 +11,8 @@ const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const sourceMaps = !!client.config.sourceMaps;
 const instrument = !!client.config.instrument;
 const PLUGIN_NAME = 'JscramblerPlugin';
+const PROTECTABLE_ASSET_REGEX = /\.(js|mjs|cjs|html|htm)$/;
+const SOURCE_MAP_ASSET_REGEX = /\.(js|mjs|cjs)\.map$/;
 const OBFUSCATION_LEVELS = {
   MODULE: 'module',
   BUNDLE: 'bundle'
@@ -239,7 +241,7 @@ class JscramblerPlugin {
    */
   getSourceMapInfo(filename, compilation) {
     let sourceMapFilename = `${filename}.map`;
-    if (/\.(js.map)$/.test(filename)) {
+    if (SOURCE_MAP_ASSET_REGEX.test(filename)) {
       sourceMapFilename = filename;
     }
     const sourceMap = compilation.assets[sourceMapFilename];
@@ -266,7 +268,7 @@ class JscramblerPlugin {
         }
 
         chunk.files.forEach(filename => {
-          if (/\.(js|html|htm)$/.test(filename)) {
+          if (PROTECTABLE_ASSET_REGEX.test(filename)) {
             const content = compilation.assets[filename].source();
 
             if (this.options.obfuscationLevel === OBFUSCATION_LEVELS.BUNDLE) {
