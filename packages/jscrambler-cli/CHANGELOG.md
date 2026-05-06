@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.11.2
+
+### Patch Changes
+
+- [139b5ef]: Update axios to 1.16.0 to address known vulnerabilities.
+
 ## 8.11.1
 
 ### Patch Changes
