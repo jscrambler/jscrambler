@@ -1,5 +1,11 @@
 # jscrambler-webpack-plugin
 
+## 8.5.5
+
+### Patch Changes
+
+- [aa1c9d0]: Protect webpack-emitted `.mjs` and `.cjs` assets.
+
 ## 8.5.4
 
 ### Patch Changes
