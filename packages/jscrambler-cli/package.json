@@ -21,6 +21,7 @@
     "clean": "rm -rf ./dist",
     "build": "babel src --out-dir dist",
     "watch": "babel -w src --out-dir dist",
+    "test": "pnpm run build && node test/output-path.js",
     "prepublish": "npm run build",
     "eslint": "eslint src/",
     "eslint:fix": "eslint src/ --fix"

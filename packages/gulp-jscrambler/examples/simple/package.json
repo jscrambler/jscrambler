@@ -18,6 +18,6 @@
   "license": "ISC",
   "devDependencies": {
     "gulp": "^4",
-    "gulp-jscrambler": "^6.0.0"
+    "gulp-jscrambler": "../../"
   }
 }

@@ -6,6 +6,8 @@ var path = require('path');
 var PluginError = require('plugin-error');
 var through = require('through2');
 
+const resolveOutputPath = jScrambler.resolveOutputPath;
+
 module.exports = function (options) {
   const emptyFiles = [];
   options = defaults(options || {}, {
@@ -56,6 +58,7 @@ module.exports = function (options) {
       return done(null);
     }
     var dest = function (buffer, filename) {
+      const outputPath = resolveOutputPath(options.cwd, filename);
       var file = null;
 
       for (var src of options.filesSrc) {
@@ -68,7 +71,7 @@ module.exports = function (options) {
       if (file === null) {
         file = new File({
           cwd: options.cwd,
-          path: path.join(options.cwd, filename)
+          path: outputPath
         });
       }
 
