@@ -20,11 +20,11 @@ const {
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  BUNDLE_CMD
+  BUNDLE_CMDS
 } = require('./constants');
 
 /**
- * Only 'bundle' command triggers obfuscation.
+ * Only known Metro bundle CLI subcommands trigger obfuscation (see BUNDLE_CMDS).
  * Development bundles will be ignored (--dev true). Use JSCRAMBLER_METRO_DEV to override this behaviour.
  * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
@@ -39,12 +39,14 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
-  command
-    .command(BUNDLE_CMD)
-    .allowUnknownOption()
-    .action(() => (isBundleCmd = true));
+  BUNDLE_CMDS.forEach(bundleCmd => {
+    command
+      .command(bundleCmd)
+      .allowUnknownOption()
+      .action(() => (isBundleCmd = true));
+  });
   command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
-  if (!isBundleCmd) {
+  if (!isBundleCmd && !argvHasBundleCommand) {
     return 'Not a *bundle* command';
   }
   if (command.dev === 'true') {
@@ -58,6 +60,8 @@ function skipObfuscation(config) {
 
 /**
  * Get bundle path based CLI arguments
+ * Only for some android/iOS builds, VegaOS
+ * does not reach this logic.
  * @returns {{bundlePath: string, bundleSourceMapPath: string}}
  * @throws {Error} when bundle output was not found
  */
@@ -73,8 +77,9 @@ function getBundlePath() {
       bundleSourceMapPath: command.sourcemapOutput
     };
   }
-  console.error('Bundle output path not found.');
-  return process.exit(-1);
+  throw new Error(
+    'Bundle output path not found. For Vega builds, ensure the Metro save hook is active (metro is resolved from the app projectRoot).',
+  );
 }
 
 /**

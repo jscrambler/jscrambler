@@ -1,6 +1,6 @@
 const path = require('path');
 
-const BUNDLE_CMD = 'bundle';
+const BUNDLE_CMDS = ['bundle', 'build-kepler', 'build-vega'];
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';
@@ -35,7 +35,6 @@ const JSCRAMBLER_HERMES_ADD_SHOW_SOURCE_DIRECTIVE = [
 ];
 
 module.exports = {
-  BUNDLE_CMD,
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
@@ -58,5 +57,6 @@ module.exports = {
   JSCRAMBLER_HERMES_ADD_SHOW_SOURCE_DIRECTIVE,
   JSCRAMBLER_ANTI_TAMPERING_MODE_SKL,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  JSCRAMBLER_EXTS
+  JSCRAMBLER_EXTS,
+  BUNDLE_CMDS,
 }
