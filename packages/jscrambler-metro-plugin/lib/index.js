@@ -286,9 +286,9 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     return {};
   }
 
-  const bundlePath = getBundlePath();
-  // make sure jscrambler-metro-plugin is properly configure on metro bundler
+  let obfuscatedViaSave = false;
   let calledByMetro = false;
+  let beforeExitHandled = false;
   const fileNames = new Set();
   const sourceMapFiles = [];
   const config = Object.assign(
@@ -308,75 +308,154 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     console.warn('warning: Jscrambler recommends you to declare your transformations list on the configuration file.')
   }
 
+  async function runObfuscation(bundlePath, bundleSourceMapPath) {
+    console.log(
+      instrument
+        ? 'info Jscrambler Instrumenting Code'
+        : `info Jscrambler Obfuscating Code ${
+            config.enabledHermes
+              ? "(Using Hermes Engine)"
+              : "(If you are using Hermes Engine set enabledHermes=true)"
+          }`,
+    );
+
+    handleHermesIncompatibilities(config);
+    await obfuscateBundle(
+      {bundlePath, bundleSourceMapPath},
+      {fileNames: Array.from(fileNames), entryPointCode},
+      sourceMapFiles,
+      config,
+      projectRoot,
+    );
+  }
+
+  function resetPerBundleSerializerState() {
+    fileNames.clear();
+    sourceMapFiles.length = 0;
+    entryPointCode = undefined;
+  }
+
+  function installMetroSaveHook(appProjectRoot) {
+    let metroOutput;
+    try {
+      metroOutput = require(
+        require.resolve('metro/src/shared/output/bundle', {
+          paths: [appProjectRoot],
+        }),
+      );
+    } catch (err) {
+      console.warn(
+        `warning: Jscrambler could not hook Metro bundle output (${err.message}). ` +
+          'Obfuscation will not run per-bundle via save().',
+      );
+      return;
+    }
+    if (metroOutput.__jscramblerSavePatched) {
+      return;
+    }
+    const originalSave = metroOutput.save.bind(metroOutput);
+    metroOutput.save = async function jscramblerMetroSave(bundle, args, log) {
+      const result = await originalSave(bundle, args, log);
+      if (args && args.bundleOutput) {
+        try {
+          debug &&
+            console.log(
+              `debug Jscrambler obfuscating bundle at ${args.bundleOutput}`,
+            );
+          await runObfuscation(args.bundleOutput, args.sourcemapOutput);
+          resetPerBundleSerializerState();
+          obfuscatedViaSave = true;
+        } catch (err) {
+          console.error(err);
+          process.exit(1);
+        }
+      }
+      return result;
+    };
+    metroOutput.__jscramblerSavePatched = true;
+  }
+
+  installMetroSaveHook(projectRoot);
+
   process.on('beforeExit', async function (exitCode) {
-    try{
+    if (beforeExitHandled) {
+      return;
+    }
+    beforeExitHandled = true;
+
+    try {
       if (!calledByMetro) {
         throw new Error('*jscrambler-metro-plugin* was not properly configured on metro.config.js file. Please verify our documentation in https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/react-native/integration.');
       }
 
-      console.log(
-        instrument
-          ? 'info Jscrambler Instrumenting Code'
-          : `info Jscrambler Obfuscating Code ${
-              config.enabledHermes
-                ? "(Using Hermes Engine)"
-                : "(If you are using Hermes Engine set enabledHermes=true)"
-            }`,
+      if (obfuscatedViaSave) {
+        return;
+      }
+
+      const bundlePaths = getBundlePath();
+      await runObfuscation(
+        bundlePaths.bundlePath,
+        bundlePaths.bundleSourceMapPath,
       );
-
-      // check for incompatible transformations and turn off code hardening
-      handleHermesIncompatibilities(config);
-
-      // start obfuscation
-      await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);
-    } catch(err) {
+      process.exit(typeof exitCode === 'number' ? exitCode : 0);
+    } catch (err) {
       console.error(err);
       process.exit(1);
-    } finally {
-      process.exit(exitCode)
     }
   });
+
+  function applyJscramblerSerializerToModule(_module) {
+    const modulePath = _module.path;
+    const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
+
+    if (shouldSkipModule) {
+      return true;
+    }
+
+    const normalizePath = buildNormalizePath(modulePath, projectRoot);
+    fileNames.add(normalizePath);
+
+    _module.output.forEach(({data}) => {
+      if (instrument && Array.isArray(data.map)) {
+        sourceMapFiles.push({
+          filename: `${normalizePath}.map`,
+          content: buildModuleSourceMap(
+            data,
+            normalizePath,
+            _module.getSource().toString()
+          )
+        });
+      }
+      if (modulePath.includes(INIT_CORE_MODULE) && entryPointCode === undefined) {
+        entryPointCode = data.code;
+      }
+      data.code = wrapCodeWithTags(data.code);
+    });
+    return true;
+  }
 
   return {
     serializer: {
       /**
-       * Select user files ONLY (no vendor) to be obfuscated. That code should be tagged with
-       * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
-       * Also gather metro source-maps in case of instrumentation process.
-       * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
-       * @returns {boolean}
+       * Vega split bundles merge createAppBundleConfig which replaces this filter.
+       * Tagging still runs from experimentalSerializerHook below.
        */
       processModuleFilter(_module) {
         calledByMetro = true;
-
-        const modulePath = _module.path;
-        const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
-
-        if (shouldSkipModule) {
-          return true;
+        return applyJscramblerSerializerToModule(_module);
+      },
+      /**
+       * Not overridden by Kepler/Vega createAppBundleConfig (unlike processModuleFilter).
+       */
+      experimentalSerializerHook(graph, delta) {
+        if (delta && delta.reset === false) {
+          return;
         }
-
-        const normalizePath = buildNormalizePath(modulePath, projectRoot);
-        fileNames.add(normalizePath);
-
-        _module.output.forEach(({data}) => {
-          if (instrument && Array.isArray(data.map)) {
-            sourceMapFiles.push({
-              filename: `${normalizePath}.map`,
-              content: buildModuleSourceMap(
-                data,
-                normalizePath,
-                _module.getSource().toString()
-              )
-            });
-          }
-          if (modulePath.includes(INIT_CORE_MODULE)){
-            entryPointCode = data.code;
-          }
-          data.code = wrapCodeWithTags(data.code);
-        });
-        return true;
-      }
+        calledByMetro = true;
+        for (const _module of graph.dependencies.values()) {
+          applyJscramblerSerializerToModule(_module);
+        }
+      },
     }
   };
 };
