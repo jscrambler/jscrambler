@@ -77,9 +77,8 @@ function getBundlePath() {
       bundleSourceMapPath: command.sourcemapOutput
     };
   }
-  throw new Error(
-    'Bundle output path not found. For Vega builds, ensure the Metro save hook is active (metro is resolved from the app projectRoot).',
-  );
+  console.error('Bundle output path not found.');
+  return process.exit(-1);
 }
 
 /**
