@@ -46,7 +46,7 @@ function skipObfuscation(config) {
       .action(() => (isBundleCmd = true));
   });
   command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
-  if (!isBundleCmd && !argvHasBundleCommand) {
+  if (!isBundleCmd) {
     return 'Not a *bundle* command';
   }
   if (command.dev === 'true') {
