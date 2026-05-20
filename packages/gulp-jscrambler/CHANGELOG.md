@@ -1,5 +1,13 @@
 # gulp-jscrambler
 
+## 8.5.39
+
+### Patch Changes
+
+- [25054ca]: Ensure protected files are not written outside of project root folder in gulp
+- [25054ca]: Updated dependencies
+  - jscrambler@8.11.3
+
 ## 8.5.38
 
 ### Patch Changes
