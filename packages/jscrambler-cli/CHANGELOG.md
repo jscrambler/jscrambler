@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.11.3
+
+### Patch Changes
+
+- [25054ca]: Ensure protected files are not written outside of project root folder in gulp
+
 ## 8.11.2
 
 ### Patch Changes
