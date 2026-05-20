@@ -1,6 +1,6 @@
 import { globSync } from 'glob';
 import fs from 'fs';
-import { extname, join, normalize } from 'path';
+import { extname, join, normalize, resolve, relative, sep, isAbsolute } from 'path';
 import filesizeParser from 'filesize-parser';
 
 /**
@@ -148,3 +148,19 @@ export const validateThresholdFn = (optionName) => (val) => {
   }
   return inBytes;
 };
+
+export function resolveOutputPath(outputPath, filename) {
+  const outputRoot = resolve(outputPath);
+  const finalPath = resolve(outputRoot, filename);
+  const relativePath = relative(outputRoot, finalPath);
+
+  if (
+    relativePath === '..' ||
+    relativePath.indexOf(`..${sep}`) === 0 ||
+    isAbsolute(relativePath)
+  ) {
+    throw new Error(`Refusing to write file outside output directory: ${filename}`);
+  }
+
+  return finalPath;
+}

@@ -38,7 +38,6 @@ You can integrate Jscrambler into your build process easily with its API client.
 - [Grunt](packages/grunt-jscrambler)
 - [Gulp](packages/gulp-jscrambler)
 - [Webpack](packages/jscrambler-webpack-plugin)
-- [Ember](packages/ember-cli-jscrambler)
 - [Metro](packages/jscrambler-metro-plugin)
 
 ### Version Compatibility

@@ -16,6 +16,7 @@ import {
   getMatchedFiles,
   validateCustomLabels,
   validateThresholdFn,
+  resolveOutputPath,
 } from './utils';
 
 import getProtectionDefaultFragments, {
@@ -132,6 +133,7 @@ function buildFinalConfig(configPathOrObject) {
 export default {
   Client: JscramblerClient,
   config,
+  resolveOutputPath,
   queries,
   generateSignedParams,
   /**
