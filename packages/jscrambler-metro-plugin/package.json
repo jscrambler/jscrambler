@@ -13,8 +13,7 @@
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",
-    "jscrambler": "workspace:*",
-    "source-map": "^0.7.6"
+    "jscrambler": "workspace:*"
   },
   "keywords": [
     "jscrambler",

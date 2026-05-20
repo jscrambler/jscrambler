@@ -1,5 +1,10 @@
 const path = require('path');
 
+/** commands used to build the bundle
+ *  - bundle: react native standard bundle command for android/iOS
+ *  - build-kepler: react native legacy bundle command for VegaOS
+ *  - build-vega: react native current bundle command for VegaOS
+ */
 const BUNDLE_CMDS = ['bundle', 'build-kepler', 'build-vega'];
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';

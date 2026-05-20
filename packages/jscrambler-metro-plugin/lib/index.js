@@ -405,6 +405,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   });
 
   function applyJscramblerSerializerToModule(_module) {
+    calledByMetro = true;
     const modulePath = _module.path;
     const shouldSkipModule = !validateModule(modulePath, config, projectRoot);
 
@@ -437,21 +438,29 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   return {
     serializer: {
       /**
-       * Vega split bundles merge createAppBundleConfig which replaces this filter.
+       * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
+       * Also gather metro source-maps in case of instrumentation process.
+       * VegaOS split bundles merge createAppBundleConfig which replaces this filter.
        * Tagging still runs from experimentalSerializerHook below.
+       * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
+       * @returns {boolean}
        */
       processModuleFilter(_module) {
-        calledByMetro = true;
         return applyJscramblerSerializerToModule(_module);
       },
       /**
        * Not overridden by Kepler/Vega createAppBundleConfig (unlike processModuleFilter).
        */
       experimentalSerializerHook(graph, delta) {
+        /**
+          * delta is the difference between the current and previous bundle
+          * we should only retag on a full bundle rebuild
+          * not on an incremental Metro update (i.e. when a file is changed, created 
+          * or deleted while metro is running)
+          */
         if (delta && delta.reset === false) {
           return;
         }
-        calledByMetro = true;
         for (const _module of graph.dependencies.values()) {
           applyJscramblerSerializerToModule(_module);
         }
