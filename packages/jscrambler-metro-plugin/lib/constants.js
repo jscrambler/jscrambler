@@ -5,7 +5,8 @@ const path = require('path');
  *  - build-kepler: react native legacy bundle command for VegaOS
  *  - build-vega: react native current bundle command for VegaOS
  */
-const BUNDLE_CMDS = ['bundle', 'build-kepler', 'build-vega'];
+const VEGA_BUNDLE_CMDS = ['build-kepler', 'build-vega'];
+const BUNDLE_CMDS = ['bundle', ...VEGA_BUNDLE_CMDS];
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';
@@ -64,4 +65,5 @@ module.exports = {
   HERMES_SHOW_SOURCE_DIRECTIVE,
   JSCRAMBLER_EXTS,
   BUNDLE_CMDS,
+  VEGA_BUNDLE_CMDS,
 }

@@ -16,7 +16,8 @@ const {
   JSCRAMBLER_END_ANNOTATION,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  JSCRAMBLER_EXTS
+  JSCRAMBLER_EXTS,
+  VEGA_BUNDLE_CMDS
 } = require('./constants');
 const {
   buildModuleSourceMap,
@@ -412,7 +413,6 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     if (shouldSkipModule) {
       return true;
     }
-
     const normalizePath = buildNormalizePath(modulePath, projectRoot);
     fileNames.add(normalizePath);
 
@@ -440,31 +440,33 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
       /**
        * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
        * Also gather metro source-maps in case of instrumentation process.
-       * VegaOS split bundles merge createAppBundleConfig which replaces this filter.
-       * Tagging still runs from experimentalSerializerHook below.
        * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
        * @returns {boolean}
        */
       processModuleFilter(_module) {
         return applyJscramblerSerializerToModule(_module);
       },
-      /**
-       * Not overridden by Kepler/Vega createAppBundleConfig (unlike processModuleFilter).
-       */
-      experimentalSerializerHook(graph, delta) {
-        /**
-          * delta is the difference between the current and previous bundle
-          * we should only retag on a full bundle rebuild
-          * not on an incremental Metro update (i.e. when a file is changed, created 
-          * or deleted while metro is running)
-          */
-        if (delta && delta.reset === false) {
-          return;
+      getPolyfills() {
+        const isVegaCmd = VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
+        if (isVegaCmd) {
+          // wrap processModuleFilter to apply Jscrambler module filtering
+          // due to Amazon overriding processModuleFilter in VegaOS
+          const originalProcessModuleFilter = this.processModuleFilter;
+          this.processModuleFilter = (_module) => {
+            applyJscramblerSerializerToModule(_module);
+            return originalProcessModuleFilter(_module);
+          };
+          return [];
         }
-        for (const _module of graph.dependencies.values()) {
-          applyJscramblerSerializerToModule(_module);
+        try {
+          // react native polyfills since version 0.72
+          return require(
+            require.resolve('@react-native/js-polyfills', { paths: [projectRoot] }),
+          )();
+        } catch (err) {
+          throw new Error('@react-native/js-polyfills not found');
         }
       },
-    }
+    },
   };
 };
