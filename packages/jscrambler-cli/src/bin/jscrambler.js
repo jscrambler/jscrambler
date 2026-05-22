@@ -190,7 +190,7 @@ commander
   )
   .option(
     '--use-profiling-data <bool>',
-    `(version 6.2 only) Protection should use the existing profiling data (default: true)`,
+    `[DEPRECATED]`,
     validateBool('use-profiling-data')
   )
   .option(
@@ -336,8 +336,10 @@ if (commander.utc) {
   config.utc = commander.utc !== 'false';
 }
 
-if (commander.useProfilingData) {
-  config.useProfilingData = commander.useProfilingData !== 'false';
+if (commander.useProfilingData || config.useProfilingData) {
+  console.warn(
+    '[WARNING] The --use-profiling-data flag has been deprecated. Use the --profiling-data-mode flag.',
+  );
 }
 
 if (commander.useAppClassification) {
@@ -486,7 +488,6 @@ const {
   debugMode,
   proxy,
   codeHardeningThreshold,
-  useProfilingData,
   profilingDataMode,
   browsers,
   useAppClassification,
@@ -668,7 +669,6 @@ if (commander.balance) {
       tolerateMinification,
       debugMode,
       codeHardeningThreshold,
-      useProfilingData,
       profilingDataMode,
       browsers,
       useAppClassification,
