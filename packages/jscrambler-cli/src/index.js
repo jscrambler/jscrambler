@@ -15,6 +15,7 @@ import * as introspection from './introspection';
 import {
   getMatchedFiles,
   validateCustomLabels,
+  validateCodeHardening,
   validateThresholdFn,
   resolveOutputPath,
 } from './utils';
@@ -322,6 +323,7 @@ export default {
       clientId,
       tolerateMinification,
       codeHardeningThreshold,
+      codeHardening,
       useProfilingData,
       browsers,
       useAppClassification,
@@ -492,6 +494,8 @@ export default {
       console.log('Creating Application Protection');
     }
 
+    const normalizedCodeHardening = validateCodeHardening(codeHardening);
+
     const protectionOptions = {
       ...updateData,
       bail,
@@ -508,6 +512,10 @@ export default {
       useGlobalNamesOnModules,
       generateAlias,
     };
+
+    if (typeof normalizedCodeHardening !== 'undefined') {
+      protectionOptions.codeHardening = normalizedCodeHardening;
+    }
 
     const normalizedCustomLabels = validateCustomLabels(customLabels);
     if (Object.keys(normalizedCustomLabels).length) {
