@@ -517,10 +517,6 @@ export default {
       generateAlias,
     };
 
-    if (typeof normalizedCodeHardening !== 'undefined') {
-      protectionOptions.codeHardening = normalizedCodeHardening;
-    }
-
     const normalizedCustomLabels = validateCustomLabels(customLabels);
     if (Object.keys(normalizedCustomLabels).length) {
       protectionOptions.customLabels = normalizedCustomLabels;
