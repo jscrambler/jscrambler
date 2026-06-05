@@ -386,6 +386,8 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
+    const normalizedCodeHardening = validateCodeHardening(codeHardening);
+
     let source;
     if (!skipSources) {
 
@@ -430,8 +432,12 @@ export default {
     const updateData = {
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold
+      codeHardeningThreshold,
     };
+
+    if (typeof normalizedCodeHardening !== 'undefined') {
+      updateData.codeHardening = normalizedCodeHardening;
+    }
 
     if (params && Object.keys(params).length) {
       updateData.parameters = normalizeParameters(params);
@@ -493,8 +499,6 @@ export default {
     if (debug) {
       console.log('Creating Application Protection');
     }
-
-    const normalizedCodeHardening = validateCodeHardening(codeHardening);
 
     const protectionOptions = {
       ...updateData,
