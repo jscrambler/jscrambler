@@ -76,6 +76,28 @@ export function validateCustomLabels(customLabels) {
   return out;
 }
 
+/**
+ * Validate protection `codeHardening` is a plain object; API validates contents.
+ * @param {*} codeHardening From config or programmatic options.
+ * @returns {object|undefined} A shallow copy when valid; `undefined` when omitted.
+ * @throws {Error} If `codeHardening` is present but not a plain object.
+ */
+export function validateCodeHardening(codeHardening) {
+  if (typeof codeHardening === 'undefined') {
+    return undefined;
+  }
+
+  if (
+    codeHardening === null ||
+    typeof codeHardening !== 'object' ||
+    Array.isArray(codeHardening)
+  ) {
+    throw new Error('Invalid *codeHardening*: expected a plain object.');
+  }
+
+  return { ...codeHardening };
+}
+
 export const APPEND_JS_TYPE = 'append-js';
 export const PREPEND_JS_TYPE = 'prepend-js';
 

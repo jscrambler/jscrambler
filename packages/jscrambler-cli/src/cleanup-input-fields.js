@@ -27,6 +27,7 @@ export default function cleanupInputFields(args, fragments, options = {}) {
     'ensureCodeAnnotation',
     'generateAlias',
     'customLabels',
+    'codeHardening',
   ].forEach(fieldCleanUp);
 
   return [options, cleanedUpFragments];

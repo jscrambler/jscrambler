@@ -324,8 +324,17 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
             }`,
       );
 
+      const isCodeHardeningThresholdSupported =
+        await jscrambler.introspectFieldOnMethod.call(
+          jscrambler,
+          config,
+          'mutation',
+          'createApplicationProtection',
+          'codeHardeningThreshold',
+        );
+
       // check for incompatible transformations and turn off code hardening
-      handleHermesIncompatibilities(config);
+      handleHermesIncompatibilities(config, isCodeHardeningThresholdSupported);
 
       // start obfuscation
       await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);

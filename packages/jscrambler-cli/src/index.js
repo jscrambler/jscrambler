@@ -15,6 +15,7 @@ import * as introspection from './introspection';
 import {
   getMatchedFiles,
   validateCustomLabels,
+  validateCodeHardening,
   validateThresholdFn,
   resolveOutputPath,
 } from './utils';
@@ -322,6 +323,7 @@ export default {
       clientId,
       tolerateMinification,
       codeHardeningThreshold,
+      codeHardening,
       useProfilingData,
       browsers,
       useAppClassification,
@@ -384,6 +386,8 @@ export default {
       throw new Error('Required *filesDest* not provided');
     }
 
+    const normalizedCodeHardening = validateCodeHardening(codeHardening);
+
     let source;
     if (!skipSources) {
 
@@ -428,8 +432,12 @@ export default {
     const updateData = {
       debugMode: !!debugMode,
       tolerateMinification,
-      codeHardeningThreshold
+      codeHardeningThreshold,
     };
+
+    if (typeof normalizedCodeHardening !== 'undefined') {
+      updateData.codeHardening = normalizedCodeHardening;
+    }
 
     if (params && Object.keys(params).length) {
       updateData.parameters = normalizeParameters(params);
