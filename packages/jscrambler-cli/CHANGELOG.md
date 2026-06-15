@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.12.0
+
+### Minor Changes
+
+- [83c2f6f]: Added suport for new code hardening
+
 ## 8.11.3
 
 ### Patch Changes

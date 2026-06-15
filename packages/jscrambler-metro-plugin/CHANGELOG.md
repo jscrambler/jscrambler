@@ -1,5 +1,16 @@
 # jscrambler-metro-plugin
 
+## 8.5.0
+
+### Minor Changes
+
+- [83c2f6f]: Added suport for new code hardening
+
+### Patch Changes
+
+- [83c2f6f]: Updated dependencies
+  - jscrambler@8.12.0
+
 ## 8.4.50
 
 ### Patch Changes
