@@ -362,17 +362,23 @@ function addHermesShowSourceDirective(config) {
 
 /**
  * @param config
+ * @param isCodeHardeningThresholdSupported
  * @exception {Error} If an incompatible transformation was selected
  */
-function handleHermesIncompatibilities(config) {
+function handleHermesIncompatibilities(
+  config,
+  isCodeHardeningThresholdSupported,
+) {
   if (!config.enabledHermes) {
     return;
   }
 
-  if (config.codeHardeningThreshold === undefined) {
-    console.log(`info Jscrambler Code Hardening ignored, as it is incompatible with hermes engine.`);
+  if (isCodeHardeningThresholdSupported) {
+    if (config.codeHardeningThreshold === undefined) {
+      console.log(`info Jscrambler Code Hardening ignored, as it is incompatible with hermes engine.`);
+    }
+    config.codeHardeningThreshold = 999999999;
   }
-  config.codeHardeningThreshold = 999999999;
 
   for (const {
     slugName,

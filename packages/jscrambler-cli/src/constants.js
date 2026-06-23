@@ -16,6 +16,7 @@ export const CLIENT_IDS = Object.freeze({
   WEBPACK: 2,
   GULP: 3,
   GRUNT: 4,
+  /* @deprecated */
   EMBER: 5,
   METRO: 6
 });
@@ -26,6 +27,7 @@ export const CLIENT_PACKAGES = Object.freeze({
   [CLIENT_IDS.WEBPACK]: 'jscrambler-webpack-plugin',
   [CLIENT_IDS.GULP]: 'gulp-jscrambler',
   [CLIENT_IDS.GRUNT]: 'grunt-jscrambler',
+  /* @deprecated */
   [CLIENT_IDS.EMBER]: 'ember-cli-jscrambler',
   [CLIENT_IDS.METRO]: 'jscrambler-metro-plugin'
 });

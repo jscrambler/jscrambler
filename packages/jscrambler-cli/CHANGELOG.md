@@ -1,5 +1,17 @@
 # jscrambler
 
+## 8.12.0
+
+### Minor Changes
+
+- [83c2f6f]: Added suport for new code hardening
+
+## 8.11.3
+
+### Patch Changes
+
+- [25054ca]: Ensure protected files are not written outside of project root folder in gulp
+
 ## 8.11.2
 
 ### Patch Changes

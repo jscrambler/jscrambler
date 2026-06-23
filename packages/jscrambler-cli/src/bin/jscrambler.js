@@ -12,6 +12,7 @@ import {
   getMatchedFiles,
   isJavascriptFile,
   validateCustomLabels,
+  validateCodeHardening,
   validateNProtections,
   validateThresholdFn,
 } from '../utils';
@@ -371,6 +372,13 @@ try {
   console.error(err.message);
   process.exit(1);
 }
+
+try {
+  config.codeHardening = validateCodeHardening(config.codeHardening);
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
 // Merge file config with CLI `--custom-label` flags (CLI wins on duplicate keys)
 config.customLabels = {
   ...config.customLabels,
@@ -486,6 +494,7 @@ const {
   debugMode,
   proxy,
   codeHardeningThreshold,
+  codeHardening,
   useProfilingData,
   profilingDataMode,
   browsers,
@@ -668,6 +677,7 @@ if (commander.balance) {
       tolerateMinification,
       debugMode,
       codeHardeningThreshold,
+      codeHardening,
       useProfilingData,
       profilingDataMode,
       browsers,
