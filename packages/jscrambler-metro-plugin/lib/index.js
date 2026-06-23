@@ -321,7 +321,16 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
           }`,
     );
 
-    handleHermesIncompatibilities(config);
+    const isCodeHardeningThresholdSupported =
+      await jscrambler.introspectFieldOnMethod.call(
+        jscrambler,
+        config,
+        'mutation',
+        'createApplicationProtection',
+        'codeHardeningThreshold',
+      );
+
+    handleHermesIncompatibilities(config, isCodeHardeningThresholdSupported);
     await obfuscateBundle(
       {bundlePath, bundleSourceMapPath},
       {fileNames: Array.from(fileNames), entryPointCode},
@@ -395,21 +404,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
         bundlePaths.bundlePath,
         bundlePaths.bundleSourceMapPath,
       );
-
-      const isCodeHardeningThresholdSupported =
-        await jscrambler.introspectFieldOnMethod.call(
-          jscrambler,
-          config,
-          'mutation',
-          'createApplicationProtection',
-          'codeHardeningThreshold',
-        );
-
-      // check for incompatible transformations and turn off code hardening
-      handleHermesIncompatibilities(config, isCodeHardeningThresholdSupported);
-
-      // start obfuscation
-      await obfuscateBundle(bundlePath, {fileNames: Array.from(fileNames), entryPointCode}, sourceMapFiles, config, projectRoot);
+      process.exit(typeof exitCode === 'number' ? exitCode : 0);
     } catch(err) {
       console.error(err);
       process.exit(1);
