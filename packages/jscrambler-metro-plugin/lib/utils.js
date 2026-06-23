@@ -418,9 +418,7 @@ function resolveMetroOutputBundle(projectRoot) {
         }),
       );
     } catch (_) {
-      console.warn(
-        `Cannot resolve metro output bundle path.`,
-      );
+      throw new Error(`[JSCRAMBLER-METRO-PLUGIN] Cannot resolve metro output bundle path.`);
     }
   }
 }
