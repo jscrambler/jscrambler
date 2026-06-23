@@ -2,11 +2,12 @@ const path = require('path');
 
 /** commands used to build the bundle
  *  - bundle: react native standard bundle command for android/iOS
+ *  - export:embed: react native export command for expo builds
  *  - build-kepler: react native legacy bundle command for VegaOS
  *  - build-vega: react native current bundle command for VegaOS
  */
 const VEGA_BUNDLE_CMDS = ['build-kepler', 'build-vega'];
-const BUNDLE_CMDS = ['bundle', ...VEGA_BUNDLE_CMDS];
+const BUNDLE_CMDS = ['bundle', ...VEGA_BUNDLE_CMDS, 'export:embed'];
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';

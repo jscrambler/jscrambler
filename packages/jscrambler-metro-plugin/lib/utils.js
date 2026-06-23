@@ -39,7 +39,7 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
-  BUNDLE_CMDS.forEach(bundleCmd => {
+  BUNDLE_CMDS.forEach(bundleCmd => {    
     command
       .command(bundleCmd)
       .allowUnknownOption()
@@ -48,6 +48,9 @@ function skipObfuscation(config) {
   command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
+  }
+  if (process.argv.includes('--eager')) {
+    return 'warning: Jscrambler Obfuscation SKIPPED [Eager export:embed]';
   }
   if (command.dev === 'true') {
     return (
@@ -395,6 +398,33 @@ function handleHermesIncompatibilities(
   }
 }
 
+/**
+ * Resolve Metro's bundle output module for expo and VegaOS.
+ * @param {string} projectRoot
+ * @returns {object}
+ */
+function resolveMetroOutputBundle(projectRoot) {
+  const moduleCandidates = [
+    "@expo/metro/metro/shared/output/bundle", // expo
+    "metro/src/shared/output/bundle", // pre react native 0.83
+    "metro/private/shared/output/bundle" // react native 0.83+
+  ];
+
+  for (const moduleId of moduleCandidates) {
+    try {
+      return require(
+        require.resolve(moduleId, {
+          paths: [projectRoot],
+        }),
+      );
+    } catch (_) {
+      console.warn(
+        `Cannot resolve metro output bundle path.`,
+      );
+    }
+  }
+}
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
@@ -410,5 +440,6 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
-  wrapCodeWithTags
+  wrapCodeWithTags,
+  resolveMetroOutputBundle
 };

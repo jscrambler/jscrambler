@@ -34,7 +34,8 @@ const {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
-  wrapCodeWithTags
+  wrapCodeWithTags,
+  resolveMetroOutputBundle
 } = require('./utils');
 
 const debug = !!process.env.DEBUG;
@@ -55,7 +56,7 @@ async function obfuscateBundle(
   projectRoot
 ) {
   await emptyDir(JSCRAMBLER_TEMP_FOLDER);
-
+  
   const metroBundle = await readFile(bundlePath, 'utf8');
   const metroBundleLocs = await extractLocs(metroBundle);
   let processedMetroBundle = metroBundle;
@@ -339,11 +340,7 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   function installMetroSaveHook(appProjectRoot) {
     let metroOutput;
     try {
-      metroOutput = require(
-        require.resolve('metro/src/shared/output/bundle', {
-          paths: [appProjectRoot],
-        }),
-      );
+      metroOutput = resolveMetroOutputBundle(appProjectRoot);
     } catch (err) {
       console.warn(
         `warning: Jscrambler could not hook Metro bundle output (${err.message}). ` +
