@@ -20,11 +20,11 @@ const {
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  BUNDLE_CMD
+  BUNDLE_CMDS
 } = require('./constants');
 
 /**
- * Only 'bundle' command triggers obfuscation.
+ * Only known Metro bundle CLI subcommands trigger obfuscation (see BUNDLE_CMDS).
  * Development bundles will be ignored (--dev true). Use JSCRAMBLER_METRO_DEV to override this behaviour.
  * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
@@ -39,13 +39,18 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
-  command
-    .command(BUNDLE_CMD)
-    .allowUnknownOption()
-    .action(() => (isBundleCmd = true));
+  BUNDLE_CMDS.forEach(bundleCmd => {    
+    command
+      .command(bundleCmd)
+      .allowUnknownOption()
+      .action(() => (isBundleCmd = true));
+  });
   command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
+  }
+  if (process.argv.includes('--eager')) {
+    return 'warning: Jscrambler Obfuscation SKIPPED [Eager export:embed]';
   }
   if (command.dev === 'true') {
     return (
@@ -58,6 +63,8 @@ function skipObfuscation(config) {
 
 /**
  * Get bundle path based CLI arguments
+ * Only for some android/iOS builds, VegaOS
+ * does not reach this logic.
  * @returns {{bundlePath: string, bundleSourceMapPath: string}}
  * @throws {Error} when bundle output was not found
  */
@@ -391,6 +398,31 @@ function handleHermesIncompatibilities(
   }
 }
 
+/**
+ * Resolve Metro's bundle output module for expo and VegaOS.
+ * @param {string} projectRoot
+ * @returns {object}
+ */
+function resolveMetroOutputBundle(projectRoot) {
+  const moduleCandidates = [
+    "@expo/metro/metro/shared/output/bundle", // expo
+    "metro/src/shared/output/bundle", // pre react native 0.83
+    "metro/private/shared/output/bundle" // react native 0.83+
+  ];
+
+  for (const moduleId of moduleCandidates) {
+    try {
+      return require(
+        require.resolve(moduleId, {
+          paths: [projectRoot],
+        }),
+      );
+    } catch (_) {
+      throw new Error(`[JSCRAMBLER-METRO-PLUGIN] Cannot resolve metro output bundle path.`);
+    }
+  }
+}
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
@@ -406,5 +438,6 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
-  wrapCodeWithTags
+  wrapCodeWithTags,
+  resolveMetroOutputBundle
 };
