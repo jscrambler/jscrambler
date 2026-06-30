@@ -6,6 +6,7 @@ const esrecurse = require('esrecurse');
 const acorn = require('acorn');
 const client = require('jscrambler').default;
 const {SourceMapSource} = require('webpack-sources');
+const { version } = require('../package.json');
 
 const JSCRAMBLER_IGNORE = '.jscramblerignore';
 const sourceMaps = !!client.config.sourceMaps;
@@ -46,6 +47,7 @@ class JscramblerPlugin {
       obfuscationLevel: OBFUSCATION_LEVELS.BUNDLE
     }, options, {
       clientId: 2,
+      clientVersion: version,
     });
 
     if(![OBFUSCATION_LEVELS.BUNDLE, OBFUSCATION_LEVELS.MODULE].includes(this.options.obfuscationLevel)) {

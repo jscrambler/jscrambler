@@ -39,6 +39,7 @@ class ClientError extends Error {
  * @param {String} [options.port=443]
  * @param {String} [options.basePath]
  * @param {String} [options.clientId=0]
+ * @param {String} [options.clientVersion]
  * @author Jscrambler
  * @license MIT <http://opensource.org/licenses/MIT>
  */
@@ -58,12 +59,13 @@ function JScramblerClient(options) {
    */
   this.options = defaults(options || {}, cfg);
 
-  const {jscramblerVersion, clientId} = this.options;
+  const {jscramblerVersion, clientId, clientVersion} = this.options;
 
   this.axiosInstance = axios.create({
     headers: {
       jscramblerVersion,
-      clientId
+      clientId,
+      clientVersion,
     },
     transformRequest: axios.defaults.transformRequest.concat(
       function (data, headers) {

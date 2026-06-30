@@ -5,6 +5,7 @@ var jScrambler = require('jscrambler').default;
 var path = require('path');
 var PluginError = require('plugin-error');
 var through = require('through2');
+const { version } = require("./package.json");
 
 const resolveOutputPath = jScrambler.resolveOutputPath;
 
@@ -15,7 +16,8 @@ module.exports = function (options) {
     filesSrc: [],
     keys: {},
     enable: () => true,
-    clientId: 3
+    clientId: 3,
+    clientVersion: version,
   });
 
   const instrument = !!options.instrument;

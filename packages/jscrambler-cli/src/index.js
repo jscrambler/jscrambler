@@ -321,6 +321,7 @@ export default {
       proxy,
       utc,
       clientId,
+      clientVersion,
       tolerateMinification,
       codeHardeningThreshold,
       codeHardening,
@@ -358,7 +359,8 @@ export default {
       jscramblerVersion,
       proxy,
       utc,
-      clientId
+      clientId,
+      clientVersion,
     });
 
     let filesSrc = finalConfig.filesSrc;
@@ -745,7 +747,8 @@ export default {
       proxy,
       utc,
       skipSources,
-      clientId
+      clientId,
+      clientVersion,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -761,7 +764,8 @@ export default {
       jscramblerVersion,
       proxy,
       utc,
-      clientId
+      clientId,
+      clientVersion,
     });
 
     let {filesSrc, filesDest} = finalConfig;
@@ -871,7 +875,8 @@ export default {
       proxy,
       utc,
       jscramblerVersion,
-      clientId
+      clientId,
+      clientVersion,
     } = finalConfig;
 
     const {accessKey, secretKey} = keys;
@@ -887,7 +892,8 @@ export default {
       proxy,
       utc,
       jscramblerVersion,
-      clientId
+      clientId,
+      clientVersion,
     });
     const instrumentation = await client
       .get('/profiling-run', {applicationId})
@@ -1530,6 +1536,7 @@ export default {
       proxy,
       utc,
       clientId,
+      clientVersion,
     } = finalConfig;
 
     const { accessKey, secretKey } = keys;
@@ -1546,6 +1553,7 @@ export default {
       proxy,
       utc,
       clientId,
+      clientVersion,
     });
 
     const appSource = await getIntrospection(client, 'ApplicationSource');
@@ -1633,6 +1641,7 @@ export default {
       proxy,
       utc,
       clientId,
+      clientVersion,
     } = finalConfig;
 
     const { accessKey, secretKey } = keys;
@@ -1649,6 +1658,7 @@ export default {
       proxy,
       utc,
       clientId,
+      clientVersion,
     });
     const balance = await client.get('/balance');
 
