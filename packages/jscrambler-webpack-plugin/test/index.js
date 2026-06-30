@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const client = require('jscrambler').default;
+const { version } = require('../package.json');
 
 const originalProtectAndDownload = client.protectAndDownload;
 const originalConfig = client.config;
@@ -39,6 +40,8 @@ async function collectProtectedFiles() {
 
   const plugin = new JscramblerPlugin({obfuscationHook: 'emit'});
   let emitHandler;
+
+  assert.strictEqual(plugin.options.clientVersion, version);
 
   plugin.apply({
     plugin(name, handler) {

@@ -8,6 +8,7 @@
 var jscrambler = require('jscrambler').default;
 var path = require('path');
 var util = require('util');
+var { version } = require('../package.json');
 
 
 
@@ -18,7 +19,8 @@ module.exports = function (grunt) {
     var successCallback = grunt.config('jscrambler.main.successCallback');
     var options = this.options({
       keys: {},
-      clientId: 4
+      clientId: 4,
+      clientVersion: version,
     });
     options.filesSrc = this.filesSrc;
     const instrument = !!options.instrument;

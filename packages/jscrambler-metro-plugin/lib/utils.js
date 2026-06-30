@@ -337,11 +337,21 @@ function handleAntiTampering(config, processedMetroBundle) {
 
 /**
  * @param {object} config
+ * @param {boolean} [isCodeHardeningThresholdSupported]
  * @returns {boolean} if true 'show source' directive is added
  */
-function addHermesShowSourceDirective(config) {
+function addHermesShowSourceDirective(
+  config,
+  isCodeHardeningThresholdSupported,
+) {
   if (!config.enabledHermes) {
     return false;
+  }
+
+  // when not supported, means that the engine is using the newer
+  // version of code hardening, so show source directive is mandatory
+  if (!isCodeHardeningThresholdSupported) {
+    return true;
   }
 
   for (const slugName of JSCRAMBLER_HERMES_ADD_SHOW_SOURCE_DIRECTIVE) {
