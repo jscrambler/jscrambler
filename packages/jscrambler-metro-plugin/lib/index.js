@@ -48,8 +48,8 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
 }
 
 async function obfuscateBundle(
-  {bundlePath, bundleSourceMapPath, isCodeHardeningThresholdSupported},
-  {fileNames, entryPointCode},
+  {bundlePath, bundleSourceMapPath},
+  {fileNames, entryPointCode, isCodeHardeningThresholdSupported},
   sourceMapFiles,
   config,
   projectRoot
