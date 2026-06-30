@@ -16,8 +16,7 @@ const {
   JSCRAMBLER_END_ANNOTATION,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  JSCRAMBLER_EXTS,
-  VEGA_BUNDLE_CMDS
+  JSCRAMBLER_EXTS
 } = require('./constants');
 const {
   buildModuleSourceMap,
@@ -34,6 +33,7 @@ const {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
+  isVegaBuild,
   wrapCodeWithTags
 } = require('./utils');
 
@@ -273,12 +273,157 @@ function validateModule(modulePath, config, projectRoot) {
   }
 }
 
+let calledByMetro = false;
+
+/**
+ * Validates that Metro invoked the Jscrambler serializer integration.
+ *
+ * If Metro never calls the serializer hook, the plugin was not applied through
+ * metro.config.js and the bundle cannot be obfuscated reliably.
+ * @returns {void}
+ */
+function validateIfJscramblerWasApplied() {
+  if (!calledByMetro) {
+    console.error(
+      '*jscrambler-metro-plugin* was not properly configured on metro.config.js file. Please verify our documentation in https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/react-native/integration.',
+    );
+    process.exit(1);
+  }
+}
+
+/**
+ * Configures the Metro integration for Vega OS builds.
+ *
+ * Vega OS overrides Metro's processModuleFilter, so this patches Metro's bundle
+ * save path to run Jscrambler after Metro writes the output and uses
+ * getPolyfills to wrap the final module filter.
+ * @param {object} options
+ * @param {function(*): boolean} options.applyJscramblerSerializerToModule Applies
+ * Jscrambler tagging and filtering to a Metro module.
+ * @param {function(string, string=): Promise<void>} options.runObfuscation Runs
+ * Jscrambler against the generated bundle and optional source map.
+ * @param {string} options.projectRoot Project root used to resolve Metro.
+ * @returns {{serializer: {getPolyfills(): string[]}}} Vega OS Metro config.
+ */
+function setupForVegaOS({
+  applyJscramblerSerializerToModule,
+  runObfuscation,
+  projectRoot,
+}) {
+  let metroOutput;
+  try {
+    // eslint-disable-next-line global-require,import/no-dynamic-require
+    metroOutput = require(
+      require.resolve('metro/src/shared/output/bundle', {
+        paths: [projectRoot],
+      }),
+    );
+  } catch (err) {
+    console.error(
+      `Jscrambler could not hook Metro bundle output (${err.message}). Please contact Jscrambler support team at support@jscrambler.com`,
+    );
+    process.exit(1);
+  }
+
+  const originalSave = metroOutput.save.bind(metroOutput);
+
+  metroOutput.save = async function jscramblerMetroSave(...opts) {
+    const [, args] = opts;
+    if (typeof args !== 'object' || args === null || !args.bundleOutput) {
+      console.error(
+        `Jscrambler output bundle could not be found. Please contact Jscrambler support at support@jscrambler.com`,
+      );
+      process.exit(1);
+    }
+
+    const result = await originalSave(...opts);
+    if (args && args.bundleOutput) {
+      try {
+        debug &&
+          console.log(
+            `debug Jscrambler obfuscating bundle at ${args.bundleOutput}`,
+        );
+        await runObfuscation(args.bundleOutput, args.sourcemapOutput);
+      } catch (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    }
+    return result;
+  };
+
+  return {
+    serializer: {
+      getPolyfills() {
+        // wrap processModuleFilter to apply Jscrambler module filtering
+        // due to Amazon overriding processModuleFilter in VegaOS
+        const originalProcessModuleFilter = this.processModuleFilter;
+        this.processModuleFilter = (_module) => {
+          const allow = originalProcessModuleFilter(_module);
+          if (allow) {
+            applyJscramblerSerializerToModule(_module);
+          }
+          return allow;
+        };
+        return [];
+      },
+    },
+  };
+}
+
+/**
+ * Configures the Metro integration for React Native builds.
+ *
+ * Registers a beforeExit hook that obfuscates the bundle produced by Metro and
+ * returns a serializer processModuleFilter that tags user modules while Metro
+ * serializes them.
+ * @param {object} options
+ * @param {function(*): boolean} options.applyJscramblerSerializerToModule Applies
+ * Jscrambler tagging and filtering to a Metro module.
+ * @param {function(string, string=): Promise<void>} options.runObfuscation Runs
+ * Jscrambler against the generated bundle and optional source map.
+ * @returns {{serializer: {processModuleFilter(*): boolean}}} React Native Metro config.
+ */
+function setupForReactNative({
+  applyJscramblerSerializerToModule,
+  runObfuscation,
+}) {
+  process.on('beforeExit', async (exitCode) => {
+    try {
+      const bundlePaths = getBundlePath();
+      await runObfuscation(
+        bundlePaths.bundlePath,
+        bundlePaths.bundleSourceMapPath,
+      );
+      process.exit(typeof exitCode === 'number' ? exitCode : 0);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+
+  /**
+   * Select user files ONLY (no vendor) to be obfuscated. That code should be tagged with
+   * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
+   * Also gather metro source-maps in case of instrumentation process.
+   * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
+   * @returns {boolean}
+   */
+  return {
+    serializer: {
+      processModuleFilter(_module) {
+        return applyJscramblerSerializerToModule(_module);
+      },
+    },
+  };
+}
+
 /**
  * Add serialize.processModuleFilter option to metro and attach listener to beforeExit event.
  * *config.fileSrc* and *config.filesDest* will be ignored.
  * @param {{enable: boolean, enabledHermes: boolean }} _config
  * @param {string} [projectRoot=process.cwd()]
- * @returns {{serializer: {processModuleFilter(*): boolean}}}
+ * @returns {{serializer: {processModuleFilter?(*): boolean, getPolyfills?(*): string[]}}}
  */
 module.exports = function (_config = {}, projectRoot = process.cwd()) {
   const skipReason = skipObfuscation(_config);
@@ -287,9 +432,6 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     return {};
   }
 
-  let obfuscatedViaSave = false;
-  let calledByMetro = false;
-  let beforeExitHandled = false;
   const fileNames = new Set();
   const sourceMapFiles = [];
   const config = Object.assign(
@@ -310,6 +452,8 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
   }
 
   async function runObfuscation(bundlePath, bundleSourceMapPath) {
+    validateIfJscramblerWasApplied();
+
     console.log(
       instrument
         ? 'info Jscrambler Instrumenting Code'
@@ -337,82 +481,12 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
       config,
       projectRoot,
     );
-  }
 
-  function resetPerBundleSerializerState() {
+    // clear obfuscation state to allow multiple builds at once
     fileNames.clear();
-    sourceMapFiles.length = 0;
+    sourceMapFiles.splice(0);
     entryPointCode = undefined;
   }
-
-  function installMetroSaveHook(appProjectRoot) {
-    let metroOutput;
-    try {
-      metroOutput = require(
-        require.resolve('metro/src/shared/output/bundle', {
-          paths: [appProjectRoot],
-        }),
-      );
-    } catch (err) {
-      console.warn(
-        `warning: Jscrambler could not hook Metro bundle output (${err.message}). ` +
-          'Obfuscation will not run per-bundle via save().',
-      );
-      return;
-    }
-    if (metroOutput.__jscramblerSavePatched) {
-      return;
-    }
-    const originalSave = metroOutput.save.bind(metroOutput);
-    metroOutput.save = async function jscramblerMetroSave(bundle, args, log) {
-      const result = await originalSave(bundle, args, log);
-      if (args && args.bundleOutput) {
-        try {
-          debug &&
-            console.log(
-              `debug Jscrambler obfuscating bundle at ${args.bundleOutput}`,
-            );
-          await runObfuscation(args.bundleOutput, args.sourcemapOutput);
-          resetPerBundleSerializerState();
-          obfuscatedViaSave = true;
-        } catch (err) {
-          console.error(err);
-          process.exit(1);
-        }
-      }
-      return result;
-    };
-    metroOutput.__jscramblerSavePatched = true;
-  }
-
-  installMetroSaveHook(projectRoot);
-
-  process.on('beforeExit', async function (exitCode) {
-    if (beforeExitHandled) {
-      return;
-    }
-    beforeExitHandled = true;
-
-    try {
-      if (!calledByMetro) {
-        throw new Error('*jscrambler-metro-plugin* was not properly configured on metro.config.js file. Please verify our documentation in https://docs.jscrambler.com/code-integrity/frameworks-and-libraries/react-native/integration.');
-      }
-
-      if (obfuscatedViaSave) {
-        return;
-      }
-
-      const bundlePaths = getBundlePath();
-      await runObfuscation(
-        bundlePaths.bundlePath,
-        bundlePaths.bundleSourceMapPath,
-      );
-      process.exit(typeof exitCode === 'number' ? exitCode : 0);
-    } catch(err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
 
   function applyJscramblerSerializerToModule(_module) {
     calledByMetro = true;
@@ -444,38 +518,16 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     return true;
   }
 
-  return {
-    serializer: {
-      /**
-       * {@JSCRAMBLER_BEG_ANNOTATION} and {@JSCRAMBLER_END_ANNOTATION}.
-       * Also gather metro source-maps in case of instrumentation process.
-       * @param {{output: Array<*>, path: string, getSource: function():Buffer}} _module
-       * @returns {boolean}
-       */
-      processModuleFilter(_module) {
-        return applyJscramblerSerializerToModule(_module);
-      },
-      getPolyfills() {
-        const isVegaCmd = VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
-        if (isVegaCmd) {
-          // wrap processModuleFilter to apply Jscrambler module filtering
-          // due to Amazon overriding processModuleFilter in VegaOS
-          const originalProcessModuleFilter = this.processModuleFilter;
-          this.processModuleFilter = (_module) => {
-            applyJscramblerSerializerToModule(_module);
-            return originalProcessModuleFilter(_module);
-          };
-          return [];
-        }
-        try {
-          // react native polyfills since version 0.72
-          return require(
-            require.resolve('@react-native/js-polyfills', { paths: [projectRoot] }),
-          )();
-        } catch (err) {
-          throw new Error('@react-native/js-polyfills not found');
-        }
-      },
-    },
+  const options = {
+    applyJscramblerSerializerToModule,
+    runObfuscation,
+    projectRoot,
   };
+
+  const isVegaOS = isVegaBuild();
+  if (isVegaOS) {
+    console.log(`info Jscrambler VegaOS application`);
+  }
+
+  return isVegaOS ? setupForVegaOS(options) : setupForReactNative(options);
 };

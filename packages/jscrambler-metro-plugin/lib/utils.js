@@ -20,6 +20,7 @@ const {
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
+  VEGA_BUNDLE_CMDS,
   BUNDLE_CMDS
 } = require('./constants');
 
@@ -79,6 +80,13 @@ function getBundlePath() {
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
+}
+
+/**
+ * Check if contains {VEGA_BUNDLE_CMDS} commands.
+ */
+function isVegaBuild() {
+  return VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
 }
 
 /**
@@ -410,5 +418,6 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
+  isVegaBuild,
   wrapCodeWithTags
 };
