@@ -20,11 +20,12 @@ const {
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  BUNDLE_CMD
+  VEGA_BUNDLE_CMDS,
+  BUNDLE_CMDS
 } = require('./constants');
 
 /**
- * Only 'bundle' command triggers obfuscation.
+ * Only known Metro bundle CLI subcommands trigger obfuscation (see BUNDLE_CMDS).
  * Development bundles will be ignored (--dev true). Use JSCRAMBLER_METRO_DEV to override this behaviour.
  * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
@@ -39,10 +40,12 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
-  command
-    .command(BUNDLE_CMD)
-    .allowUnknownOption()
-    .action(() => (isBundleCmd = true));
+  BUNDLE_CMDS.forEach(bundleCmd => {
+    command
+      .command(bundleCmd)
+      .allowUnknownOption()
+      .action(() => (isBundleCmd = true));
+  });
   command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
@@ -58,6 +61,8 @@ function skipObfuscation(config) {
 
 /**
  * Get bundle path based CLI arguments
+ * Only for some android/iOS builds, VegaOS
+ * does not reach this logic.
  * @returns {{bundlePath: string, bundleSourceMapPath: string}}
  * @throws {Error} when bundle output was not found
  */
@@ -75,6 +80,13 @@ function getBundlePath() {
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
+}
+
+/**
+ * Check if contains {VEGA_BUNDLE_CMDS} commands.
+ */
+function isVegaBuild() {
+  return VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
 }
 
 /**
@@ -416,5 +428,6 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
+  isVegaBuild,
   wrapCodeWithTags
 };
