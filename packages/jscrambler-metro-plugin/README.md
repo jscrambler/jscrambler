@@ -11,10 +11,11 @@ Version Compatibility
 The version's compatibility table match your [Jscrambler Version](https://app.jscrambler.com/settings) with the Jscrambler Metro Plugin.
 Please make sure you install the right version, otherwise some functionalities might not work properly.
 
-| _Jscrambler Version_   |      _Client and Integrations_      |
-|:----------:|:-------------:|
-| _<= 7.1_ |  _<= 5.x.x_ |
-| _\>= 7.2_ |   _\>= 6.0.0_ |
+| _Jscrambler Version_ | _Client and Integrations_ |
+|:--------------------:|:-------------------------:|
+|       _<= 7.1_       |        _<= 5.x.x_         |
+|      _\>= 7.2_       |    _\>= 6.0.0 <=8.5.0_    |
+|      _\>= 8.6_       |        _\>= 9.0.0_        |
 
 # Usage
 

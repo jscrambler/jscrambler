@@ -1,5 +1,16 @@
 # jscrambler-metro-plugin
 
+## 9.0.0
+
+### Major Changes
+
+- [7fae688]: Add client version and set show source in metro-plugin
+
+### Patch Changes
+
+- [7fae688]: Updated dependencies
+  - jscrambler@8.13.0
+
 ## 8.5.0
 
 ### Minor Changes
