@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.13.0
+
+### Minor Changes
+
+- [7fae688]: Add client version and set show source in metro-plugin
+
 ## 8.12.0
 
 ### Minor Changes

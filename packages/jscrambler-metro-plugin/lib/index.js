@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const generateSourceMaps = require('./sourceMaps');
 const globalThisPolyfill = require('./polyfills/globalThis');
+const { version } = require('../package.json');
 
 const {
   INIT_CORE_MODULE,
@@ -50,7 +51,7 @@ function logSourceMapsWarning(hasMetroSourceMaps, hasJscramblerSourceMaps) {
 
 async function obfuscateBundle(
   {bundlePath, bundleSourceMapPath},
-  {fileNames, entryPointCode},
+  {fileNames, entryPointCode, isCodeHardeningThresholdSupported},
   sourceMapFiles,
   config,
   projectRoot
@@ -136,6 +137,7 @@ async function obfuscateBundle(
   config.sources = sources;
   config.filesDest = JSCRAMBLER_DIST_TEMP_FOLDER;
   config.clientId = JSCRAMBLER_CLIENT_ID;
+  config.clientVersion = version;
 
   const supportsExcludeList = await jscrambler.introspectFieldOnMethod.call(
     jscrambler,
@@ -165,7 +167,10 @@ async function obfuscateBundle(
     processedMetroBundle,
   );
 
-  const addShowSource = addHermesShowSourceDirective(config);
+  const addShowSource = addHermesShowSourceDirective(
+    config,
+    isCodeHardeningThresholdSupported,
+  );
 
   if (addShowSource) {
     console.log(
