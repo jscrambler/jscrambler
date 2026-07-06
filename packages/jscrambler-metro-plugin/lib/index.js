@@ -1,4 +1,5 @@
 const {copy, emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
+const { getDefaultConfig } = require('@react-native/metro-config');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
@@ -348,6 +349,7 @@ function setupForVegaOS({
           console.log(
             `debug Jscrambler obfuscating bundle at ${args.bundleOutput}`,
         );
+        console.log(`info Jscrambler VegaOS application`);
         await runObfuscation(args.bundleOutput, args.sourcemapOutput);
       } catch (err) {
         console.error(err);
@@ -356,6 +358,9 @@ function setupForVegaOS({
     }
     return result;
   };
+
+  const metroPollyfils =
+    getDefaultConfig(projectRoot)?.serializer?.getPolyfills() || [];
 
   return {
     serializer: {
@@ -370,9 +375,7 @@ function setupForVegaOS({
           }
           return allow;
         };
-        return require(
-          require.resolve('@react-native/js-polyfills', { paths: [projectRoot] }),
-        )();
+        return metroPollyfils;
       },
     },
   };
@@ -531,10 +534,5 @@ module.exports = function (_config = {}, projectRoot = process.cwd()) {
     projectRoot,
   };
 
-  const isVegaOS = isVegaBuild();
-  if (isVegaOS) {
-    console.log(`info Jscrambler VegaOS application`);
-  }
-
-  return isVegaOS ? setupForVegaOS(options) : setupForReactNative(options);
+  return isVegaBuild() ? setupForVegaOS(options) : setupForReactNative(options);
 };

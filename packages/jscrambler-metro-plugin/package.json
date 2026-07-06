@@ -8,7 +8,8 @@
     "eslint:fix": "pnpm run eslint --fix"
   },
   "peerDependencies": {
-    "metro-source-map": "0.x"
+    "metro-source-map": "0.x",
+    "@react-native/metro-config": "*"
   },
   "dependencies": {
     "commander": "^2.20.0",
