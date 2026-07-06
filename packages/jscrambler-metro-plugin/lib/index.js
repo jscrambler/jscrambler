@@ -370,7 +370,9 @@ function setupForVegaOS({
           }
           return allow;
         };
-        return [];
+        return require(
+          require.resolve('@react-native/js-polyfills', { paths: [projectRoot] }),
+        )();
       },
     },
   };
