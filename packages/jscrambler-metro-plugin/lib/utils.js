@@ -20,6 +20,8 @@ const {
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
+  VEGA_BUNDLE_CMDS,
+  EXPO_BUNDLE_CMDS,
   BUNDLE_CMDS
 } = require('./constants');
 
@@ -39,7 +41,7 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
-  BUNDLE_CMDS.forEach(bundleCmd => {    
+  BUNDLE_CMDS.forEach(bundleCmd => {
     command
       .command(bundleCmd)
       .allowUnknownOption()
@@ -49,6 +51,7 @@ function skipObfuscation(config) {
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
   }
+  // use commander
   if (process.argv.includes('--eager')) {
     return 'warning: Jscrambler Obfuscation SKIPPED [Eager export:embed]';
   }
@@ -82,6 +85,20 @@ function getBundlePath() {
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
+}
+
+/**
+ * Check if contains {VEGA_BUNDLE_CMDS} commands.
+ */
+function isVegaBuild() {
+  return VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
+}
+
+/**
+ * Check if contains {EXPO_BUNDLE_CMDS} commands.
+ */
+function isExpoBuild() {
+  return EXPO_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
 }
 
 /**
@@ -417,7 +434,7 @@ function resolveMetroOutputBundle(projectRoot) {
   const moduleCandidates = [
     "@expo/metro/metro/shared/output/bundle", // expo
     "metro/src/shared/output/bundle", // pre react native 0.83
-    "metro/private/shared/output/bundle" // react native 0.83+
+    "metro/private/shared/output/bundle" // TODO: Check this path for react native 0.83+
   ];
 
   for (const moduleId of moduleCandidates) {
@@ -428,7 +445,7 @@ function resolveMetroOutputBundle(projectRoot) {
         }),
       );
     } catch (_) {
-      throw new Error(`[JSCRAMBLER-METRO-PLUGIN] Cannot resolve metro output bundle path.`);
+      /* empty */
     }
   }
 }
@@ -448,6 +465,8 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
+  isVegaBuild,
   wrapCodeWithTags,
+  isExpoBuild,
   resolveMetroOutputBundle
 };
