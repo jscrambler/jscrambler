@@ -12,6 +12,7 @@ const BUNDLE_CMDS = ['bundle', ...VEGA_BUNDLE_CMDS, ...EXPO_BUNDLE_CMDS ];
 const BUNDLE_OUTPUT_CLI_ARG = '--bundle-output';
 const BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG = '--sourcemap-output';
 const BUNDLE_DEV_CLI_ARG = '--dev';
+const BUNDLE_EAGER_CLI_ARG = '--eager';
 // path.join so it supports both linux and windows fs
 const INIT_CORE_MODULE = path.join(process.platform === 'win32' ? '/' : '', 'node_modules', 'react-native', 'Libraries', 'Core', 'InitializeCore.js');
 const JSCRAMBLER_CLIENT_ID = 6;
@@ -49,6 +50,7 @@ module.exports = {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
+  BUNDLE_EAGER_CLI_ARG,
   INIT_CORE_MODULE,
   JSCRAMBLER_CLIENT_ID,
   JSCRAMBLER_IGNORE,

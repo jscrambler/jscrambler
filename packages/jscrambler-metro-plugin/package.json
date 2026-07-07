@@ -9,7 +9,8 @@
   },
   "peerDependencies": {
     "metro-source-map": "0.x",
-    "@react-native/metro-config": "*"
+    "@react-native/metro-config": "*",
+    "expo": "*"
   },
   "dependencies": {
     "commander": "^2.20.0",

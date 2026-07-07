@@ -19,6 +19,7 @@ const {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
+  BUNDLE_EAGER_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
   VEGA_BUNDLE_CMDS,
   EXPO_BUNDLE_CMDS,
@@ -47,12 +48,14 @@ function skipObfuscation(config) {
       .allowUnknownOption()
       .action(() => (isBundleCmd = true));
   });
-  command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
+  command
+    .option(`${BUNDLE_DEV_CLI_ARG} <boolean>`)
+    .option(BUNDLE_EAGER_CLI_ARG)
+    .parse(process.argv);
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
   }
-  // use commander
-  if (process.argv.includes('--eager')) {
+  if (command.eager) {
     return 'warning: Jscrambler Obfuscation SKIPPED [Eager export:embed]';
   }
   if (command.dev === 'true') {

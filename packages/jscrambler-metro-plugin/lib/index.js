@@ -1,5 +1,6 @@
 const {copy, emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const { getDefaultConfig } = require('@react-native/metro-config');
+const { getDefaultConfig: getDefaultExpoConfig } = require('expo/metro-config');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
@@ -356,8 +357,12 @@ function setupViaSaveHook({
     return result;
   };
 
+  const metroConfigFactory = isExpoBuild()
+    ? getDefaultExpoConfig
+    : getDefaultConfig;
+  const getPolyfills = metroConfigFactory(projectRoot)?.serializer?.getPolyfills;
   const metroPollyfils =
-    getDefaultConfig(projectRoot)?.serializer?.getPolyfills() || [];
+    typeof getPolyfills === 'function' ? getPolyfills() : [];
 
   return {
     serializer: {
