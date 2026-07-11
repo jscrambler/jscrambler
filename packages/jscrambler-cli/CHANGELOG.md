@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.15.0
+
+### Minor Changes
+
+- [7fe1986]: release jscrambler 8.15.0 with security fix
+
 ## 8.13.0
 
 ### Minor Changes
