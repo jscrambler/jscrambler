@@ -1,0 +1,5 @@
+---
+"jscrambler": minor
+---
+
+Bump minor
