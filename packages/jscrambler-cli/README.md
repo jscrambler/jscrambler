@@ -1,4 +1,8 @@
 # [![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)](https://jscrambler.com/?utm_source=github.com&utm_medium=referral)
+
+> [!IMPORTANT]
+> **Security advisory (11/07/2026):** [Unauthorized Publication of a Malicious npm Package affecting CI](https://jscrambler.com/blog/security-advisory-malicious-npm-package)
+
 Jscrambler Code Integrity Client
 --------------------
 
