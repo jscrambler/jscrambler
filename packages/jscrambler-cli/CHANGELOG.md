@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.18.0
+
+### Minor Changes
+
+- [da9e255]: Bump minor
+
 ## 8.15.0
 
 ### Minor Changes
