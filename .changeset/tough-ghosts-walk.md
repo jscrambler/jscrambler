@@ -1,5 +1,0 @@
----
-"jscrambler": minor
----
-
-Bump version

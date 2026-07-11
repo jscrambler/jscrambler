@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.22.0
+
+### Minor Changes
+
+- [53bd252]: Bump version
+
 ## 8.18.0
 
 ### Minor Changes
