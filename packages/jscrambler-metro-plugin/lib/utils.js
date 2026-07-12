@@ -19,12 +19,15 @@ const {
   BUNDLE_OUTPUT_CLI_ARG,
   BUNDLE_SOURCEMAP_OUTPUT_CLI_ARG,
   BUNDLE_DEV_CLI_ARG,
+  BUNDLE_EAGER_CLI_ARG,
   HERMES_SHOW_SOURCE_DIRECTIVE,
-  BUNDLE_CMD
+  VEGA_BUNDLE_CMDS,
+  EXPO_BUNDLE_CMDS,
+  BUNDLE_CMDS
 } = require('./constants');
 
 /**
- * Only 'bundle' command triggers obfuscation.
+ * Only known Metro bundle CLI subcommands trigger obfuscation (see BUNDLE_CMDS).
  * Development bundles will be ignored (--dev true). Use JSCRAMBLER_METRO_DEV to override this behaviour.
  * @returns {string} skip reason. If falsy value dont skip obfuscation
  */
@@ -39,13 +42,21 @@ function skipObfuscation(config) {
 
   let isBundleCmd = false;
   const command = new Command();
+  BUNDLE_CMDS.forEach(bundleCmd => {
+    command
+      .command(bundleCmd)
+      .allowUnknownOption()
+      .action(() => (isBundleCmd = true));
+  });
   command
-    .command(BUNDLE_CMD)
-    .allowUnknownOption()
-    .action(() => (isBundleCmd = true));
-  command.option(`${BUNDLE_DEV_CLI_ARG} <boolean>`).parse(process.argv);
+    .option(`${BUNDLE_DEV_CLI_ARG} <boolean>`)
+    .option(BUNDLE_EAGER_CLI_ARG)
+    .parse(process.argv);
   if (!isBundleCmd) {
     return 'Not a *bundle* command';
+  }
+  if (command.eager) {
+    return 'warning: Jscrambler Obfuscation SKIPPED [Eager export:embed]';
   }
   if (command.dev === 'true') {
     return (
@@ -58,6 +69,8 @@ function skipObfuscation(config) {
 
 /**
  * Get bundle path based CLI arguments
+ * Only for some android/iOS builds, VegaOS
+ * does not reach this logic.
  * @returns {{bundlePath: string, bundleSourceMapPath: string}}
  * @throws {Error} when bundle output was not found
  */
@@ -75,6 +88,20 @@ function getBundlePath() {
   }
   console.error('Bundle output path not found.');
   return process.exit(-1);
+}
+
+/**
+ * Check if contains {VEGA_BUNDLE_CMDS} commands.
+ */
+function isVegaBuild() {
+  return VEGA_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
+}
+
+/**
+ * Check if contains {EXPO_BUNDLE_CMDS} commands.
+ */
+function isExpoBuild() {
+  return EXPO_BUNDLE_CMDS.some((cmd) => process.argv.includes(cmd));
 }
 
 /**
@@ -401,6 +428,31 @@ function handleHermesIncompatibilities(
   }
 }
 
+/**
+ * Resolve Metro's bundle output module for expo and VegaOS.
+ * @param {string} projectRoot
+ * @returns {object}
+ */
+function resolveMetroOutputBundle(projectRoot) {
+  const moduleCandidates = [
+    "@expo/metro/metro/shared/output/bundle", // expo
+    "metro/src/shared/output/bundle", // pre react native 0.83
+    "metro/private/shared/output/bundle" // TODO: Check this path for react native 0.83+
+  ];
+
+  for (const moduleId of moduleCandidates) {
+    try {
+      return require(
+        require.resolve(moduleId, {
+          paths: [projectRoot],
+        }),
+      );
+    } catch (_) {
+      /* empty */
+    }
+  }
+}
+
 module.exports = {
   buildModuleSourceMap,
   buildNormalizePath,
@@ -416,5 +468,8 @@ module.exports = {
   handleAntiTampering,
   addHermesShowSourceDirective,
   handleHermesIncompatibilities,
-  wrapCodeWithTags
+  isVegaBuild,
+  wrapCodeWithTags,
+  isExpoBuild,
+  resolveMetroOutputBundle
 };
