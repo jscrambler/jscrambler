@@ -24,7 +24,7 @@ jobs:
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
 
-      - uses: pnpm/setup@v1
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b
         with:
           version: 11
           runtime: node@24
