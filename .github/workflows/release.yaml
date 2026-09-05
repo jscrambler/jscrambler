@@ -14,13 +14,13 @@ jobs:
     steps:
       - name: Get Access Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v5
+        uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
 
       - name: Checkout Repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish to Staged npm
         id: changesets
-        uses: changesets/action@v2
+        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1
         with:
           publish-script: pnpm ci:publish
           commit-message: "chore(changeset): bump versions"
