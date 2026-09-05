@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - master
+      - release/staged
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,34 +14,30 @@ jobs:
     steps:
       - name: Get Access Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v1
+        uses: peter-murray/workflow-application-token-action@v5
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
 
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/setup@v1
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
+          version: 11
+          runtime: node@24
+          cache: true
           run_install: true
 
-      - name: Create Release Pull Request or Publish to npm
+      - name: Create Release Pull Request or Publish to Staged npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
-          publish: pnpm ci:publish
-          commit: "chore(changeset): bump versions"
-          title: "[Changeset] Bump Versions"
-          createGithubReleases: false
-        env:
-          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          publish-script: pnpm ci:publish
+          commit-message: "chore(changeset): bump versions"
+          pr-title: "[Changeset] Bump Versions"
+          create-github-releases: false
+          push-git-tags: false
+          github-token: ${{ steps.get_workflow_token.outputs.token }}
