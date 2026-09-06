@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "ci:publish": "pnpm -r stage publish --dry-run  && ./scripts/push-new-tags.sh"
+    "ci:publish": "pnpm -r stage publish && ./scripts/push-new-tags.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
