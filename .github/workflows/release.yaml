@@ -33,11 +33,11 @@ jobs:
 
       - name: Create Release Pull Request or Publish to Staged npm
         id: changesets
-        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d
         with:
-          publish-script: pnpm ci:publish
-          commit-message: "chore(changeset): bump versions"
-          pr-title: "[Changeset] Bump Versions"
-          create-github-releases: false
-          push-git-tags: false
-          github-token: ${{ steps.get_workflow_token.outputs.token }}
+          publish: pnpm ci:publish
+          commit: "chore(changeset): bump versions"
+          title: "[Changeset] Bump Versions"
+          createGithubReleases: false
+          env:
+            GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
