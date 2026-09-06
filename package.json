@@ -4,8 +4,8 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
-    "pnpm": ">=9.1.1",
-    "node": ">=18.0.0"
+    "pnpm": "^11.3.0",
+    "node": ">=22.12.0"
   },
   "scripts": {
     "preinstall": "only-allow pnpm",
