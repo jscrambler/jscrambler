@@ -41,5 +41,5 @@ jobs:
           commit-message: "chore(changeset): bump versions"
           pr-title: "[Changeset] Bump Versions"
           create-github-releases: false
-          push-git-tags: false
+          push-git-tags: true
           github-token: ${{ steps.get_workflow_token.outputs.token }}
