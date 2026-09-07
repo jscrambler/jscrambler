@@ -5,14 +5,19 @@ on:
     branches:
       - release/staged
 
+# reset permissions and explicitly specify for each job
+permissions: {}
+
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
-    name: Release
+  select-mode:
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select-mode.outputs.publish-plan-artifact-id }}
     permissions:
-      id-token: write # IMPORTANT: mandatory for trusted publishing
+      contents: read # to check out repo (actions/checkout)
     steps:
       - name: Get Access Token
         id: get_workflow_token
@@ -25,6 +30,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
+          persist-credentials: false # recommended: do not persist git credentials on disk
 
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b
         with:
@@ -33,13 +39,80 @@ jobs:
           cache: true
           install: true
 
-      - name: Create Release Pull Request or Publish to Staged npm
-        id: changesets
-        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1
+      - name: Select Changesets mode
+        id: select-mode
+        uses: changesets/action/select-mode@8488615a623b1b9c987934bb89eae8af6a946ac1
+
+  version:
+    if: needs.select-mode.outputs.mode == 'version'
+    needs: select-mode
+    runs-on: ubuntu-latest
+    outputs:
+      version-dir-artifact-id: ${{ steps.version.outputs.version-dir-artifact-id }}
+    permissions:
+      contents: write # to check out repo (actions/checkout) and commit version changes (changesets/action/version)
+      pull-requests: write # to create pull request (changesets/action/version)
+    steps:
+      - name: Get Access Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
         with:
-          publish-script: pnpm ci:publish
+          application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
+          application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
+
+      - name: Checkout Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }}
+          persist-credentials: false # recommended: do not persist git credentials on disk
+
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b
+        with:
+          version: 11
+          runtime: node@24
+          cache: true
+          install: true
+
+      - name: Version packages
+        id: version
+        uses: changesets/action/version@8488615a623b1b9c987934bb89eae8af6a946ac1
+        with:
           commit-message: "chore(changeset): bump versions"
           pr-title: "[Changeset] Bump Versions"
-          create-github-releases: false
           push-git-tags: true
+          github-token: ${{ steps.get_workflow_token.outputs.token }}
+
+  publish:
+    if: needs.select-mode.outputs.mode == 'publish'
+    needs: select-mode
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to check out repo (actions/checkout) and to create releases (changesets/action/publish)
+    steps:
+      - name: Get Access Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
+        with:
+          application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
+          application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
+
+      - name: Checkout Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }}
+          persist-credentials: false # recommended: do not persist git credentials on disk
+
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b
+        with:
+          version: 11
+          runtime: node@24
+          cache: true
+          install: true
+
+      - name: Publish packages
+        uses: changesets/action/publish@8488615a623b1b9c987934bb89eae8af6a946ac1
+        with:
+          script:  pnpm ci:publish
+          pr-title: "[Changeset] Bump Versions"
+          create-github-releases: false
           github-token: ${{ steps.get_workflow_token.outputs.token }}
