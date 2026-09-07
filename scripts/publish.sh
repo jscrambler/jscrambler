@@ -19,6 +19,9 @@ readonly pack_out_dir
 packages_dir="${pack_out_dir}/packages"
 readonly packages_dir
 
+ls -la $packages_dir
+ls -la $pack_out_dir
+
 publish_plan_path="${pack_out_dir}/publish-plan.json"
 readonly publish_plan_path
 
