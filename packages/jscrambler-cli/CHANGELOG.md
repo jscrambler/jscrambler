@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.22.3
+
+### Patch Changes
+
+- [09f35c3]: bump axios version on Jscrambler CLI to v1.19 due to vulnerabilities
+
 ## 8.22.2
 
 ### Patch Changes
