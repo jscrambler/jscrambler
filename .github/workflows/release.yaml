@@ -85,9 +85,9 @@ jobs:
     if: needs.select-mode.outputs.mode == 'publish'
     needs: select-mode
     runs-on: ubuntu-latest
-  permissions:
-    contents: write # to check out repo (actions/checkout) and to create releases (changesets/action/publish)
-    id-token: write # for trusted publishing (changesets/action/publish)
+    permissions:
+      contents: write # to check out repo (actions/checkout) and to create releases (changesets/action/publish)
+      id-token: write # for trusted publishing (changesets/action/publish)
     steps:
       - name: Get Access Token
         id: get_workflow_token
