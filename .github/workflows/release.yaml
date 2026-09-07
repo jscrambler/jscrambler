@@ -40,4 +40,5 @@ jobs:
           pr-title: "[Changeset] Bump Versions"
           create-github-releases: false
           push-git-tags: false
+          publish-branch: release/staged
           github-token: ${{ steps.get_workflow_token.outputs.token }}
