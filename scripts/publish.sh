@@ -10,7 +10,10 @@ fi
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly script_dir
 
-pack_out_dir="$1"
+root_dir="$(cd -- "${script_dir}/.." && pwd)"
+readonly root_dir
+
+pack_out_dir="${root_dir}/$1"
 readonly pack_out_dir
 
 packages_dir="${pack_out_dir}/packages"
