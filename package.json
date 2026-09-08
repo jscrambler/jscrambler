@@ -4,18 +4,18 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
-    "pnpm": ">=9.1.1",
-    "node": ">=18.0.0"
+    "pnpm": "^11.3.0",
+    "node": ">=22.12.0"
   },
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "ci:publish": "pnpm changeset publish && ./scripts/push-new-tags.sh"
+    "ci:publish": "./scripts/publish.sh tmp/changeset-pack-dir"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/eslint-parser": "^7.23.3",
-    "@changesets/cli": "2.27.1",
+    "@changesets/cli": "3.0.1",
     "@commitlint/cli": "17.6.1",
     "@commitlint/config-conventional": "17.6.1",
     "eslint": "8.56.0",
