@@ -19,9 +19,6 @@ readonly pack_out_dir
 packages_dir="${pack_out_dir}/packages"
 readonly packages_dir
 
-ls -la $packages_dir
-ls -la $pack_out_dir
-
 publish_plan_path="${pack_out_dir}/publish-plan.json"
 readonly publish_plan_path
 
@@ -32,9 +29,12 @@ readonly publish_report_script_path
 shopt -s nullglob
 packages=("${packages_dir}"/*.tgz)
 
+# create file is not exists
+: >> "${CHANGESETS_OUTPUT}"
+
 if (( ${#packages[@]} == 0 )); then
   echo "No .tgz packages found in ${packages_dir}" >&2
-  exit 1
+  exit 0
 fi
 
 if [[ -z "${CHANGESETS_OUTPUT:-}" ]]; then
@@ -42,7 +42,6 @@ if [[ -z "${CHANGESETS_OUTPUT:-}" ]]; then
   exit 1
 fi
 
-: >> "${CHANGESETS_OUTPUT}"
 
 # PUBLISH to stage
 for package in "${packages[@]}"; do
