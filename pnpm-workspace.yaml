@@ -3,5 +3,7 @@ packages:
 allowBuilds:
   core-js: true
   es5-ext: true
+  jscrambler-cli: true
+  jscrambler-webpack-plugin: true
 # 1 week delay
 minimumReleaseAge: 10080
