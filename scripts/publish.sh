@@ -50,6 +50,6 @@ for package in "${packages[@]}"; do
   IFS=$'\t' read -r integrity output_line <<< "${publish_entry}"
 
   echo "Staging $(basename -- "${package}") with integrity ${integrity}..."
-  pnpm stage publish "${package}" --publish-branch release/staged
+  pnpm stage publish "${package}"
   printf '%s\n' "${output_line}" >> "${CHANGESETS_OUTPUT}"
 done
