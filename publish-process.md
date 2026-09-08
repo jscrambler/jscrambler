@@ -10,7 +10,7 @@ first selects one of two modes:
 
 1. **Version mode** creates or updates the version-bump pull request.
 2. **Publish mode** packs the packages, publishes the generated tarballs to the
-   staging branch, and pushes the corresponding Git tags.
+   npm Stage area, and pushes the corresponding Git tags.
 
 Only one run for the same workflow and Git ref can execute at a time because the
 workflow uses `${{ github.workflow }}-${{ github.ref }}` as its concurrency key.
