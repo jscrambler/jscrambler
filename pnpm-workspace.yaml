@@ -1,2 +1,7 @@
 packages:
   - "packages/*"
+allowBuilds:
+  core-js: true
+  es5-ext: true
+# 1 week delay
+minimumReleaseAge: 10080
