@@ -29,7 +29,7 @@ readonly publish_report_script_path
 shopt -s nullglob
 packages=("${packages_dir}"/*.tgz)
 
-# create file is not exists
+# create the file if it does not exist
 : >> "${CHANGESETS_OUTPUT}"
 
 if (( ${#packages[@]} == 0 )); then
