@@ -81,9 +81,10 @@ For every tarball, the script:
 
 1. Builds its publish-plan path as `packages/<tarball-name>.tgz`.
 2. Calls `scripts/build-publish-report-line.mjs` to find the matching publish
-   entry and generate a Changesets output record for the package's
+   entry, read the tarball integrity recorded in `publish-plan.json`, and
+   generate a Changesets output record for the package's
    `<package-name>@<version>` Git tag.
-3. Calculates the tarball's SHA-1 checksum with `shasum` for the staging log.
+3. Logs the integrity returned by the helper before staging the tarball.
 4. Publishes the tarball with:
 
    ```bash
