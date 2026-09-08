@@ -1,5 +1,12 @@
 # jscrambler-webpack-plugin
 
+## 8.6.4
+
+### Patch Changes
+
+- [3c23635]: Updated dependencies
+  - jscrambler@8.22.1
+
 ## 8.6.3
 
 ### Patch Changes
