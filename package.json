@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
-    "ci:publish": "pnpm changeset publish && ./scripts/push-new-tags.sh"
+    "ci:publish": "./scripts/publish.sh tmp/changeset-pack-dir"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
