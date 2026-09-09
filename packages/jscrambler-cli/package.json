@@ -1,7 +1,7 @@
 {
   "name": "jscrambler",
   "description": "Jscrambler Code Integrity API client.",
-  "version": "8.13.0",
+  "version": "8.22.1",
   "homepage": "https://github.com/jscrambler/jscrambler",
   "author": "Jscrambler <support@jscrambler.com>",
   "repository": {
@@ -22,7 +22,7 @@
     "build": "babel src --out-dir dist",
     "watch": "babel -w src --out-dir dist",
     "test": "pnpm run build && node test/output-path.js",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "eslint": "eslint src/",
     "eslint:fix": "eslint src/ --fix"
   },
@@ -30,7 +30,7 @@
     "node": ">= 12.17.0"
   },
   "dependencies": {
-    "axios": "1.16.0",
+    "axios": "1.19.0",
     "commander": "^2.8.1",
     "core-js": "3.38.1",
     "filesize-parser": "1.5.0",

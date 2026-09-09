@@ -1,4 +1,5 @@
 # [![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)](https://jscrambler.com/?utm_source=github.com&utm_medium=referral)
+
 Jscrambler Code Integrity Client
 --------------------
 
