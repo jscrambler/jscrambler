@@ -357,12 +357,24 @@ function setupViaSaveHook({
     return result;
   };
 
-  const metroConfigFactory = isExpoBuild()
-    ? getDefaultExpoConfig
-    : getDefaultConfig;
-  const getPolyfills = metroConfigFactory(projectRoot)?.serializer?.getPolyfills;
+  if (isExpoBuild()) {
+    const getDefaultprocessModuleFilter = getDefaultExpoConfig(projectRoot)?.serializer?.processModuleFilter;
+    return {
+      serializer: {
+        processModuleFilter(_module) {
+          const allow = getDefaultprocessModuleFilter(_module);
+          if (allow) {
+            applyJscramblerSerializerToModule(_module);
+          }
+          return allow;
+        },
+      }
+    };
+  }
+
+  const getPolyfills = getDefaultConfig(projectRoot)?.serializer?.getPolyfills;
   const metroPollyfils =
-    typeof getPolyfills === 'function' ? getPolyfills() : [];
+      typeof getPolyfills === 'function' ? getPolyfills() : [];
 
   return {
     serializer: {
