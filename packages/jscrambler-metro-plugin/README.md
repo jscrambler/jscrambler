@@ -1,5 +1,5 @@
 # ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
-# Jscrambler Code Integrity for React-Native (Metro Bundler)
+# Jscrambler Code Integrity for React-Native and Vega Os
 
 Jscrambler [Code Integrity](https://jscrambler.com/code-integrity) is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
@@ -19,44 +19,75 @@ Please make sure you install the right version, otherwise some functionalities m
 
 # Usage
 
-This metro plugin protects your **React Native** bundle using Jscrambler.
+This metro plugin protects your [React Native](https://reactnative.dev/) and [Vega](https://developer.amazon.com/apps-and-games/vega) bundle using Jscrambler.
 
-Include the plugin in your `metro.config.js` and add the following code:
+First install the **jscrambler-metro-plugin** as a development dependency
 
-```js
-const {resolve} = require('path');
-const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
-  /* optional */
-  {
-    enable: true,
-    enabledHermes: true, // true by default. If you are not using Hermes engine, set to false
-    ignoreFile: resolve(__dirname, '.jscramblerignore'),
-    params: [
-      {
-        name: 'selfDefending',
-        options: {
-          threshold: 1
-        }
-      }
-    ]
-  }
-);
-
-module.exports = jscramblerMetroPlugin;
+```shell
+npm install -D jscrambler-metro.plugin
 ```
 
-You can pass your Jscrambler configuration using the plugin parameter or using
-the usual `.jscramblerrc` file.
+Then, set up the plugin in your `metro.config.js` by adding the following code:
 
-If you use a different location for the `.jscramblerignore` file, you can use the `ignoreFile` option to tell Jscrambler the path to the file.
-Otherwise, if a `.jscramblerignore` file is found in a project root folder, it will be considered. You can find more information and examples in Ignoring Files.
+```js
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const jscramblerMetroPlugin = require('jscrambler-metro-plugin')();
+
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('@react-native/metro-config').MetroConfig}
+ */
+const config = {
+  ...jscramblerMetroPlugin
+};
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+```
+
+Finally, create a `.jscramblerrc` file with your Jscrambler configuration downloaded from Code Integrity Application Dashboard.
 
 By default, Jscrambler protection is **ignored** when bundle mode is set for **Development**. You can override this behavior by setting env variable `JSCRAMBLER_METRO_DEV=true`
 
 In order to activate source map generation effectively, you will need to enable source maps both in the Jscrambler configuration file, by adding the following parameter to said file:
 
-...
-"sourceMaps": true,
-...
+```json
+{
+  ...
+ "sourceMaps": true,
+  ...
+}
+```
 
 and in the [React Native app](https://reactnative.dev/docs/debugging-release-builds?platform=android#enabling-source-maps).
+
+## Plugin Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enable` | `boolean` | `true` | Enables Jscrambler protection. Set to `false` to skip protection. |
+| `enabledHermes` | `boolean` | `true` | Enables Hermes-specific compatibility handling. Set to `false` when the app does not use Hermes. |
+| `ignoreFile` | `string` | `.jscramblerignore` in the project root | Path to the ignore file used to exclude files from protection. |
+| `params` | `Array<object>` | Value from `.jscramblerrc` | Overrides the `params` transformation list from `.jscramblerrc`, useful for testing. |
+
+```js
+const jscramblerMetroPlugin = require('jscrambler-metro-plugin')(
+    /* OPTIONAL */
+    {
+        enable: true, 
+        enabledHermes: true,
+        ignoreFile: resolve(__dirname, '.jscramblerignore'),
+        // overrides the params on `.jscramblerrc` file. Usefull for testing purposes.
+        params: [  
+            {
+              name: "stringConcealing",
+              options: {
+                freq: 1,
+                max: -1
+              }
+            }
+        ]
+    }
+);
+```
