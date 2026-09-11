@@ -1,5 +1,12 @@
 # jscrambler-metro-plugin
 
+## 9.1.0
+
+### Minor Changes
+
+- [67b8d27]: allow for multiple bundle obfuscation and compatibility with VegaOS
+- [cd2e5e4]: added support for react native expo
+
 ## 9.0.4
 
 ### Patch Changes
