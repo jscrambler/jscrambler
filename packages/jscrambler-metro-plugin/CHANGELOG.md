@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 9.1.1
+
+### Patch Changes
+
+- [3cf75f4]: Update README.md
+
 ## 9.1.0
 
 ### Minor Changes
