@@ -1,5 +1,5 @@
 # ![Jscrambler](https://media.jscrambler.com/images/logo_500px.png)
-# Jscrambler Code Integrity for React-Native and Vega Os
+# Jscrambler Code Integrity for React-Native and Vega OS
 
 Jscrambler [Code Integrity](https://jscrambler.com/code-integrity) is a JavaScript protection technology for Web and Mobile Applications. Its main purpose is to enable JavaScript applications to become self-defensive and resilient to tampering and reverse engineering.
 
@@ -19,7 +19,7 @@ Please make sure you install the right version, otherwise some functionalities m
 
 # Usage
 
-This metro plugin protects your [React Native](https://reactnative.dev/) and [Vega](https://developer.amazon.com/apps-and-games/vega) bundle using Jscrambler.
+This plugin uses Jscrambler to protect your [React Native](https://reactnative.dev/) bundles built with Expo or the Community CLI, as well as your [Vega OS](https://developer.amazon.com/apps-and-games/vega) bundles.
 
 First install the **jscrambler-metro-plugin** as a development dependency
 
@@ -30,7 +30,14 @@ npm install -D jscrambler-metro.plugin
 Then, set up the plugin in your `metro.config.js` by adding the following code:
 
 ```js
+// For React-Native Community CLI or Vega OS, import getDefaultConfig and mergeConfig from @react-native/metro-config  
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+
+// For Expo, import getDefaultConfig from expo/metro-config and mergeConfig from @react-native/metro-config
+const { getDefaultConfig } = require("expo/metro-config");
+const { mergeConfig } = require('@react-native/metro-config');
+
+// Import Jscrambler Metro Plugin
 const jscramblerMetroPlugin = require('jscrambler-metro-plugin')();
 
 /**
