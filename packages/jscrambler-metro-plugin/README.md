@@ -30,7 +30,14 @@ npm install -D jscrambler-metro.plugin
 Then, set up the plugin in your `metro.config.js` by adding the following code:
 
 ```js
+// For React-Native Community CLI or Vega OS, import getDefaultConfig and mergeConfig from @react-native/metro-config  
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+
+// For Expo, import getDefaultConfig from expo/metro-config and mergeConfig from @react-native/metro-config
+const { getDefaultConfig } = require("expo/metro-config");
+const { mergeConfig } = require('@react-native/metro-config');
+
+// Import Jscrambler Metro Plugin
 const jscramblerMetroPlugin = require('jscrambler-metro-plugin')();
 
 /**
