@@ -1,5 +1,11 @@
 # jscrambler
 
+## 8.22.2
+
+### Patch Changes
+
+- [86bc04a]: Bump axios to v1.20.0
+
 ## 8.22.1
 
 ### Patch Changes
