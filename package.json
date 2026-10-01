@@ -4,11 +4,17 @@
   "author": "Jscrambler <support@jscrambler.com>",
   "license": "MIT",
   "engines": {
-    "pnpm": "^11.3.0",
+    "pnpm": "^11.27.0",
     "node": ">=22.12.0"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.27.0",
+      "onFail": "error"
+    }
+  },
   "scripts": {
-    "preinstall": "only-allow pnpm",
     "postinstall": "husky install",
     "ci:publish": "./scripts/publish.sh tmp/changeset-pack-dir"
   },
@@ -23,7 +29,6 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.3",
     "husky": "8.0.3",
-    "only-allow": "1.1.1",
     "prettier": "3.1.1"
   },
   "commitlint": {
