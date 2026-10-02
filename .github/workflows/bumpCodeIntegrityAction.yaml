@@ -1,9 +1,6 @@
 name: Release Code Integrity Github Actions
 
-on:
-  push:
-    tags:
-      - 'temp-disable@*'
+on: [push]
 
 jobs:
   tag_code_integrity_github_action:
@@ -12,29 +9,29 @@ jobs:
     steps:
       - name: Get Jscrambler Version
         id: get_version
-        uses: johngeorgewright/parse-version-action@v2.0.0
+        uses: johngeorgewright/regex-action@fb76bad527f3554f4d648801b4ef19d4a6ad574c
         with:
-          ref: ${{ github.ref }}
-          trim-start: jscrambler@
-      - name: Get Access Token to Code Integrity Action Repository
+          ref: "refs/tags/jscrambler@8.22.1"
+          regex: ^refs/tags/jscrambler@(?P<version>\d+.\d+.\d+)$
+      - name: Get Access Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v1
+        uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
-      - uses: actions/checkout@v3
+      - name: Checkout Code Integrity Actions Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
       - name: Update Jscrambler CLI Version
-        uses: jossef/action-set-json-field@v2.1
+        uses: jossef/action-set-json-field@890d7642122dbb2833dddd2003659bb71a2b21fe
         with:
           file: package.json
           field: dependencies.jscrambler
-          value: ${{ steps.get_version.outputs.version }}
+          value: ${{ fromJSON(steps.get_version.outputs.groups).version }}
       - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
         with:
           commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           tagging_message: ${{ steps.get_version.outputs.version }}
-          push_options: '--force'
