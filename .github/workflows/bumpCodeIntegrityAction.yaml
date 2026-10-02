@@ -9,10 +9,10 @@ jobs:
     steps:
       - name: Get Jscrambler Version
         id: get_version
-        uses: johngeorgewright/regex-action@fb76bad527f3554f4d648801b4ef19d4a6ad574c
+        uses: johngeorgewright/parse-version-action@72f62834450c8b6f8cbc766455b892c2a6bc4794
         with:
           ref: "refs/tags/jscrambler@8.22.1"
-          regex: ^refs/tags/jscrambler@(?P<version>\d+.\d+.\d+)$
+          trim-start: jscrambler@
       - name: Get Access Token
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
@@ -29,7 +29,7 @@ jobs:
         with:
           file: package.json
           field: dependencies.jscrambler
-          value: ${{ fromJSON(steps.get_version.outputs.groups).version }}
+          value: ${{ steps.get_version.outputs.version }}
       - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
         with:
