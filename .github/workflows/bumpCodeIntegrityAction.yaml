@@ -31,6 +31,7 @@ jobs:
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version }}
       - name: Create pull request to bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
+        id: create_pull_request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
@@ -40,6 +41,16 @@ jobs:
           body: "Updates the Jscrambler dependency to ${{ steps.get_version.outputs.version }}."
           add-paths: package.json
           sign-commits: true
+      - name: Notify Google Chat of pull request
+        if: ${{ steps.create_pull_request.outputs.pull-request-operation == 'created' || steps.create_pull_request.outputs.pull-request-operation == 'updated' }}
+        env:
+          WEBHOOK_URI: ${{ secrets.WEBHOOK_API_URI }}
+          PULL_REQUEST_URL: ${{ steps.create_pull_request.outputs.pull-request-url }}
+        run: |
+          jq -n --arg text "Code Integrity Actions dependency update is ready for review: $PULL_REQUEST_URL" '{text: $text}' |
+            curl --fail --silent --show-error \
+              --header 'Content-Type: application/json' \
+              --data-binary @- "$WEBHOOK_URI"
       - name: Notify failure
         if: ${{ failure() }}
         env:
