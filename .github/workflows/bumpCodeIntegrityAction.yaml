@@ -30,11 +30,15 @@ jobs:
           file: package.json
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version }}
-      - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
-        uses: actions-js/push@968f4695ca558093eadb24ad83cc5891f47e0cdc
+      - name: Create pull request to bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
-          github_token: ${{ steps.get_workflow_token.outputs.token }}
+          token: ${{ steps.get_workflow_token.outputs.token }}
+          commit-message: "Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}"
+          branch: release/jscrambler-${{ steps.get_version.outputs.version }}
+          title: "Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}"
+          body: "Updates the Jscrambler dependency to ${{ steps.get_version.outputs.version }}."
+          add-paths: package.json
       - name: Notify failure
         if: ${{ failure() }}
         env:
