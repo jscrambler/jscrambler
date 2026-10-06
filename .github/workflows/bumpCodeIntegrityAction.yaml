@@ -1,6 +1,9 @@
 name: Release Code Integrity Github Actions
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'jscrambler@*'
 
 jobs:
   tag_code_integrity_github_action:
@@ -11,7 +14,7 @@ jobs:
         id: get_version
         uses: johngeorgewright/parse-version-action@72f62834450c8b6f8cbc766455b892c2a6bc4794
         with:
-          ref: "refs/tags/jscrambler@8.22.1"
+          ref: ${{ github.ref }}
           trim-start: jscrambler@
       - name: Get Access Token
         id: get_workflow_token
