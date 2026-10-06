@@ -34,7 +34,7 @@ jobs:
         uses: actions-js/push@968f4695ca558093eadb24ad83cc5891f47e0cdc
         with:
           message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
-          github_token: ${{ teps.get_workflow_token.outputs.token }}
+          github_token: ${{ steps.get_workflow_token.outputs.token }}
       - name: Notify failure
         if: ${{ failure() }}
         env:
