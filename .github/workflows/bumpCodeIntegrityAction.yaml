@@ -35,3 +35,13 @@ jobs:
         with:
           message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
           github_token: ${{ teps.get_workflow_token.outputs.token }}
+      - name: Notify failure
+        if: ${{ failure() }}
+        env:
+          WEBHOOK_URI: ${{ secrets.WEBHOOK_API_URI }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          jq -n --arg text "Release code-integrity-actions failed: $RUN_URL" '{text: $text}' |
+            curl --fail --silent --show-error \
+              --header 'Content-Type: application/json' \
+              --data-binary @- "$WEBHOOK_URI"
