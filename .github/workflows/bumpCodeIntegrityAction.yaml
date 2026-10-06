@@ -31,7 +31,7 @@ jobs:
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version }}
       - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
-        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d
+        uses: actions-js/push@968f4695ca558093eadb24ad83cc5891f47e0cdc
         with:
-          commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
-          tagging_message: ${{ steps.get_version.outputs.version }}
+          message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
+          github_token: ${{ teps.get_workflow_token.outputs.token }}
