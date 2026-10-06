@@ -39,6 +39,7 @@ jobs:
           title: "Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}"
           body: "Updates the Jscrambler dependency to ${{ steps.get_version.outputs.version }}."
           add-paths: package.json
+          sign-commits: true
       - name: Notify failure
         if: ${{ failure() }}
         env:
