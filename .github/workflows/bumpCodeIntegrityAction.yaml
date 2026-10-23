@@ -3,7 +3,7 @@ name: Release Code Integrity Github Actions
 on:
   push:
     tags:
-      - 'temp-disable@*'
+      - 'jscrambler@*'
 
 jobs:
   tag_code_integrity_github_action:
@@ -12,29 +12,55 @@ jobs:
     steps:
       - name: Get Jscrambler Version
         id: get_version
-        uses: johngeorgewright/parse-version-action@v2.0.0
+        uses: johngeorgewright/parse-version-action@72f62834450c8b6f8cbc766455b892c2a6bc4794
         with:
           ref: ${{ github.ref }}
           trim-start: jscrambler@
-      - name: Get Access Token to Code Integrity Action Repository
+      - name: Get Access Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v1
+        uses: peter-murray/workflow-application-token-action@dad2b81e50ce3edeb5f3b7ffbd79f731368bd668
         with:
           application_id: ${{ secrets.CODE_INTEGRITY_ACTIONS_APP_ID }}
           application_private_key: ${{ secrets.CODE_INTEGRITY_ACTIONS_PRIVATE_KEY }}
-      - uses: actions/checkout@v3
+      - name: Checkout Code Integrity Actions Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: jscrambler/code-integrity-actions
           token: ${{ steps.get_workflow_token.outputs.token }}
       - name: Update Jscrambler CLI Version
-        uses: jossef/action-set-json-field@v2.1
+        uses: jossef/action-set-json-field@890d7642122dbb2833dddd2003659bb71a2b21fe
         with:
           file: package.json
           field: dependencies.jscrambler
           value: ${{ steps.get_version.outputs.version }}
-      - name: Bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create pull request to bump Code Integrity Action to ${{ steps.get_version.outputs.version }}
+        id: create_pull_request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          commit_message: Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}
-          tagging_message: ${{ steps.get_version.outputs.version }}
-          push_options: '--force'
+          token: ${{ steps.get_workflow_token.outputs.token }}
+          commit-message: "Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}"
+          branch: release/jscrambler-${{ steps.get_version.outputs.version }}
+          title: "Bump Jscrambler dependency to ${{ steps.get_version.outputs.version }}"
+          body: "Updates the Jscrambler dependency to ${{ steps.get_version.outputs.version }}."
+          add-paths: package.json
+          sign-commits: true
+      - name: Notify Google Chat of pull request
+        if: ${{ steps.create_pull_request.outputs.pull-request-operation == 'created' || steps.create_pull_request.outputs.pull-request-operation == 'updated' }}
+        env:
+          WEBHOOK_URI: ${{ secrets.WEBHOOK_API_URI }}
+          PULL_REQUEST_URL: ${{ steps.create_pull_request.outputs.pull-request-url }}
+        run: |
+          jq -n --arg text "Code Integrity Actions dependency update is ready for review: $PULL_REQUEST_URL" '{text: $text}' |
+            curl --fail --silent --show-error \
+              --header 'Content-Type: application/json' \
+              --data-binary @- "$WEBHOOK_URI"
+      - name: Notify failure
+        if: ${{ failure() }}
+        env:
+          WEBHOOK_URI: ${{ secrets.WEBHOOK_API_URI }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          jq -n --arg text "Release code-integrity-actions failed: $RUN_URL" '{text: $text}' |
+            curl --fail --silent --show-error \
+              --header 'Content-Type: application/json' \
+              --data-binary @- "$WEBHOOK_URI"
