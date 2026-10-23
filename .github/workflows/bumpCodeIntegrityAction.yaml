@@ -1,10 +1,9 @@
 name: Release Code Integrity Github Actions
 
-on: [push]
-#on:
-#  push:
-#    tags:
-#      - 'jscrambler@*'
+on:
+  push:
+    tags:
+      - 'jscrambler@*'
 
 jobs:
   tag_code_integrity_github_action:
