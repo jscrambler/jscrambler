@@ -1,5 +1,11 @@
 # jscrambler-metro-plugin
 
+## 9.1.3
+
+### Patch Changes
+
+- [1d22a1f]: Only require `expo/metro-config` for Expo builds, so vanilla React Native projects no longer need `expo` installed
+
 ## 9.1.2
 
 ### Patch Changes
