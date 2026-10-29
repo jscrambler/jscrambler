@@ -12,6 +12,11 @@
     "@react-native/metro-config": "*",
     "expo": "*"
   },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "commander": "^2.20.0",
     "fs-extra": "^8.0.1",

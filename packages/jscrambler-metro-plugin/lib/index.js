@@ -1,6 +1,5 @@
 const {copy, emptyDir, mkdirp, readFile, writeFile} = require('fs-extra');
 const { getDefaultConfig } = require('@react-native/metro-config');
-const { getDefaultConfig: getDefaultExpoConfig } = require('expo/metro-config');
 const jscrambler = require('jscrambler').default;
 const fs = require('fs');
 const path = require('path');
@@ -358,6 +357,8 @@ function setupViaSaveHook({
   };
 
   if (isExpoBuild()) {
+    // required lazily so that vanilla React Native projects don't need expo installed
+    const { getDefaultConfig: getDefaultExpoConfig } = require('expo/metro-config');
     const getDefaultprocessModuleFilter = getDefaultExpoConfig(projectRoot)?.serializer?.processModuleFilter;
     return {
       serializer: {
